@@ -96,7 +96,7 @@ void SceneNode::SetScale(glm::vec3 scale){
 
 void SceneNode::SetPivot(glm::vec3 pivot) {
     pivot_ = position_ + (pivot * orientation_);
-    std::cout << glm::to_string(pivot_) << std::endl;
+    //std::cout << glm::to_string(pivot_) << std::endl;
 }
 
 void SceneNode::SetParentTransf(glm::mat4 transf) {

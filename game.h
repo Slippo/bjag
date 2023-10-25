@@ -67,6 +67,7 @@ namespace game {
             // Methods to handle events
             static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
             static void ResizeCallback(GLFWwindow* window, int width, int height);
+            static void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 
             // Kelp tree/bush nodes
             // The sphere used to make leaves
