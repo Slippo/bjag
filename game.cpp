@@ -140,21 +140,18 @@ void Game::MainLoop(void){
             float mytheta = glm::pi<float>() / 64;
             if ((current_time - last_time) > 0.05){
                 scene_.Update(&camera_, &resman_);
+                
                 CompositeNode* a_kelp = scene_.GetNode("Kelp");
                 SceneNode* root = a_kelp->GetNode("Root");
                 root->Orbit(glm::angleAxis(mytheta, glm::vec3(0.1 * sin(current_time), 0, 0.05 * sin(1 - current_time))));
-                //for (int x = 0; x < root->GetChildCount(); x++) {
-                //    root->GetChild(x)->Orbit(glm::angleAxis(mytheta, glm::vec3(0.1 * sin(current_time), 0, 0.05 * sin(1-current_time))));
-                //}
+              
+                for (int x = 0; x < root->GetChildCount(); x++) {
+                    root->GetChild(x)->Orbit(glm::angleAxis(mytheta, glm::vec3(0.1 * sin(current_time), 0, 0.05 * sin(1-current_time))));
+                }
                 last_time = current_time;
             }
         }
-        // Process camera/player forward movement
-        camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
-        if (camera_.GetSpeed() > 0) {
-            camera_.SetSpeed(camera_.GetSpeed() * 0.98);
-
-        }
+        
 
         // Draw the scene
         scene_.Draw(&camera_);
@@ -234,7 +231,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
 
     // View control
     float rot_factor(2 * glm::pi<float>() / 180); // amount the ship turns per keypress (DOUBLE)
-    float trans_factor = 1.0; // amount the ship steps forward per keypress
+    float trans_factor = 0.2; // amount the ship steps forward per keypress
     // Look up/down
     if (key == GLFW_KEY_UP){
         game->camera_.Pitch(rot_factor);
@@ -243,22 +240,27 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         game->camera_.Pitch(-rot_factor);
     }
     // Turn left/right
-    if (key == GLFW_KEY_A){
+    if (key == GLFW_KEY_LEFT) {
         game->camera_.Yaw(rot_factor);
     }
-    if (key == GLFW_KEY_D){
+    if (key == GLFW_KEY_RIGHT) {
         game->camera_.Yaw(-rot_factor);
     }
-    // Roll anticlockwise/clockwise
-    if (key == GLFW_KEY_LEFT){
-        game->camera_.Roll(-rot_factor);
+    
+    //forward backward side movement (strafe)
+    if (key == GLFW_KEY_A){
+      
+        game->camera_.Translate(-glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
     }
-    if (key == GLFW_KEY_RIGHT){
-        game->camera_.Roll(rot_factor);
+    if (key == GLFW_KEY_D){
+        
+        game->camera_.Translate(glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
     }
+   
     // Accelerate and break
     if (key == GLFW_KEY_W){
-        //game->camera_.Translate(game->camera_.GetForward()*trans_factor);
+      
+        /* //old architecture from acceleration based model
         float new_speed = game->camera_.GetSpeed() + 0.005f;
         
         if (new_speed < game->camera_.GetMaxSpeed()) {
@@ -266,32 +268,24 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         }
         else {
             game->camera_.SetSpeed(game->camera_.GetMaxSpeed());
-        }
+        }*/
+
+        game->camera_.Translate(glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
     }
     if (key == GLFW_KEY_S){
-        //game->camera_.Translate(-game->camera_.GetForward()*trans_factor);
+     
+        /* //old architecture from acceleration based model
         float new_speed = game->camera_.GetSpeed() - 0.05f;
-        if (new_speed > 0.0f) {
+        if (new_speed > game->camera_.GetMinSpeed()) {
             game->camera_.SetSpeed(new_speed);
         }
         else {
             game->camera_.SetSpeed(0.0f);
-        }
+        }*/
+
+        game->camera_.Translate(-glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
     }
-    // Strafe left/right
-    if (key == GLFW_KEY_J){
-        game->camera_.Translate(-game->camera_.GetSide()*trans_factor);
-    }
-    if (key == GLFW_KEY_L){
-        game->camera_.Translate(game->camera_.GetSide()*trans_factor);
-    }
-    // Travel up/down
-    if (key == GLFW_KEY_I){
-        game->camera_.Translate(game->camera_.GetUp()*trans_factor);
-    }
-    if (key == GLFW_KEY_K){
-        game->camera_.Translate(-game->camera_.GetUp()*trans_factor);
-    }
+  
 }
 
 

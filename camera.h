@@ -36,6 +36,7 @@ namespace game {
             glm::vec3 GetUp(void) const;
             float GetSpeed(void) const;
             float GetMaxSpeed(void) const;
+            float GetMinSpeed(void) const;
 
             // Perform relative transformations of camera
             void Pitch(float angle);
@@ -55,6 +56,7 @@ namespace game {
         private:
             float speed_; // Current speed factor
             float max_speed_ = 0.2f; // Maximum speed factor
+            float min_speed_ = -0.2f; // Minimum speed factor
             glm::vec3 position_; // Position of camera
             glm::quat orientation_; // Orientation of camera
             glm::vec3 forward_; // Initial forward vector (-Z)

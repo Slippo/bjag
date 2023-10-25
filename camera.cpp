@@ -70,6 +70,10 @@ float Camera::GetMaxSpeed(void) const {
     return max_speed_;
 }
 
+float Camera::GetMinSpeed(void) const {
+    return min_speed_;
+}
+
 void Camera::Pitch(float angle){
     glm::quat rotation = glm::angleAxis(angle, GetSide());
     orientation_ = rotation * orientation_;
