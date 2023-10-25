@@ -12,8 +12,8 @@ namespace game {
 
 // Main window settings
 const std::string window_title_g = "COMP 3501 Assignment 3: Tree";
-const unsigned int window_width_g = 800;
-const unsigned int window_height_g = 600;
+const unsigned int window_width_g = 1280;
+const unsigned int window_height_g = 720;
 const bool window_full_screen_g = false;
 
 // Viewport and camera settings
@@ -79,7 +79,6 @@ void Game::InitWindow(void){
 
 
 void Game::InitView(void){
-
     // Set up z-buffer
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -96,6 +95,9 @@ void Game::InitView(void){
     camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
     // Set acceleration
     camera_.SetSpeed(0.0f);
+
+    // Hide mouse
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 
@@ -104,6 +106,7 @@ void Game::InitEventHandlers(void){
     // Set event callbacks
     glfwSetKeyCallback(window_, KeyCallback);
     glfwSetFramebufferSizeCallback(window_, ResizeCallback);
+    glfwSetCursorPosCallback(window_, CursorPosCallback);
 
     // Set pointer to game object, so that callbacks can access it
     glfwSetWindowUserPointer(window_, (void *) this);
@@ -141,10 +144,10 @@ void Game::MainLoop(void){
                 CompositeNode* a_kelp = scene_.GetNode("Kelp");
                 SceneNode* root = a_kelp->GetNode("Root");
                 root->Orbit(glm::angleAxis(mytheta, glm::vec3(0.1 * sin(current_time), 0, 0.05 * sin(1 - current_time))));
+              
                 for (int x = 0; x < root->GetChildCount(); x++) {
                     root->GetChild(x)->Orbit(glm::angleAxis(mytheta, glm::vec3(0.1 * sin(current_time), 0, 0.05 * sin(1-current_time))));
                 }
-                
                 last_time = current_time;
             }
         }
@@ -161,12 +164,45 @@ void Game::MainLoop(void){
     }
 }
 
+void Game::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
+    // Get user data with a pointer to the game class
+    void* ptr = glfwGetWindowUserPointer(window);
+    Game* game = (Game*)ptr;
+    int width = 0;
+    int height = 0;
+    glfwGetWindowSize(window, &width, &height);
+    
+    glm::vec2 dir = glm::vec2(xpos,ypos) - glm::vec2(width / 2, height / 2); // current direction of the cursor
+    dir = glm::normalize(dir);
+    float sens = 0.025;
+
+    game->camera_.Yaw(sens * -dir.x);
+    game->camera_.Pitch(sens * -dir.y);
+    
+    //game->camera_.Roll(0);
+
+    std::cout << glm::to_string(dir) << std::endl;
+
+    glfwSetCursorPos(window, width / 2, height / 2); // center the cursor
+}
 
 void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
 
     // Get user data with a pointer to the game class
     void* ptr = glfwGetWindowUserPointer(window);
     Game *game = (Game *) ptr;
+
+    //double x = 0;
+    //double y = 0;
+    //int width = 0;
+    //int height = 0;
+    //glfwGetWindowSize(window, &width, &height);
+    //glfwSetCursorPos(window, width / 2, height / 2);
+    //glfwGetCursorPos(window, &x, &y);
+
+    //std::cout<<x <<", " << y << std::endl;
+
+    
 
     // Quit game if 'q' is pressed
     if (key == GLFW_KEY_Q && action == GLFW_PRESS){
