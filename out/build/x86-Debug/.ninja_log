@@ -1,0 +1,10 @@
+# ninja log v5
+26	503	7199665847831700	CMakeFiles/Tree.dir/resource.cpp.obj	6a23cec5d332a5ca
+1	668	7199665849473439	CMakeFiles/Tree.dir/camera.cpp.obj	ca62797c5fd24c68
+33	758	7199665850366162	CMakeFiles/Tree.dir/resource_manager.cpp.obj	980fe811c4b8a63a
+9	836	7199665851148247	CMakeFiles/Tree.dir/composite_node.cpp.obj	e8e025c728f69785
+21	886	7199665851655485	CMakeFiles/Tree.dir/main.cpp.obj	e9147cd47cf52630
+40	890	7199665851690545	CMakeFiles/Tree.dir/scene_graph.cpp.obj	6f89c54e84f7011e
+47	917	7199665851966607	CMakeFiles/Tree.dir/scene_node.cpp.obj	9f0ae8652b70eec5
+15	925	7199665852051733	CMakeFiles/Tree.dir/game.cpp.obj	6e0a9b088f5475ae
+926	1711	7199665859732828	Tree_d.exe	3fbbed1409ccd47c
