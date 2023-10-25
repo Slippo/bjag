@@ -49,6 +49,14 @@ CompositeNode *SceneGraph::GetNode(std::string node_name) const {
 
 }
 
+CompositeNode* SceneGraph::GetNode(int index) const {
+    
+    if (index >= 0 && index < node_.size()) {
+        return node_[index];
+    }
+    return NULL;
+}
+
 
 std::vector<CompositeNode *>::const_iterator SceneGraph::begin() const { return node_.begin(); }
 
