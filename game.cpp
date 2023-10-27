@@ -12,8 +12,8 @@ namespace game {
 
 // Main window settings
 const std::string window_title_g = "COMP 3501 Assignment 3: Tree";
-const unsigned int window_width_g = 800;
-const unsigned int window_height_g = 600;
+const unsigned int window_width_g = 1280;
+const unsigned int window_height_g = 720;
 const bool window_full_screen_g = false;
 
 // Viewport and camera settings
@@ -30,7 +30,6 @@ const std::string material_directory_g = MATERIAL_DIRECTORY;
 
 // Manipulator
 Manipulator* manipulator = new Manipulator();
-
 
 Game::Game(void){
 
@@ -82,7 +81,6 @@ void Game::InitWindow(void){
 
 
 void Game::InitView(void){
-
     // Set up z-buffer
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -99,14 +97,16 @@ void Game::InitView(void){
     camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
     // Set acceleration
     camera_.SetSpeed(0.0f);
+    // Hide mouse
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
-
 
 void Game::InitEventHandlers(void){
 
     // Set event callbacks
     glfwSetKeyCallback(window_, KeyCallback);
     glfwSetFramebufferSizeCallback(window_, ResizeCallback);
+    glfwSetCursorPosCallback(window_, CursorPosCallback);
 
     // Set pointer to game object, so that callbacks can access it
     glfwSetWindowUserPointer(window_, (void *) this);
@@ -126,8 +126,7 @@ void Game::SetupResources(void){
 }
 
 
-void Game::SetupScene(void){
-    
+void Game::SetupScene(void){    
     scene_.SetBackgroundColor(viewport_background_color_g);
     
     scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(0.0, 0.0, -5.0)));
@@ -137,7 +136,6 @@ void Game::SetupScene(void){
 void Game::MainLoop(void){
     // Loop while the user did not close the window
     while (!glfwWindowShouldClose(window_)){
-
         // Animate the scene
         if (animating_){
             static double last_time = 0;
@@ -168,13 +166,34 @@ void Game::MainLoop(void){
     }
 }
 
+void Game::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
+    // Get user data with a pointer to the game class
+    void* ptr = glfwGetWindowUserPointer(window);
+    Game* game = (Game*)ptr;
+    int width = 0;
+    int height = 0;
+    glfwGetWindowSize(window, &width, &height);
+    
+    glm::vec2 dir = glm::vec2(xpos,ypos) - glm::vec2(width / 2, height / 2); // current direction of the cursor
+    dir = glm::normalize(dir);
+    float sens = 0.025;
+
+    game->camera_.Yaw(sens * -dir.x);
+    game->camera_.Pitch(sens * -dir.y);
+    
+    //game->camera_.Roll(0);
+
+    std::cout << glm::to_string(dir) << std::endl;
+
+    glfwSetCursorPos(window, width / 2, height / 2); // center the cursor
+}
 
 void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
 
     // Get user data with a pointer to the game class
     void* ptr = glfwGetWindowUserPointer(window);
     Game *game = (Game *) ptr;
-
+  
     // Quit game if 'q' is pressed
     if (key == GLFW_KEY_Q && action == GLFW_PRESS){
         glfwSetWindowShouldClose(window, true);
@@ -202,7 +221,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
 
     // View control
     float rot_factor(2 * glm::pi<float>() / 180); // amount the ship turns per keypress (DOUBLE)
-    float trans_factor = 1.0; // amount the ship steps forward per keypress
+    float trans_factor = 0.2; // amount the ship steps forward per keypress
     // Look up/down
     if (key == GLFW_KEY_UP){
         game->camera_.Pitch(rot_factor);
@@ -211,22 +230,28 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         game->camera_.Pitch(-rot_factor);
     }
     // Turn left/right
-    if (key == GLFW_KEY_A){
+  
+    if (key == GLFW_KEY_LEFT) {
         game->camera_.Yaw(rot_factor);
     }
-    if (key == GLFW_KEY_D){
+    if (key == GLFW_KEY_RIGHT) {
         game->camera_.Yaw(-rot_factor);
     }
-    // Roll anticlockwise/clockwise
-    if (key == GLFW_KEY_LEFT){
-        game->camera_.Roll(-rot_factor);
+    
+    //forward backward side movement (strafe)
+    if (key == GLFW_KEY_A){
+      
+        game->camera_.Translate(-glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
     }
-    if (key == GLFW_KEY_RIGHT){
-        game->camera_.Roll(rot_factor);
+    if (key == GLFW_KEY_D){
+        
+        game->camera_.Translate(glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
     }
+   
     // Accelerate and break
     if (key == GLFW_KEY_W){
-        //game->camera_.Translate(game->camera_.GetForward()*trans_factor);
+      
+        /* //old architecture from acceleration based model
         float new_speed = game->camera_.GetSpeed() + 0.005f;
         
         if (new_speed < game->camera_.GetMaxSpeed()) {
@@ -234,31 +259,22 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         }
         else {
             game->camera_.SetSpeed(game->camera_.GetMaxSpeed());
-        }
+        }*/
+
+        game->camera_.Translate(glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
     }
     if (key == GLFW_KEY_S){
-        //game->camera_.Translate(-game->camera_.GetForward()*trans_factor);
+     
+        /* //old architecture from acceleration based model
         float new_speed = game->camera_.GetSpeed() - 0.05f;
-        if (new_speed > 0.0f) {
+        if (new_speed > game->camera_.GetMinSpeed()) {
             game->camera_.SetSpeed(new_speed);
         }
         else {
             game->camera_.SetSpeed(0.0f);
-        }
-    }
-    // Strafe left/right
-    if (key == GLFW_KEY_J){
-        game->camera_.Translate(-game->camera_.GetSide()*trans_factor);
-    }
-    if (key == GLFW_KEY_L){
-        game->camera_.Translate(game->camera_.GetSide()*trans_factor);
-    }
-    // Travel up/down
-    if (key == GLFW_KEY_I){
-        game->camera_.Translate(game->camera_.GetUp()*trans_factor);
-    }
-    if (key == GLFW_KEY_K){
-        game->camera_.Translate(-game->camera_.GetUp()*trans_factor);
+        }*/
+
+        game->camera_.Translate(-glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
     }
 }
 
@@ -308,5 +324,4 @@ SceneNode* Game::CreateSceneNodeInstance(std::string entity_name, std::string ob
     SceneNode* node = new SceneNode(entity_name, geom, mat, 0);
     return node;
 }
-
 } // namespace game

@@ -42,7 +42,6 @@ namespace game {
 	private:
 		std::string name_;
 		std::vector<SceneNode*> node_;
-		
 	};
 
 }

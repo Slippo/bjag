@@ -29,7 +29,6 @@ namespace game {
             // Constructor and destructor
             SceneGraph(void);
             ~SceneGraph();
-
             // Getters
             int GetSize() { return node_.size(); }
             CompositeNode* GetNode(std::string node_name) const;

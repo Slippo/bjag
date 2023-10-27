@@ -10,15 +10,14 @@ set(HDRS
 )
  
 set(SRCS
-     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp
-      kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl
+     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl
 )
 
 # Add path name to configuration file
 #configure_file(path_config.h.in path_config.h)
 
 # Add executable based on the header and source files
-add_executable(${PROJ_NAME} ${HDRS} ${SRCS} "manipulator.h")
+add_executable(${PROJ_NAME} ${HDRS} ${SRCS})
 
 # Require OpenGL library
 find_package(OpenGL REQUIRED)

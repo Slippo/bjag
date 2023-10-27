@@ -29,7 +29,6 @@ namespace game {
     std::vector<SceneNode*>::const_iterator CompositeNode::end() const { return node_.end(); }
 
     void CompositeNode::Draw(Camera* camera) {
-
         // Draw all scene nodes
         for (int i = 0; i < node_.size(); i++) {
             node_[i]->Draw(camera);
