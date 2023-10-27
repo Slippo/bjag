@@ -29,6 +29,10 @@ namespace game {
             // Constructor and destructor
             SceneGraph(void);
             ~SceneGraph();
+            // Getters
+            int GetSize() { return node_.size(); }
+            CompositeNode* GetNode(std::string node_name) const;
+            CompositeNode* GetNode(int index) const;
 
             // Background color
             void SetBackgroundColor(glm::vec3 color);
@@ -36,8 +40,6 @@ namespace game {
             
             // Add an already-created node
             void AddNode(CompositeNode *node);
-            // Find a scene node with a specific name
-            CompositeNode *GetNode(std::string node_name) const;
             // Get node const iterator
             std::vector<CompositeNode *>::const_iterator begin() const;
             std::vector<CompositeNode *>::const_iterator end() const;

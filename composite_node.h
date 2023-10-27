@@ -42,8 +42,6 @@ namespace game {
 	private:
 		std::string name_;
 		std::vector<SceneNode*> node_;
-		
-		glm::vec3 background_color_;
 	};
 
 }

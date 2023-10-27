@@ -12,6 +12,7 @@
 #include "resource_manager.h"
 #include "camera.h"
 #include "composite_node.h"
+#include "manipulator.h"
 
 namespace game {
 
@@ -69,14 +70,12 @@ namespace game {
             static void ResizeCallback(GLFWwindow* window, int width, int height);
             static void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 
+
             // Kelp tree/bush nodes
             // The sphere used to make leaves
             // The scene node instance is used to make the cylinders (stems/branches)
             SceneNode* CreateSphereInstance(std::string entity_name, std::string object_name, std::string material_name);
             SceneNode* CreateSceneNodeInstance(std::string entity_name, std::string object_name, std::string material_name);
-            
-            // Adds a kelp bush to the scene graph
-            void CreateKelp(int branch_complexity = 4);
     }; // class Game
 
 } // namespace game
