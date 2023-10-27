@@ -1,3 +1,0 @@
-C:/Users/Joey/OneDrive/Documents/GitHub/bjag/bjag/out/build/x64-Debug/CMakeFiles/Tree.dir
-C:/Users/Joey/OneDrive/Documents/GitHub/bjag/bjag/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-C:/Users/Joey/OneDrive/Documents/GitHub/bjag/bjag/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
