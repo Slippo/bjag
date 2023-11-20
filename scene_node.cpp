@@ -83,7 +83,7 @@ void SceneNode::SetPosition(glm::vec3 position){
     position_ = position;
 }
 
-void SceneNode::SetOrientation(glm::quat orientation){
+void SceneNode::SetOrientation(glm::quat orientation){ // Does not work yet, use Rotate instead
     orientation_ = orientation;
 }
 
@@ -95,8 +95,7 @@ void SceneNode::SetScale(glm::vec3 scale){
 }
 
 void SceneNode::SetPivot(glm::vec3 pivot) {
-    pivot_ = position_ + (pivot * orientation_);
-    //std::cout << glm::to_string(pivot_) << std::endl;
+    pivot_ = position_ + (pivot * orientation_); // Important note: SetPivot() already considers position / orientation, do not include them again when using this function.
 }
 
 void SceneNode::SetParentTransf(glm::mat4 transf) {
@@ -121,13 +120,14 @@ void SceneNode::Rotate(glm::quat rot){
 void SceneNode::Orbit(glm::quat rot) {
     glm::vec3 trans = glm::vec3(pivot_ - position_);
     glm::mat4 rot_mat = glm::mat4_cast(glm::normalize(rot));
-    orbit_ *= glm::translate(glm::mat4(1.0f), (pivot_ - position_)) * rot_mat * glm::translate(glm::mat4(1.0f), -(pivot_ - position_));
+    orbit_ *= glm::translate(glm::mat4(1.0f), trans) * rot_mat * glm::translate(glm::mat4(1.0f), -trans);
 }
 
 
 void SceneNode::Scale(glm::vec3 scale){
 
     scale_ *= scale;
+    pivot_ *= scale;
 }
 
 

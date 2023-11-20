@@ -114,23 +114,31 @@ void Game::InitEventHandlers(void){
 
 
 void Game::SetupResources(void){
-    // STEMS AND LEAVES
+    // SHAPES
     resman_.CreateCylinder("Cylinder", 2, 0.15);
+    resman_.CreateSphere("Sphere", 1.0f, 90, 45);
+    resman_.CreateCylinder("StalagmiteBase", 3.0, 3.0, 30, 15);
+    resman_.CreateCone("StalagmiteSpike", 1.0, 0.6, 30, 15);
+    resman_.CreateSphere("SubmarineBase", 10.0, 90, 45);
+
+    // TEXTURES
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
     resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
 
-    // Sphere for leaves
-    resman_.CreateSphere("Sphere", 1.0f, 90, 45);
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
-    resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
+    resman_.LoadResource(Material, "Material", filename.c_str());
 }
 
 
 void Game::SetupScene(void){    
     scene_.SetBackgroundColor(viewport_background_color_g);
     
-    scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(0.0, 0.0, -5.0)));
-    scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(-5.0, 0.0, -5.0)));
+    //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, glm::vec3(0,0,-10)));
+    scene_.AddNode(manipulator->ConstructSubmarine(&resman_, glm::vec3(0, 0, -20)));
+    //scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(0.0, 0.0, -5.0)));
+    //scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(-5.0, 0.0, -25.0)));
+
+    //scene_.GetNode("Kelp")->GetNode("Root")->Scale(glm::vec3(2.0, 1.0, 2.0)); // Example of how to transform objects after creation
 }
 
 void Game::MainLoop(void){
@@ -182,8 +190,6 @@ void Game::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
     game->camera_.Pitch(sens * -dir.y);
     
     //game->camera_.Roll(0);
-
-    std::cout << glm::to_string(dir) << std::endl;
 
     glfwSetCursorPos(window, width / 2, height / 2); // center the cursor
 }
