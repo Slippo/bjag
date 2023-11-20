@@ -31,7 +31,7 @@ namespace game {
 
         public:
 
-            typedef enum Type { Stem, Leaf } NodeType;
+            typedef enum Type { Stem, Leaf , Tip} NodeType;
             // Create scene node from given resources
             SceneNode(const std::string name, const Resource *geometry, const Resource *material, int collision);
 
@@ -53,6 +53,10 @@ namespace game {
             glm::vec3 GetPivot(void) const;
             std::vector<SceneNode*>::const_iterator begin() const;
             std::vector<SceneNode*>::const_iterator end() const;
+
+            //colour attributes
+            inline glm::vec3 GetColor(void) { return colour; }
+            inline void SetColour(glm::vec3 new_color) { colour = new_color; }
 
             // Set node attributes
             void SetPosition(glm::vec3 position);
@@ -103,6 +107,9 @@ namespace game {
             glm::vec3 pivot_; // the point at which the node orbits (locally)
             glm::mat4 parent_transf_ = glm::mat4(1.0f);
             Type t_; // for use in shader. Types allow for differentiation between stems and leaves
+
+            //vec3 representing the current colour of the game object
+            glm::vec3 colour = glm::vec3(1.0, 1.0, 1.0);
 
             // Set matrices that transform the node in a shader program
             virtual void SetupShader(GLuint program);

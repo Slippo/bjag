@@ -123,6 +123,18 @@ void Game::SetupResources(void){
     resman_.CreateSphere("Sphere", 1.0f, 90, 45);
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
     resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
+
+    //create a resources for coral
+    resman_.CreateCylinder("FatStem", 2.0, 0.6, 30, 30);
+    resman_.CreateCylinder("LongStem", 5.0, 0.6, 30, 30);
+    resman_.CreateCylinder("SuperLongStem", 10.0, 0.6, 30, 30);
+    resman_.CreateCylinder("Branch", 3.0, 0.6, 30, 30);
+    resman_.CreateSphere("Tip", 0.6, 90, 45);
+
+    //load material for coral
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
+    resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());
+
 }
 
 
@@ -131,6 +143,10 @@ void Game::SetupScene(void){
     
     scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(0.0, 0.0, -5.0)));
     scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(-5.0, 0.0, -5.0)));
+    scene_.AddNode(manipulator->ConstructCoral(&resman_, glm::vec3(-8.0, 0.0, -8.0)));
+    scene_.AddNode(manipulator->ConstructCoral(&resman_, glm::vec3(-11.0, 0.0, 5.0)));
+    scene_.AddNode(manipulator->ConstructCoral(&resman_, glm::vec3(5.0, 0.0, 2.0)));
+    scene_.AddNode(manipulator->ConstructCoral(&resman_, glm::vec3(3.0, 0.0, -3.0)));
 }
 
 void Game::MainLoop(void){
