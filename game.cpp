@@ -191,7 +191,7 @@ void Game::SetupResources(void){
     resman_.LoadResource(Material, "NormalMapMaterial", filename.c_str());
 
     // TEXTURES
-    std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
     resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
@@ -237,7 +237,7 @@ void Game::MainLoop(void){
     // Loop while the user did not close the window
     while (!glfwWindowShouldClose(window_)){
 
-        SceneNode* world_light = scene_.GetNode("Sphere")->GetNode("Root");
+        SceneNode* world_light = scene_.GetNode("Sphere")->GetRoot();
 
         // Animate the scene
         if (animating_){

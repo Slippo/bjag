@@ -54,7 +54,7 @@ namespace game {
             glm::vec3 GetColor(void) const;
             std::vector<SceneNode*>::const_iterator begin() const;
             std::vector<SceneNode*>::const_iterator end() const;
-            inline glm::vec3 GetColor(void) { return colour; }
+            //inline glm::vec3 GetColor(void) { return colour; }
 
             // Set node attributes
             void SetPosition(glm::vec3 position);

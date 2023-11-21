@@ -63,7 +63,7 @@ namespace game {
 
     // Update all nodes and their respective children
     int CompositeNode::Update(Camera* camera) {
-        root_->Draw(camera);
+        root_->Update(camera);
         for (int i = 0; i < node_.size(); i++) {
             node_[i]->Update(camera);
         }

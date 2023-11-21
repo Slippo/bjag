@@ -85,16 +85,16 @@ Manipulator::~Manipulator() {}
                 }
             }
         }
+        return kelp;
     }
-    return kelp;
-}
+    
 
     CompositeNode* Manipulator::ConstructPlane(ResourceManager* resman_) {
         CompositeNode* plane = new CompositeNode("Plane");
 
         SceneNode* root = CreateSceneNodeInstance("Root", "Plane", "NormalMapMaterial", "NormalMapSand", resman_);
         root->SetColor(glm::vec3(1, 0.9, 0.5));
-        plane->AddNode(root);
+        plane->SetRoot(root);
 
         return plane;
     }
@@ -104,7 +104,7 @@ Manipulator::~Manipulator() {}
 
         SceneNode* root = CreateSceneNodeInstance("Root", "Boundary", "NormalMapMaterial", "NormalMapStone", resman_);
         root->SetColor(glm::vec3(0.6,0.6,0.7));
-        boundary->AddNode(root);
+        boundary->SetRoot(root);
 
         return boundary;
     }
@@ -114,7 +114,7 @@ Manipulator::~Manipulator() {}
 
         SceneNode* root = CreateSceneNodeInstance("Root", "Sphere", "NormalMapMaterial", "", resman);
         root->SetPosition(position);
-        sphere->AddNode(root);
+        sphere->SetRoot(root);
 
         return sphere;
     }
