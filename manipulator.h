@@ -22,7 +22,7 @@ namespace game {
 
 			// (2) Animate hierarchical objects
 			void AnimateAll(SceneGraph* scene_, double time_, float theta_);
-			void AnimateKelp(CompositeNode* root_);
+			void AnimateKelp(CompositeNode* current, double time_, float theta_);
 	
 		private:
 			// Copied from game.cpp
