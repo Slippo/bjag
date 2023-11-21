@@ -9,7 +9,10 @@
 
 namespace game {
 
-Camera::Camera(void){}
+Camera::Camera(void){
+    state_ = walking;
+    jump_ = 0.0;
+}
 
 Camera::~Camera(){}
 
@@ -35,6 +38,16 @@ void Camera::SetSpeed(float speed) {
 
 void Camera::SetMaxSpeed(float speed) {
     max_speed_ = speed;
+}
+
+void Camera::SetRadius(float r)
+{
+    radius_ = r;
+}
+
+void Camera::SetDead(bool d)
+{
+    dead_ = d;
 }
 
 void Camera::Translate(glm::vec3 trans){
@@ -74,6 +87,15 @@ float Camera::GetMinSpeed(void) const {
     return min_speed_;
 }
 
+float Camera::GetRadius(void) const
+{
+    return radius_;
+}
+
+bool Camera::IsDead(void) const
+{
+    return dead_;
+}
 void Camera::Pitch(float angle){
     glm::quat rotation = glm::angleAxis(angle, GetSide());
     orientation_ = rotation * orientation_;
@@ -82,7 +104,7 @@ void Camera::Pitch(float angle){
 
 void Camera::Yaw(float angle){
     //glm::quat rotation = glm::angleAxis(angle, GetUp());
-    glm::quat rotation = glm::angleAxis(angle, glm::vec3(0,1,0));
+    glm::quat rotation = glm::angleAxis(angle, GetUp());
     orientation_ = rotation * orientation_;
     orientation_ = glm::normalize(orientation_);
 }
@@ -91,6 +113,80 @@ void Camera::Roll(float angle){
     glm::quat rotation = glm::angleAxis(angle,GetForward());
     orientation_ = rotation * orientation_;
     orientation_ = glm::normalize(orientation_);
+}
+
+void Camera::Jump()
+{
+    std::cout << state_ << std::endl;
+    if (state_ == walking)
+    {
+        state_ = jumping;
+    }
+
+    //if (state_ == jumping)
+    //{
+     //   if (position_.y <= 2.0)
+      //  {
+        //    position_.y += 0.1;
+       // }
+        //else
+       // {
+        //    state_ = falling;
+       // }
+    //}
+    //else
+    //{
+     //   position_.y -= 0.1;
+
+ //       if (position_.y <= 0.0)
+   //     {
+     //       position_.y = 0.0;
+       // }
+    //}
+}
+void Camera::Update()
+{
+    position_ += (GetForward() * speed_);
+
+    if (state_ == falling)
+    {
+        jump_ -= 0.05f;
+        position_ = position_ - glm::vec3(0.0, 0.05f, 0.0);
+        if (jump_ <= 0.0f)
+        {
+            jump_ = 0.0f;
+            state_ = walking;
+            position_.y = 0.0f;
+        }
+
+    }
+    else if (state_ == jumping)
+    {
+        jump_ += 0.10f;
+        position_ = position_ + glm::vec3(0.0, 0.10f, 0.0);
+
+        if (jump_ > jump_limit_)
+        {
+            state_ = falling;
+            jump_ = jump_limit_;
+            position_.y = jump_limit_;
+        }
+    }
+    std::cout << position_.x << ", " << position_.y << ", " << position_.z << std::endl;
+
+
+}
+void Camera::UpdateVelocity(float backwards)
+{
+    speed_ += (0.05 * backwards);
+    if (speed_ >= GetMaxSpeed())
+    {
+        speed_ = max_speed_;
+    }
+    if (speed_ <= GetMinSpeed())
+    {
+        speed_ = min_speed_;
+    }
 }
 
 void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up){
