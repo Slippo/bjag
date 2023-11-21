@@ -52,12 +52,12 @@ namespace game {
     void CompositeNode::Scale(glm::vec3 scale) {
         root_->Scale(scale);
     }
-
-    void CompositeNode::Draw(Camera* camera) {
+    
+    void CompositeNode::Draw(Camera* camera, SceneNode* light) {
         // Draw all scene nodes
-        root_->Draw(camera);
+        root_->Draw(camera, light);
         for (int i = 0; i < node_.size(); i++) {
-            node_[i]->Draw(camera);
+            node_[i]->Draw(camera, light);
         }
     }
 

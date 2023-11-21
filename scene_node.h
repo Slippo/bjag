@@ -33,7 +33,7 @@ namespace game {
 
             typedef enum Type { KelpStem, KelpLeaf, KelpTip} NodeType;
             // Create scene node from given resources
-            SceneNode(const std::string name, const Resource *geometry, const Resource *material, int collision);
+            SceneNode(const std::string name, const Resource *geometry, const Resource *material, const Resource* texture, int collision);
 
             // Destructor
             ~SceneNode();
@@ -51,6 +51,7 @@ namespace game {
             glm::quat GetOrientation(void) const;
             glm::vec3 GetScale(void) const;
             glm::vec3 GetPivot(void) const;
+            glm::vec3 GetColor(void) const;
             std::vector<SceneNode*>::const_iterator begin() const;
             std::vector<SceneNode*>::const_iterator end() const;
             inline glm::vec3 GetColor(void) { return colour; }
@@ -63,7 +64,7 @@ namespace game {
             void SetPivot(glm::vec3 pivot);
             void SetParentTransf(glm::mat4 transf);
             void SetType(Type type);
-            inline void SetColour(glm::vec3 new_color) { colour = new_color; }
+            void SetColor(glm::vec3 color);
             
             // Perform transformations on node
             void Translate(glm::vec3 trans);
@@ -73,7 +74,7 @@ namespace game {
 
             // Draw the node according to scene parameters in 'camera'
             // variable
-            virtual void Draw(Camera *camera);
+            virtual void Draw(Camera *camera, SceneNode* light);
 
             // Update the node
             virtual void Update(Camera *camera);
@@ -97,20 +98,19 @@ namespace game {
             GLenum mode_; // Type of geometry
             GLsizei size_; // Number of primitives in geometry
             GLuint material_; // Reference to shader program
+            GLuint texture_; // Reference to texture resource
             glm::vec3 position_; // Position of node
             glm::quat orientation_; // Orientation of node
             glm::mat4 orbit_; // orbit motion + rotation
             glm::vec3 scale_; // Scale of node
+            glm::vec3 color_ = glm::vec3(1,0,1);
             int collision_; // Collision state of the node (0 = no collision, 1 = collidable, 2 = has been collided with)
             glm::vec3 pivot_; // the point at which the node orbits (locally)
             glm::mat4 parent_transf_ = glm::mat4(1.0f);
             Type t_; // for use in shader. Types allow for differentiation between stems and leaves
 
-            //vec3 representing the current colour of the game object
-            glm::vec3 colour = glm::vec3(1.0, 1.0, 1.0);
-
             // Set matrices that transform the node in a shader program
-            virtual void SetupShader(GLuint program);
+            virtual void SetupShader(GLuint program, Camera* camera, SceneNode* light);
 
     }; // class SceneNode
 

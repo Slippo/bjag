@@ -45,7 +45,7 @@ namespace game {
             std::vector<CompositeNode *>::const_iterator end() const;
 
             // Draw the entire scene
-            void Draw(Camera *camera);
+            void Draw(Camera *camera, SceneNode* light);
 
             // Update entire scene
             int Update(Camera *camera, ResourceManager *resman);
