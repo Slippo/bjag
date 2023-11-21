@@ -32,6 +32,7 @@ void main()
     // Get substitute normal in tangent space from the normal map
     
     vec2 coord = tile_count * vertex_uv; // multiply by a constant (10) to tile the texture
+
     coord.y = 1.0 - coord.y;
     N = (texture2D(texture_map, coord).rgb);
     N = normalize(N * 2.0 - 1.0); // change scale from 0 to 1 --> -1 to 1
@@ -52,10 +53,11 @@ void main()
     float specular = pow(spec_angle, specular_power); // NOTE: This one too (so lammbertian coefficient, specular coefficient, ambient, specular power)
     
     vec4 obj_col = vec4(object_color, 1.0);
-
+    vec4 blue = vec4(0.5,0.5,1.0,0.5);
     if (gl_FrontFacing){
         gl_FragColor = (ambient + lambertian_coefficient*lambertian + specular_coefficient*specular)*obj_col; // NOTE: These three coefficients
+
     } else {
-        gl_FragColor = 0.25*ambient*obj_col;
+        gl_FragColor = 0.25*ambient*blue*obj_col;
     }
 }

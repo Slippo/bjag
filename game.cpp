@@ -12,15 +12,15 @@ namespace game {
 
 // Main window settings
 const std::string window_title_g = "Bjag";
-const unsigned int window_width_g = 1280;
-const unsigned int window_height_g = 720;
+const unsigned int window_width_g = 1920;
+const unsigned int window_height_g = 1080;
 const bool window_full_screen_g = false;
 
 // Viewport and camera settings
 float camera_near_clip_distance_g = 0.01;
 float camera_far_clip_distance_g = 1000.0;
 float camera_fov_g = 60.0; // Field-of-view of camera (degrees)
-const glm::vec3 viewport_background_color_g(0.0, 0.0, 0.0);
+const glm::vec3 viewport_background_color_g(0.5, 0.5, 1.0);
 glm::vec3 camera_position_g(0.0, 5.0, 8.0);
 glm::vec3 camera_look_at_g(0.0, 0, 0.0);
 glm::vec3 camera_up_g(0.0, 1.0, 0.0);
@@ -84,6 +84,7 @@ void Game::InitView(void){
     // Set up z-buffer
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+    
 
     // Set viewport
     int width, height;
@@ -163,7 +164,7 @@ void Game::SetupResources(void){
     for (int z = 0; z < plane_size_.y; ++z) {
         for (int x = 0; x < plane_size_.x; ++x) {
             height_file >> h;
-            height_map_boundary_[x][z] += h/16; // max height is 16 (255/16) ~= 15.9
+            height_map_boundary_[x][z] += h/8; // max height is 16 (255/16) ~= 15.9
         }
     }
     height_file.close();
@@ -239,7 +240,7 @@ void Game::SetupScene(void){
     scene_.AddNode(manipulator->ConstructBoundary(&resman_));
 
     // Light source ("sun")
-    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,50,0)));
+    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,100,0)));
   
     //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
@@ -356,7 +357,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
 
     // View control
     float rot_factor(2 * glm::pi<float>() / 180); // amount the ship turns per keypress (DOUBLE)
-    float trans_factor = 0.5f; // amount the ship steps forward per keypress
+    float trans_factor = 0.7f; // amount the ship steps forward per keypress
     // Look up/down
     if (key == GLFW_KEY_UP){
         game->camera_.Pitch(rot_factor);
