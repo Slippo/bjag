@@ -304,6 +304,97 @@ namespace game {
         return coral;
     }
 
+    CompositeNode* Manipulator::ConstructPart(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
+
+        CompositeNode* part = new CompositeNode(name_);
+        part->SetType(CompositeNode::Type::Part);
+
+        SceneNode* root_node = CreateSceneNodeInstance("root_node", "MainBody", "ObjectMaterial", resman_);
+
+        root_node->SetPosition(position_);
+        root_node->SetColour(glm::vec3(0.501, 0.501, 0.501));
+        part->SetRoot(root_node);
+        //part->AddNode(root_node);
+
+        SceneNode* node1 = CreateSceneNodeInstance("root_node", "Exhaust", "ObjectMaterial", resman_);
+
+        node1->SetPosition(glm::vec3(0.0,6,0));
+        node1->SetColour(glm::vec3(0.501, 0.501, 0.501));
+        root_node->AddChild(node1);
+        part->AddNode(node1);
+
+        SceneNode* node2 = CreateSceneNodeInstance("root_node", "Exhaust", "ObjectMaterial", resman_);
+
+        node2->SetPosition(glm::vec3(-1.5, 5, 0));
+        node2->SetColour(glm::vec3(0.501, 0.501, 0.501));
+        root_node->AddChild(node2);
+        part->AddNode(node2);
+
+        SceneNode* node3 = CreateSceneNodeInstance("root_node", "Exhaust", "ObjectMaterial", resman_);
+
+        node3->SetPosition(glm::vec3(1.0, 1.5, 0));
+        node3->SetOrientation(glm::normalize(glm::angleAxis(-1.0f, glm::vec3(0, 0, 1))));
+        node3->SetColour(glm::vec3(0.501, 0.501, 0.501));
+        node1->AddChild(node3);
+        part->AddNode(node3);
+
+        return part;
+    }
+
+    CompositeNode* Manipulator::ConstructAnemonie(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
+        CompositeNode* an = new CompositeNode(name_);
+        an->SetType(CompositeNode::Type::Anemonie);
+
+        SceneNode* root_node = CreateSceneNodeInstance("root_node", "Base", "ObjectMaterial", resman_);
+
+        root_node->SetPosition(position_);
+        root_node->SetColour(glm::vec3(1,0.83,0.501));
+        an->SetRoot(root_node);
+
+        SceneNode* node1 = CreateSceneNodeInstance("root_node", "Middle", "ObjectMaterial", resman_);
+
+        node1->SetPosition(glm::vec3(0,0.6,0));
+        node1->SetColour(glm::vec3(1, 0.83, 0.501));
+        root_node->AddChild(node1);
+        an->AddNode(node1);
+
+        float theta = 2 * glm::pi<float>();
+        float offset = 0.2f;
+        float stem_len = 2.0f;
+
+        for (int i = 0; i < 10; i++) {
+            float frac = float(i) / (10);
+            SceneNode* branch = CreateSceneNodeInstance("Branch", "Cylinder", "ObjectMaterial", resman_);
+            branch->SetType(SceneNode::Type::KelpStem); // type specified for shader
+            branch->SetPosition(glm::vec3(0, 1, 0)); // 2 units above the root
+            branch->SetPivot(glm::vec3(0, -stem_len/ 2 , 0));
+            // Orbit about the pivot to set the starting orientation
+            branch->Orbit(glm::angleAxis(theta / 12, glm::vec3(1.5* cos(theta * frac), 0,1.5 * sin(theta * frac))));
+            branch->SetColour(glm::vec3(1, 0.654, 0.043));
+            node1->AddChild(branch);
+            an->AddNode(branch);
+
+            for (int k = 0; k < 4; k++) {
+                float frac = float(k) / 4;
+                SceneNode* sub_branch = CreateSceneNodeInstance("SubBranch", "Tentacle", "ObjectMaterial", resman_);
+                sub_branch->SetType(SceneNode::Type::KelpStem);
+                sub_branch->SetPosition(glm::vec3(0, 1, 0));
+                sub_branch->SetPivot(glm::vec3(0, -(0.5), 0));
+                sub_branch->Orbit(glm::angleAxis(-theta / 16.0f, glm::vec3(cos(theta * frac), 0, sin(theta * frac))));
+                sub_branch->SetColour(glm::vec3(1, 0.83, 0.501));
+                branch->AddChild(sub_branch);
+                an->AddNode(sub_branch);
+
+
+                
+            }
+
+        }
+
+        return an;
+
+    }
+
 	// (2) Animate hierarchical objects
     void Manipulator::AnimateAll(SceneGraph* scene_, double time_, float theta_) {
         CompositeNode* current_;

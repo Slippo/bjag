@@ -20,6 +20,8 @@ namespace game {
 			CompositeNode* ConstructStalagmite(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
 			CompositeNode* ConstructSubmarine(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
 			CompositeNode* ConstructCoral(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
+			CompositeNode* ConstructPart(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
+			CompositeNode* ConstructAnemonie(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
 
 			// (2) Animate hierarchical objects
 			void AnimateAll(SceneGraph* scene_, double time_, float theta_);
