@@ -141,16 +141,17 @@ void Game::SetupResources(void){
 void Game::SetupScene(void){    
     scene_.SetBackgroundColor(viewport_background_color_g);
     
-    //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, glm::vec3(10,0,-10)));
-    //scene_.GetNode("Stalagmite")->Scale(glm::vec3(2, 2, 1));
-    //scene_.GetNode("Stalagmite")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
+    scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
+    scene_.GetNode("Stalagmite1")->Scale(glm::vec3(2, 2, 1));
+    //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
     
-    //scene_.AddNode(manipulator->ConstructSubmarine(&resman_, glm::vec3(0, 0, -20)));
+    //scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(0, 0, -20)));
 
-    //scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(0.0, 0.0, -5.0))); // Example on how to make object
-    //scene_.GetNode("Kelp")->Scale(glm::vec3(1,2,1)); // Example on how to transform object after creation
+    //scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(-8.0, 5.0, -20.0)));
+    //scene_.GetNode("Coral1")->Scale(glm::vec3(2, 3, 2));
 
-    scene_.AddNode(manipulator->ConstructCoral(&resman_, glm::vec3(-8.0, 0.0, -8.0)));
+    //scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp1", 4, glm::vec3(0.0, 0.0, -5.0))); // Example on how to make object
+    //scene_.GetNode("Kelp1")->Scale(glm::vec3(1,2,1)); // Example on how to transform object after creation
 }
 
 void Game::MainLoop(void){

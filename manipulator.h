@@ -16,15 +16,14 @@ namespace game {
 			~Manipulator();
 
 			// (1) Construct hierarchical objects
-			CompositeNode* ConstructKelp(ResourceManager* resman_, int branch_complexity = 4, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
-			CompositeNode* ConstructStalagmite(ResourceManager* resman_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
-			CompositeNode* ConstructSubmarine(ResourceManager* resman_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
-
-			CompositeNode* ConstructCoral(ResourceManager* resman_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
+			CompositeNode* ConstructKelp(ResourceManager* resman_, std::string name_, int branch_complexity = 4, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
+			CompositeNode* ConstructStalagmite(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
+			CompositeNode* ConstructSubmarine(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
+			CompositeNode* ConstructCoral(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
 
 			// (2) Animate hierarchical objects
 			void AnimateAll(SceneGraph* scene_, double time_, float theta_);
-			void AnimateKelp(CompositeNode* current, double time_, float theta_);
+			void AnimateKelp(CompositeNode* node, double time_, float theta_);
 	
 		private:
 			// Copied from game.cpp

@@ -31,7 +31,7 @@ namespace game {
 
         public:
 
-            typedef enum Type { Stem, Leaf , Tip} NodeType;
+            typedef enum Type { KelpStem, KelpLeaf, KelpTip} NodeType;
             // Create scene node from given resources
             SceneNode(const std::string name, const Resource *geometry, const Resource *material, int collision);
 
@@ -53,10 +53,7 @@ namespace game {
             glm::vec3 GetPivot(void) const;
             std::vector<SceneNode*>::const_iterator begin() const;
             std::vector<SceneNode*>::const_iterator end() const;
-
-            //colour attributes
             inline glm::vec3 GetColor(void) { return colour; }
-            inline void SetColour(glm::vec3 new_color) { colour = new_color; }
 
             // Set node attributes
             void SetPosition(glm::vec3 position);
@@ -66,6 +63,7 @@ namespace game {
             void SetPivot(glm::vec3 pivot);
             void SetParentTransf(glm::mat4 transf);
             void SetType(Type type);
+            inline void SetColour(glm::vec3 new_color) { colour = new_color; }
             
             // Perform transformations on node
             void Translate(glm::vec3 trans);

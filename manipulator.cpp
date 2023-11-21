@@ -7,16 +7,17 @@ namespace game {
 	Manipulator::~Manipulator() {}
 
 	// (1) Construct hierarchical objects
-	CompositeNode* Manipulator::ConstructKelp(ResourceManager* resman_, int branch_complexity, glm::vec3 position_) {
+	CompositeNode* Manipulator::ConstructKelp(ResourceManager* resman_, std::string name_, int branch_complexity, glm::vec3 position_) {
         
-        CompositeNode* kelp = new CompositeNode("Kelp");
+        CompositeNode* kelp = new CompositeNode(name_);
+        kelp->SetType(CompositeNode::Type::Kelp);
 
         // Create root node
         SceneNode* root = CreateSceneNodeInstance("Root", "Cylinder", "KelpMaterial", resman_);
         root->SetPosition(position_);
         root->SetPivot(glm::vec3(0, -1, 0));
         std::cout << glm::to_string(root->GetPivot());
-        root->SetType(SceneNode::Type::Stem);
+        root->SetType(SceneNode::Type::KelpStem);
         kelp->SetRoot(root);
 
         // Create branches and sub-branches   
@@ -27,7 +28,7 @@ namespace game {
         for (int i = 0; i < branch_complexity + 1; i++) {
             float frac = float(i) / (branch_complexity + 1);
             SceneNode* branch = CreateSceneNodeInstance("Branch", "Cylinder", "KelpMaterial", resman_);
-            branch->SetType(SceneNode::Type::Stem); // type specified for shader
+            branch->SetType(SceneNode::Type::KelpStem); // type specified for shader
             branch->SetPosition(glm::vec3(0, 2, 0)); // 2 units above the root
             branch->SetPivot(glm::vec3(0, -stem_len / 2, 0));
             // Orbit about the pivot to set the starting orientation
@@ -40,13 +41,13 @@ namespace game {
             for (int j = 0; j < branch_complexity; j++) {
                 float frac = float(j) / (branch_complexity);
                 SceneNode* high_leaf = CreateSceneNodeInstance("Leaf", "Sphere", "KelpMaterial", resman_);
-                high_leaf->SetType(SceneNode::Type::Leaf);
+                high_leaf->SetType(SceneNode::Type::KelpLeaf);
                 high_leaf->SetScale(0.25f * glm::vec3(1.0f + abs(cos(theta * frac)), 0.2f, 1.0f + abs(sin(theta * frac))));
                 high_leaf->Scale(glm::vec3(0.75f));
                 high_leaf->SetPosition(glm::vec3(offset * cos(theta * frac), 1, offset * sin(theta * frac)));
                 high_leaf->SetPivot(glm::vec3(0, -1, 0));
                 SceneNode* low_leaf = CreateSceneNodeInstance("SubSubBranch", "Sphere", "KelpMaterial", resman_);
-                low_leaf->SetType(SceneNode::Type::Leaf);
+                low_leaf->SetType(SceneNode::Type::KelpLeaf);
                 low_leaf->SetScale(0.25f * glm::vec3(1.0f + abs(cos(theta * frac)), 0.2f, 1.0f + abs(sin(theta * frac))));
                 low_leaf->SetPosition(glm::vec3(offset * cos(theta * frac), 0, offset * sin(theta * frac)));
                 low_leaf->SetPivot(glm::vec3(0, -stem_len / 2, 0));
@@ -61,7 +62,7 @@ namespace game {
             for (int k = 0; k < branch_complexity; k++) {
                 float frac = float(k) / branch_complexity;
                 SceneNode* sub_branch = CreateSceneNodeInstance("SubBranch", "Cylinder", "KelpMaterial", resman_);
-                sub_branch->SetType(SceneNode::Type::Stem);
+                sub_branch->SetType(SceneNode::Type::KelpStem);
                 sub_branch->SetPosition(glm::vec3(0, stem_len, 0));
                 sub_branch->SetPivot(glm::vec3(0, -stem_len / 2, 0));
                 sub_branch->Orbit(glm::angleAxis(-theta / 16.0f, glm::vec3(cos(theta * frac), 0, sin(theta * frac))));
@@ -73,7 +74,7 @@ namespace game {
                     float theta = 2.0f * glm::pi<float>();
                     float frac = float(j) / (branch_complexity);
                     SceneNode* leaf = CreateSceneNodeInstance("Leaf", "Sphere", "KelpMaterial", resman_);
-                    leaf->SetType(SceneNode::Type::Leaf);
+                    leaf->SetType(SceneNode::Type::KelpLeaf);
                     leaf->SetScale(0.25f * glm::vec3(1.0f + abs(cos(theta * frac)), 0.2f, 1.0f + abs(sin(theta * frac))));
                     leaf->SetPosition(glm::vec3(offset * cos(theta * frac), 1, offset * sin(theta * frac)));
                     leaf->SetPivot(glm::vec3(0, -stem_len / 2, 0));
@@ -86,8 +87,9 @@ namespace game {
         return kelp;
 	}
 
-    CompositeNode* Manipulator::ConstructStalagmite(ResourceManager* resman_, glm::vec3 position_) {
-        CompositeNode* stalagmite = new CompositeNode("Stalagmite");
+    CompositeNode* Manipulator::ConstructStalagmite(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
+        CompositeNode* stalagmite = new CompositeNode(name_);
+        stalagmite->SetType(CompositeNode::Type::Stalagmite);
 
         // Create root node
         SceneNode* root = CreateSceneNodeInstance("Root", "StalagmiteBase", "KelpMaterial", resman_);
@@ -140,8 +142,9 @@ namespace game {
         return stalagmite;
     }
 
-    CompositeNode* Manipulator::ConstructSubmarine(ResourceManager* resman_, glm::vec3 position_) {
-        CompositeNode* Submarine = new CompositeNode("Submarine");
+    CompositeNode* Manipulator::ConstructSubmarine(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
+        CompositeNode* Submarine = new CompositeNode(name_);
+        Submarine->SetType(CompositeNode::Type::Submarine);
 
         // Base of submarine
         SceneNode* root = CreateSceneNodeInstance("Root", "SubmarineBase", "KelpMaterial", resman_);
@@ -150,7 +153,7 @@ namespace game {
         Submarine->SetRoot(root);
 
         // Front window
-        SceneNode* front_window = CreateSceneNodeInstance("FrontWindow", "SubmarineBase", "Material", resman_);
+        SceneNode* front_window = CreateSceneNodeInstance("FrontWindow", "SubmarineBase", "ObjectMaterial", resman_);
         front_window->SetScale(glm::vec3(0.4, 0.3, 0.5));
         front_window->SetPosition(root->GetPosition() + glm::vec3(-7, 1, 15));
         front_window->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
@@ -173,10 +176,12 @@ namespace game {
         }
 
         return Submarine;
+    }
 
-    CompositeNode* Manipulator::ConstructCoral(ResourceManager* resman_, glm::vec3 position_) {
+    CompositeNode* Manipulator::ConstructCoral(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
 
-        CompositeNode* coral = new CompositeNode("Coral");
+        CompositeNode* coral = new CompositeNode(name_);
+        coral->SetType(CompositeNode::Type::Coral);
 
         //creating main stems
 
@@ -188,13 +193,12 @@ namespace game {
         //std::cout << "this is the main stems color: " << glm::to_string(stem_prime->GetColor()) << std::endl;
         //stem_prime->SetLength(10.0);
         stem_prime->SetPivot(glm::vec3(0, 5, 0));
-        stem_prime->SetType(SceneNode::Type::Stem);
-        stem_prime->SetScale(glm::vec3(0.2,0.2,0.2));
-        coral->AddNode(stem_prime);
+        stem_prime->SetScale(glm::vec3(0.2, 0.2, 0.2));
+        coral->SetRoot(stem_prime);
 
         SceneNode* stem1 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", resman_);
         stem1->SetPosition(glm::vec3(2.5, -4.5, 0));
-        stem1->Rotate(glm::normalize(glm::angleAxis(1.5f, glm::vec3(0,0,1))));
+        stem1->Rotate(glm::normalize(glm::angleAxis(1.5f, glm::vec3(0, 0, 1))));
         stem1->SetColour(glm::vec3(0.97, 0.51, 0.47));
         stem_prime->AddChild(stem1);
         coral->AddNode(stem1);
@@ -269,8 +273,6 @@ namespace game {
         stem_prime->AddChild(stem11);
         coral->AddNode(stem11);
 
-
-
         return coral;
     }
 
@@ -282,7 +284,7 @@ namespace game {
             if (current_ != nullptr) {
 
                 // Animate all kelp instances
-                if (current_->GetName() == "Kelp") {
+                if (current_->GetType() == CompositeNode::Type::Kelp) {
                     AnimateKelp(current_, time_, theta_);
                 }
 
@@ -290,10 +292,10 @@ namespace game {
         }
     }
 
-	void Manipulator::AnimateKelp(CompositeNode* current_, double time_, float theta_) {
-        current_->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_), 0, 0.05 * sin(1 - time_))));
-        for (int i = 0; i < current_->GetRoot()->GetChildCount(); i++) {
-            current_->GetRoot()->GetChild(i)->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_), 0, 0.05 * sin(1 - time_))));
+	void Manipulator::AnimateKelp(CompositeNode* node_, double time_, float theta_) {
+        node_->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_), 0, 0.05 * sin(1 - time_))));
+        for (int i = 0; i < node_->GetRoot()->GetChildCount(); i++) {
+            node_->GetRoot()->GetChild(i)->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_), 0, 0.05 * sin(1 - time_))));
         }
 	}
 
