@@ -15,6 +15,12 @@ in vec3 tangent_view_pos;
 uniform sampler2D texture_map; // Normal map
 uniform int tile_count;
 
+// Lighting
+uniform float lambertian_coefficient;
+uniform float specular_coefficient;
+uniform float specular_power;
+uniform float ambient_lighting;
+
 // Material attributes (constants)
 uniform vec3 object_color;
 
@@ -36,19 +42,19 @@ void main()
     H = normalize(H);
     
     // AMBIENT
-    float ambient = 0.4;
+    float ambient = ambient_lighting;
 
     // DIFFUSE
     float lambertian = max(dot(N, L), 0.0);
 
     // SPECULAR
     float spec_angle = max(dot(N, H), 0.0);
-    float specular = pow(spec_angle, 278.0); // NOTE: This one too (so lammbertian coefficient, specular coefficient, ambient, specular power)
+    float specular = pow(spec_angle, specular_power); // NOTE: This one too (so lammbertian coefficient, specular coefficient, ambient, specular power)
     
     vec4 obj_col = vec4(object_color, 1.0);
 
     if (gl_FrontFacing){
-        gl_FragColor = (0.25*ambient + 0.7*lambertian + 0.2*specular)*obj_col; // NOTE: These three coefficients
+        gl_FragColor = (ambient + lambertian_coefficient*lambertian + specular_coefficient*specular)*obj_col; // NOTE: These three coefficients
     } else {
         gl_FragColor = 0.25*ambient*obj_col;
     }

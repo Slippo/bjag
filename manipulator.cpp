@@ -182,7 +182,10 @@ Manipulator::~Manipulator() {}
         SceneNode* root = CreateSceneNodeInstance("Root", "SubmarineBase", "NormalMapMaterial", "NormalMapMetal", resman_);
         root->SetColor(glm::vec3(1.0, 0.9, 0.3));
         root->SetScale(glm::vec3(1.2, 0.5, 0.7));
-        root->SetPosition(position_);
+        root->SetPosition(position_);;
+        root->SetSpecularCoefficient(3);
+        root->SetSpecularPower(400);
+        root->SetLambertianCoefficient(1);
         Submarine->SetRoot(root);
 
         // Front window
@@ -192,6 +195,9 @@ Manipulator::~Manipulator() {}
         front_window->Scale(glm::vec3(0.5, 0.5, 0.6));
         front_window->Translate(glm::vec3(-5.7, 0, 0));
         front_window->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
+        front_window->SetSpecularCoefficient(5);
+        front_window->SetSpecularPower(200);
+        front_window->SetLambertianCoefficient(1.2);
         Submarine->AddNode(front_window);
 
         // Side windows
@@ -206,6 +212,9 @@ Manipulator::~Manipulator() {}
                 float z = 9.5;
                 if (j == 0 || j == 3) { z = 8.5; }
                 side_window->Translate(glm::vec3(flip * (x - 5), 0, flip * z));
+                side_window->SetSpecularCoefficient(5);
+                side_window->SetSpecularPower(200);
+                side_window->SetLambertianCoefficient(1.2);
                 Submarine->AddNode(side_window);
                 x += 3;
             }
@@ -219,6 +228,9 @@ Manipulator::~Manipulator() {}
         leg1->Scale(glm::vec3(2.0, 4.0, 2.0));
         leg1->Translate(glm::vec3(5, -7, 5));
         leg1->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(-1, 0, 0)));
+        leg1->SetSpecularCoefficient(3);
+        leg1->SetSpecularPower(400);
+        leg1->SetLambertianCoefficient(1);
         Submarine->AddNode(leg1);
         SceneNode* leg1_a = CreateSceneNodeInstance("Leg", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
         leg1_a->SetColor(glm::vec3(0.4, 0.4, 0.4));
@@ -226,6 +238,9 @@ Manipulator::~Manipulator() {}
         leg1_a->Scale(glm::vec3(1, 1, 1));
         leg1_a->Translate(glm::vec3(0, -1.3, -0.9));
         leg1_a->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1.5, 0, 0)));
+        leg1_a->SetSpecularCoefficient(3);
+        leg1_a->SetSpecularPower(400);
+        leg1_a->SetLambertianCoefficient(1);
         leg1->AddChild(leg1_a);
         Submarine->AddNode(leg1_a);
 
@@ -235,6 +250,9 @@ Manipulator::~Manipulator() {}
         leg2->Scale(glm::vec3(2.0, 4.0, 2.0));
         leg2->Translate(glm::vec3(5, -7, -5));
         leg2->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1, 0, 0)));
+        leg2->SetSpecularCoefficient(3);
+        leg2->SetSpecularPower(400);
+        leg2->SetLambertianCoefficient(1);
         Submarine->AddNode(leg2);
         SceneNode* leg2_a = CreateSceneNodeInstance("Leg", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
         leg2_a->SetColor(glm::vec3(0.4, 0.4, 0.4));
@@ -242,6 +260,9 @@ Manipulator::~Manipulator() {}
         leg2_a->Scale(glm::vec3(1, 1, 1));
         leg2_a->Translate(glm::vec3(0, -1.3, 0.9));
         leg2_a->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(-1.5, 0, 0)));
+        leg2_a->SetSpecularCoefficient(3);
+        leg2_a->SetSpecularPower(400);
+        leg2_a->SetLambertianCoefficient(1);
         leg2->AddChild(leg2_a);
         Submarine->AddNode(leg2_a);
 
@@ -251,6 +272,9 @@ Manipulator::~Manipulator() {}
         leg3->Scale(glm::vec3(2.0, 4.0, 2.0));
         leg3->Translate(glm::vec3(-5, -7, 5));
         leg3->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(-1, 0, 0)));
+        leg3->SetSpecularCoefficient(3);
+        leg3->SetSpecularPower(400);
+        leg3->SetLambertianCoefficient(1);
         Submarine->AddNode(leg3);
         SceneNode* leg3_a = CreateSceneNodeInstance("Leg", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
         leg3_a->SetColor(glm::vec3(0.4, 0.4, 0.4));
@@ -258,6 +282,9 @@ Manipulator::~Manipulator() {}
         leg3_a->Scale(glm::vec3(1, 1, 1));
         leg3_a->Translate(glm::vec3(0, -1.3, -0.9));
         leg3_a->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1.5, 0, 0)));
+        leg3_a->SetSpecularCoefficient(3);
+        leg3_a->SetSpecularPower(400);
+        leg3_a->SetLambertianCoefficient(1);
         leg3->AddChild(leg3_a);
         Submarine->AddNode(leg3_a);
 
@@ -267,6 +294,9 @@ Manipulator::~Manipulator() {}
         leg4->Scale(glm::vec3(2.0, 4.0, 2.0));
         leg4->Translate(glm::vec3(-5, -7, -5));
         leg4->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1, 0, 0)));
+        leg4->SetSpecularCoefficient(3);
+        leg4->SetSpecularPower(400);
+        leg4->SetLambertianCoefficient(1);
         Submarine->AddNode(leg4);
         SceneNode* leg4_a = CreateSceneNodeInstance("Leg", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
         leg4_a->SetColor(glm::vec3(0.4, 0.4, 0.4));
@@ -274,6 +304,9 @@ Manipulator::~Manipulator() {}
         leg4_a->Scale(glm::vec3(1, 1, 1));
         leg4_a->Translate(glm::vec3(0, -1.3, 0.9));
         leg4_a->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(-1.5, 0, 0)));
+        leg4_a->SetSpecularCoefficient(3);
+        leg4_a->SetSpecularPower(400);
+        leg4_a->SetLambertianCoefficient(1);
         leg4->AddChild(leg4_a);
         Submarine->AddNode(leg4_a);
 
