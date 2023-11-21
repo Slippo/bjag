@@ -182,26 +182,58 @@ namespace game {
         SceneNode* leg1 = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", resman_);
         leg1->SetColour(glm::vec3(0.4, 0.4, 0.4));
         leg1->Scale(glm::vec3(2.0, 4.0, 2.0));
-        leg1->Translate(glm::vec3(5, -10, 5));
+        leg1->Translate(glm::vec3(5, -7, 5));
+        leg1->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(-1, 0, 0)));
         Submarine->AddNode(leg1);
+        SceneNode* leg1_a = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", resman_);
+        leg1_a->SetColour(glm::vec3(0.4, 0.4, 0.4));
+        leg1_a->Scale(glm::vec3(1, 1, 1));
+        leg1_a->Translate(glm::vec3(0, -1.3, -0.9));
+        leg1_a->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1.5, 0, 0)));
+        leg1->AddChild(leg1_a);
+        Submarine->AddNode(leg1_a);
 
         SceneNode* leg2 = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", resman_);
         leg2->SetColour(glm::vec3(0.4, 0.4, 0.4));
         leg2->Scale(glm::vec3(2.0, 4.0, 2.0));
-        leg2->Translate(glm::vec3(5, -10, -5));
+        leg2->Translate(glm::vec3(5, -7, -5));
+        leg2->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1, 0, 0)));
         Submarine->AddNode(leg2);
+        SceneNode* leg2_a = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", resman_);
+        leg2_a->SetColour(glm::vec3(0.4, 0.4, 0.4));
+        leg2_a->Scale(glm::vec3(1, 1, 1));
+        leg2_a->Translate(glm::vec3(0, -1.3, 0.9));
+        leg2_a->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(-1.5, 0, 0)));
+        leg2->AddChild(leg2_a);
+        Submarine->AddNode(leg2_a);
 
         SceneNode* leg3 = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", resman_);
         leg3->SetColour(glm::vec3(0.4, 0.4, 0.4));
         leg3->Scale(glm::vec3(2.0, 4.0, 2.0));
-        leg3->Translate(glm::vec3(-5, -10, 5));
+        leg3->Translate(glm::vec3(-5, -7, 5));
+        leg3->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(-1, 0, 0)));
         Submarine->AddNode(leg3);
+        SceneNode* leg3_a = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", resman_);
+        leg3_a->SetColour(glm::vec3(0.4, 0.4, 0.4));
+        leg3_a->Scale(glm::vec3(1, 1, 1));
+        leg3_a->Translate(glm::vec3(0, -1.3, -0.9));
+        leg3_a->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1.5, 0, 0)));
+        leg3->AddChild(leg3_a);
+        Submarine->AddNode(leg3_a);
 
         SceneNode* leg4 = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", resman_);
         leg4->SetColour(glm::vec3(0.4, 0.4, 0.4));
         leg4->Scale(glm::vec3(2.0, 4.0, 2.0));
-        leg4->Translate(glm::vec3(-5, -10, -5));
+        leg4->Translate(glm::vec3(-5, -7, -5));
+        leg4->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1, 0, 0)));
         Submarine->AddNode(leg4);
+        SceneNode* leg4_a = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", resman_);
+        leg4_a->SetColour(glm::vec3(0.4, 0.4, 0.4));
+        leg4_a->Scale(glm::vec3(1, 1, 1));
+        leg4_a->Translate(glm::vec3(0, -1.3, 0.9));
+        leg4_a->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(-1.5, 0, 0)));
+        leg4->AddChild(leg4_a);
+        Submarine->AddNode(leg4_a);
 
         return Submarine;
     }
@@ -304,6 +336,30 @@ namespace game {
         return coral;
     }
 
+    CompositeNode* Manipulator::ConstructSeaweed(ResourceManager* resman_, std::string name_, int length_compexity, glm::vec3 position_) {
+
+        CompositeNode* seaweed = new CompositeNode(name_);
+        seaweed->SetType(CompositeNode::Type::Seaweed);
+
+        // Create root node
+        SceneNode* root = CreateSceneNodeInstance("Root", "LowResCylinder", "KelpMaterial", resman_);
+        root->SetScale(glm::vec3(1.0, 2.0, 1.0));
+        root->SetPosition(position_);
+        root->SetPivot(glm::vec3(0, -2.0, 0));
+        seaweed->SetRoot(root);
+
+        for (int i = 2; i < length_compexity+1; i++) {
+            SceneNode* piece = CreateSceneNodeInstance("Piece", "LowResCylinder", "KelpMaterial", resman_);
+            piece->Scale(glm::vec3(1.0 / i+0.25, i, 1.0 / i+0.25));
+            piece->Translate(glm::vec3(0, i-1, 0));
+            piece->SetPivot(glm::vec3(0, -(i-1), 0));
+            root->AddChild(piece);
+            seaweed->AddNode(piece);
+        }
+
+        return seaweed;
+    }
+
 	// (2) Animate hierarchical objects
     void Manipulator::AnimateAll(SceneGraph* scene_, double time_, float theta_) {
         CompositeNode* current_;
@@ -313,6 +369,10 @@ namespace game {
 
                 // Animate all kelp instances
                 if (current_->GetType() == CompositeNode::Type::Kelp) {
+                    AnimateKelp(current_, time_, theta_);
+                }
+
+                else if (current_->GetType() == CompositeNode::Type::Seaweed) {
                     AnimateKelp(current_, time_, theta_);
                 }
 
@@ -326,6 +386,13 @@ namespace game {
             node_->GetRoot()->GetChild(i)->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_), 0, 0.05 * sin(1 - time_))));
         }
 	}
+
+    void Manipulator::AnimateSeaweed(CompositeNode* node_, double time_, float theta_) {
+        node_->Orbit(glm::angleAxis(theta_, glm::vec3(1, 1, 1)));
+        for (int i = 0; i < node_->GetRoot()->GetChildCount(); i++) {
+            node_->GetRoot()->GetChild(i)->Orbit(glm::angleAxis(theta_, glm::vec3(1, 1, 1))); 
+        }
+    }
 
 	// Copied from game.cpp
 	SceneNode* Manipulator::CreateSceneNodeInstance(std::string entity_name, std::string object_name, std::string material_name, ResourceManager* resman_) {
