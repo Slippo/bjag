@@ -34,7 +34,7 @@ namespace game {
 		std::vector<SceneNode*>::const_iterator end() const;
 
 		// Draw nodes
-		void Draw(Camera* camera);
+		void Draw(Camera* camera, SceneNode* light);
 
 		// Update all nodes
 		int Update(Camera* camera);
