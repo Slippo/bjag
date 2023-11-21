@@ -20,7 +20,7 @@ namespace game {
 			CompositeNode* ConstructStalagmite(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
 			CompositeNode* ConstructSubmarine(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
 			CompositeNode* ConstructCoral(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
-			CompositeNode* ConstructSeaweed(ResourceManager* resman_, std::string name_, int length_complexity = 4, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
+			CompositeNode* ConstructSeaweed(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
 
 			// Create the sand floor
 			CompositeNode* ConstructPlane(ResourceManager* resman_);

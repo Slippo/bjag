@@ -123,6 +123,10 @@ void SceneNode::SetColor(glm::vec3 color) {
     color_ = color;
 }
 
+void SceneNode::SetTileCount(int count) {
+    tile_count_ = count;
+}
+
 void SceneNode::Translate(glm::vec3 trans){
     position_ += trans;
     pivot_ += trans;
@@ -304,6 +308,10 @@ void SceneNode::SetupShader(GLuint program, Camera* camera, SceneNode* light){
     // Object color
     GLint object_color_var = glGetUniformLocation(program, "object_color");
     glUniform3fv(object_color_var, 1, glm::value_ptr(color_));
+
+    // Tile count
+    GLint tile_count_var = glGetUniformLocation(program, "tile_count");
+    glUniform1i(tile_count_var, tile_count_);
 }
 
 int SceneNode::GetCollision(void) const {

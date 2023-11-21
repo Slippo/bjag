@@ -179,15 +179,16 @@ Manipulator::~Manipulator() {}
         Submarine->SetType(CompositeNode::Type::Submarine);
 
         // Base of submarine
-        SceneNode* root = CreateSceneNodeInstance("Root", "SubmarineBase", "ObjectMaterial", "", resman_);
+        SceneNode* root = CreateSceneNodeInstance("Root", "SubmarineBase", "NormalMapMaterial", "NormalMapMetal", resman_);
         root->SetColor(glm::vec3(1.0, 0.9, 0.3));
         root->SetScale(glm::vec3(1.2, 0.5, 0.7));
         root->SetPosition(position_);
         Submarine->SetRoot(root);
 
         // Front window
-        SceneNode* front_window = CreateSceneNodeInstance("FrontWindow", "SubmarineBase", "ObjectMaterial", "", resman_);
+        SceneNode* front_window = CreateSceneNodeInstance("FrontWindow", "SubmarineBase", "NormalMapMaterial", "NormalMapGlass", resman_);
         front_window->SetColor(glm::vec3(0.6, 0.8, 1.0));
+        front_window->SetTileCount(2);
         front_window->Scale(glm::vec3(0.5, 0.5, 0.6));
         front_window->Translate(glm::vec3(-5.7, 0, 0));
         front_window->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
@@ -198,8 +199,9 @@ Manipulator::~Manipulator() {}
         for (int i = 0; i < 2; i++) {
             int x = 0;
             for (int j = 0; j < 4; j++) {
-                SceneNode* side_window = CreateSceneNodeInstance("SideWindow", "SubmarineBase", "ObjectMaterial", "", resman_);
+                SceneNode* side_window = CreateSceneNodeInstance("SideWindow", "SubmarineBase", "NormalMapMaterial", "NormalMapGlass", resman_);
                 side_window->SetColor(glm::vec3(0.6, 0.8, 1.0));
+                side_window->SetTileCount(2);
                 side_window->Scale(glm::vec3(0.1, 0.2, 0.1));
                 float z = 9.5;
                 if (j == 0 || j == 3) { z = 8.5; }
@@ -211,56 +213,64 @@ Manipulator::~Manipulator() {}
         }
 
         // Legs
-        SceneNode* leg1 = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", "", resman_);
+        SceneNode* leg1 = CreateSceneNodeInstance("Leg", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
         leg1->SetColor(glm::vec3(0.4, 0.4, 0.4));
+        leg1->SetTileCount(1);
         leg1->Scale(glm::vec3(2.0, 4.0, 2.0));
         leg1->Translate(glm::vec3(5, -7, 5));
         leg1->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(-1, 0, 0)));
         Submarine->AddNode(leg1);
-        SceneNode* leg1_a = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", "", resman_);
+        SceneNode* leg1_a = CreateSceneNodeInstance("Leg", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
         leg1_a->SetColor(glm::vec3(0.4, 0.4, 0.4));
+        leg1_a->SetTileCount(1);
         leg1_a->Scale(glm::vec3(1, 1, 1));
         leg1_a->Translate(glm::vec3(0, -1.3, -0.9));
         leg1_a->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1.5, 0, 0)));
         leg1->AddChild(leg1_a);
         Submarine->AddNode(leg1_a);
 
-        SceneNode* leg2 = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", "", resman_);
+        SceneNode* leg2 = CreateSceneNodeInstance("Leg", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
         leg2->SetColor(glm::vec3(0.4, 0.4, 0.4));
+        leg2->SetTileCount(1);
         leg2->Scale(glm::vec3(2.0, 4.0, 2.0));
         leg2->Translate(glm::vec3(5, -7, -5));
         leg2->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1, 0, 0)));
         Submarine->AddNode(leg2);
-        SceneNode* leg2_a = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", "", resman_);
+        SceneNode* leg2_a = CreateSceneNodeInstance("Leg", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
         leg2_a->SetColor(glm::vec3(0.4, 0.4, 0.4));
+        leg2_a->SetTileCount(1);
         leg2_a->Scale(glm::vec3(1, 1, 1));
         leg2_a->Translate(glm::vec3(0, -1.3, 0.9));
         leg2_a->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(-1.5, 0, 0)));
         leg2->AddChild(leg2_a);
         Submarine->AddNode(leg2_a);
 
-        SceneNode* leg3 = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", "", resman_);
+        SceneNode* leg3 = CreateSceneNodeInstance("Leg", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
         leg3->SetColor(glm::vec3(0.4, 0.4, 0.4));
+        leg3->SetTileCount(1);
         leg3->Scale(glm::vec3(2.0, 4.0, 2.0));
         leg3->Translate(glm::vec3(-5, -7, 5));
         leg3->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(-1, 0, 0)));
         Submarine->AddNode(leg3);
-        SceneNode* leg3_a = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", "", resman_);
+        SceneNode* leg3_a = CreateSceneNodeInstance("Leg", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
         leg3_a->SetColor(glm::vec3(0.4, 0.4, 0.4));
+        leg3_a->SetTileCount(1);
         leg3_a->Scale(glm::vec3(1, 1, 1));
         leg3_a->Translate(glm::vec3(0, -1.3, -0.9));
         leg3_a->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1.5, 0, 0)));
         leg3->AddChild(leg3_a);
         Submarine->AddNode(leg3_a);
 
-        SceneNode* leg4 = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", "", resman_);
+        SceneNode* leg4 = CreateSceneNodeInstance("Leg", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
         leg4->SetColor(glm::vec3(0.4, 0.4, 0.4));
+        leg4->SetTileCount(1);
         leg4->Scale(glm::vec3(2.0, 4.0, 2.0));
         leg4->Translate(glm::vec3(-5, -7, -5));
         leg4->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1, 0, 0)));
         Submarine->AddNode(leg4);
-        SceneNode* leg4_a = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", "", resman_);
+        SceneNode* leg4_a = CreateSceneNodeInstance("Leg", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
         leg4_a->SetColor(glm::vec3(0.4, 0.4, 0.4));
+        leg4_a->SetTileCount(1);
         leg4_a->Scale(glm::vec3(1, 1, 1));
         leg4_a->Translate(glm::vec3(0, -1.3, 0.9));
         leg4_a->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(-1.5, 0, 0)));
@@ -368,23 +378,27 @@ Manipulator::~Manipulator() {}
         return coral;
     }
 
-    CompositeNode* Manipulator::ConstructSeaweed(ResourceManager* resman_, std::string name_, int length_compexity, glm::vec3 position_) {
+    CompositeNode* Manipulator::ConstructSeaweed(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
 
         CompositeNode* seaweed = new CompositeNode(name_);
         seaweed->SetType(CompositeNode::Type::Seaweed);
 
         // Create root node
-        SceneNode* root = CreateSceneNodeInstance("Root", "LowResCylinder", "KelpMaterial", "", resman_);
+        SceneNode* root = CreateSceneNodeInstance("Root", "LowResCylinder", "NormalMapMaterial", "NormalMapGrass", resman_);
+        root->SetColor(glm::vec3(0.7, 1.0, 0.7));
+        root->SetTileCount(1);
         root->SetScale(glm::vec3(1.0, 2.0, 1.0));
         root->SetPosition(position_);
         root->SetPivot(glm::vec3(0, -2.0, 0));
         seaweed->SetRoot(root);
 
-        for (int i = 2; i < length_compexity+1; i++) {
-            SceneNode* piece = CreateSceneNodeInstance("Piece", "LowResCylinder", "KelpMaterial", "", resman_);
-            piece->Scale(glm::vec3(1.0 / i+0.25, i, 1.0 / i+0.25));
-            piece->Translate(glm::vec3(0, i-1, 0));
-            piece->SetPivot(glm::vec3(0, -(i-1), 0));
+        for (int i = 2; i < 5; i++) {
+            SceneNode* piece = CreateSceneNodeInstance("Piece", "LowResCylinder", "NormalMapMaterial", "NormalMapGrass", resman_);
+            piece->SetColor(glm::vec3(0.7, 1.0, 0.7));
+            piece->SetTileCount(1);
+            piece->Scale(glm::vec3(1.0 / i + 0.25, i, 1.0 / i + 0.25));
+            piece->Translate(glm::vec3(0, i - 1, 0));
+            piece->SetPivot(glm::vec3(0, -(i - 1), 0));
             root->AddChild(piece);
             seaweed->AddNode(piece);
         }
