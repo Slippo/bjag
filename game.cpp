@@ -182,6 +182,13 @@ void Game::SetupResources(void){
     resman_.CreateCylinder("SuperLongStem", 10.0, 0.6, 30, 30);
     resman_.CreateCylinder("Branch", 3.0, 0.6, 30, 30);
     resman_.CreateSphere("Tip", 0.6, 90, 45);
+    //mechanical part
+    resman_.CreateCylinder("MainBody", 10, 2);
+    resman_.CreateCylinder("Exhaust", 2.5, 0.5);
+    //sea anemonie
+    resman_.CreateCylinder("Base", 0.5, 1);
+    resman_.CreateSphere("Middle", 1.0, 30);
+    resman_.CreateCylinder("Tentacle", 0.5, 0.1);
     // Seaweed
     resman_.CreateCylinder("LowResCylinder", 1.0, 0.6, 6, 6);
     // Plane
@@ -222,6 +229,11 @@ void Game::SetupScene(void){
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
     
     //scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(0, 0, -20)));
+
+    //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part", glm::vec3(0, -5, -20)));
+
+    scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, -5, -20)));
+
 
     //scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(-8.0, 5.0, -20.0)));
     //scene_.GetNode("Coral1")->Scale(glm::vec3(2,5, 2));
