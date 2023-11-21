@@ -9,7 +9,7 @@ namespace game {
     CompositeNode::~CompositeNode(){}
 
     void CompositeNode::AddNode(SceneNode* node) {
-
+        root_->AddChild(node);
         node_.push_back(node);
     }
 
@@ -24,12 +24,38 @@ namespace game {
         return NULL;
     }
 
+    SceneNode* CompositeNode::GetRoot() const {
+        if (root_ != nullptr) {
+            return root_;
+        }
+        else { return nullptr; }
+    }
+
     // iterators for the vector
     std::vector<SceneNode*>::const_iterator CompositeNode::begin() const { return node_.begin(); }
     std::vector<SceneNode*>::const_iterator CompositeNode::end() const { return node_.end(); }
 
+    void CompositeNode::SetRoot(SceneNode* root) {
+        root_ = root;
+    }
+
+    // Transformations
+    void CompositeNode::Translate(glm::vec3 trans) {
+        root_->Translate(trans);
+    }
+    void CompositeNode::Rotate(glm::quat rot) {
+        root_->Rotate(rot);
+    }
+    void CompositeNode::Orbit(glm::quat rot) {
+        root_->Orbit(rot);
+    }
+    void CompositeNode::Scale(glm::vec3 scale) {
+        root_->Scale(scale);
+    }
+    
     void CompositeNode::Draw(Camera* camera, SceneNode* light) {
         // Draw all scene nodes
+        root_->Draw(camera, light);
         for (int i = 0; i < node_.size(); i++) {
             node_[i]->Draw(camera, light);
         }
@@ -37,6 +63,7 @@ namespace game {
 
     // Update all nodes and their respective children
     int CompositeNode::Update(Camera* camera) {
+        root_->Draw(camera);
         for (int i = 0; i < node_.size(); i++) {
             node_[i]->Update(camera);
         }

@@ -19,6 +19,8 @@ namespace game {
 	// Supports hierarchical transformations
 	class CompositeNode {
 	public:
+		typedef enum Type { None, Kelp, Coral, Seaweed, Stalagmite, Submarine } NodeType; // Object types list
+
 		// Create a named composite node
 		CompositeNode(const std::string name);
 		~CompositeNode();
@@ -30,8 +32,20 @@ namespace game {
 		// Getters
 		SceneNode* GetNode(std::string node_name) const;
 		inline std::string GetName(void) const { return name_; }
+		SceneNode* GetRoot() const;
+		Type GetType() const { return t_; }
 		std::vector<SceneNode*>::const_iterator begin() const;
 		std::vector<SceneNode*>::const_iterator end() const;
+
+		// Setters
+		void SetRoot(SceneNode* root);
+		void SetType(Type type) { t_ = type; }
+
+		// Transformations
+		void Translate(glm::vec3 trans);
+		void Rotate(glm::quat rot);
+		void Orbit(glm::quat rot);
+		void Scale(glm::vec3 scale);
 
 		// Draw nodes
 		void Draw(Camera* camera, SceneNode* light);
@@ -42,6 +56,8 @@ namespace game {
 	private:
 		std::string name_;
 		std::vector<SceneNode*> node_;
+		SceneNode* root_ = nullptr;
+		Type t_ = None; // Object type
 	};
 
 }

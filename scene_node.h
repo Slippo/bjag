@@ -31,7 +31,7 @@ namespace game {
 
         public:
 
-            typedef enum Type { Stem, Leaf } NodeType;
+            typedef enum Type { KelpStem, KelpLeaf, KelpTip} NodeType;
             // Create scene node from given resources
             SceneNode(const std::string name, const Resource *geometry, const Resource *material, const Resource* texture, int collision);
 
@@ -54,6 +54,7 @@ namespace game {
             glm::vec3 GetColor(void) const;
             std::vector<SceneNode*>::const_iterator begin() const;
             std::vector<SceneNode*>::const_iterator end() const;
+            inline glm::vec3 GetColor(void) { return colour; }
 
             // Set node attributes
             void SetPosition(glm::vec3 position);

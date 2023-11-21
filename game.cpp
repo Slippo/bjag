@@ -167,28 +167,39 @@ void Game::SetupResources(void){
         }
     }
     height_file.close();
-
-
-    // Create geometry of a plane
+  
+    // SHAPES
+    // Basic
+    resman_.CreateCylinder("Cylinder", 2, 0.15);
+    resman_.CreateSphere("Sphere", 1.0f, 90, 45);
+    // Stalagmite
+    resman_.CreateCylinder("StalagmiteBase", 3.0, 3.0, 30, 15);
+    resman_.CreateCone("StalagmiteSpike", 1.0, 0.6, 30, 15);
+    resman_.CreateSphere("SubmarineBase", 10.0, 90, 45);
+    // Coral
+    resman_.CreateCylinder("FatStem", 2.0, 0.6, 30, 30);
+    resman_.CreateCylinder("LongStem", 5.0, 0.6, 30, 30);
+    resman_.CreateCylinder("SuperLongStem", 10.0, 0.6, 30, 30);
+    resman_.CreateCylinder("Branch", 3.0, 0.6, 30, 30);
+    resman_.CreateSphere("Tip", 0.6, 90, 45);
+    // Seaweed
+    resman_.CreateCylinder("LowResCylinder", 1.0, 0.6, 6, 6);
+    // Plane
     resman_.CreatePlane("Plane", height_map_, plane_size_.x, plane_size_.y, offsetX, offsetZ);
     resman_.CreatePlane("Boundary", height_map_boundary_, plane_size_.x, plane_size_.y, offsetX, offsetZ);
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/normal_map");
     resman_.LoadResource(Material, "NormalMapMaterial", filename.c_str());
 
-    // Simple cylinder for stems
-    resman_.CreateCylinder("Cylinder", 2, 0.15);
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
+    // TEXTURES
+    std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
     resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
 
-    // Simple sphere for leaves
-    resman_.CreateSphere("Sphere", 1.0f, 90, 45);
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
-    resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
+    resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());
 
     // Load texture to be used in normal mapping
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_sand.png");
     resman_.LoadResource(Texture, "NormalMapSand", filename.c_str());
-
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_stone.png");
     resman_.LoadResource(Texture, "NormalMapStone", filename.c_str());
@@ -204,10 +215,22 @@ void Game::SetupScene(void){
     // Boundary "walls" (stone)
     scene_.AddNode(manipulator->ConstructBoundary(&resman_));
 
+    // Light source ("sun")
     scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,50,0)));
+  
+    //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
+    //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
+    
+    //scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(0, 0, -20)));
 
-    scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(0.0, 0.0, -5.0)));
-    scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(-5.0, 0.0, -5.0)));
+    //scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(-8.0, 5.0, -20.0)));
+    //scene_.GetNode("Coral1")->Scale(glm::vec3(2,5, 2));
+
+    scene_.AddNode(manipulator->ConstructSeaweed(&resman_, "Seaweed1", 4, glm::vec3(0, 0, -5)));
+
+    //scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp1", 4, glm::vec3(0.0, 0.0, -5.0))); // Example on how to make object
+    //scene_.GetNode("Kelp1")->Scale(glm::vec3(1,2,1)); // Example on how to transform object after creation
+
 }
 
 void Game::MainLoop(void){
