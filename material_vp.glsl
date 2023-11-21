@@ -24,10 +24,10 @@ void main()
 {
     gl_Position = projection_mat * view_mat * world_mat * vec4(vertex, 1.0);
 
-    color_interp = vec4(colour_type, 1.0);
+    color_interp = vec4(object_color, 1.0);
 
     //if(node_type == 1){
-       // color_interp = vec4(colour_type, 1.0);
+       // color_interp = vec4(object_color, 1.0);
    // }else{
        // color_interp = vec4(color, 1.0);
    // }
