@@ -17,7 +17,7 @@ out vec4 color_interp;
 
 //uniforms for custom object colors
 uniform int node_type;
-uniform vec3 colour_type;
+uniform vec3 object_color;
 
 
 void main()
