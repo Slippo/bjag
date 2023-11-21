@@ -22,14 +22,24 @@ namespace game {
 			CompositeNode* ConstructCoral(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
 			CompositeNode* ConstructPart(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
 			CompositeNode* ConstructAnemonie(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
+			CompositeNode* ConstructSeaweed(ResourceManager* resman_, std::string name_, int length_complexity = 4, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
+
+			// Create the sand floor
+			CompositeNode* ConstructPlane(ResourceManager* resman_);
+			// Create the stone boundary/wall
+			CompositeNode* ConstructBoundary(ResourceManager* resman_);
+
+			CompositeNode* ConstructSun(ResourceManager* resman, glm::vec3 position_ = glm::vec3(0.0, 20.0, 0.0));
+
 
 			// (2) Animate hierarchical objects
 			void AnimateAll(SceneGraph* scene_, double time_, float theta_);
-			void AnimateKelp(CompositeNode* node, double time_, float theta_);
+			void AnimateKelp(CompositeNode* node_, double time_, float theta_);
+			void AnimateSeaweed(CompositeNode* node_, double time_, float theta_);
 	
 		private:
 			// Copied from game.cpp
-			SceneNode* CreateSceneNodeInstance(std::string entity_name, std::string object_name, std::string material_name, ResourceManager* resman_);
+			SceneNode* CreateSceneNodeInstance(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name, ResourceManager* resman_);
 
 	};
 }

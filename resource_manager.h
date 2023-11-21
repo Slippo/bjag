@@ -41,6 +41,9 @@ namespace game {
             // Create the geometry for a cone
             void CreateCone(std::string object_name, float height = 1.0, float radius = 0.6, int num_samples_theta = 90, int num_samples_phi = 45);
 
+            // Create the geometry for a plane
+            // Used to make the floor and the boundaries of the game
+            void CreatePlane(std::string object_name, float** height_map, int length = 100, int width = 100, int offsetX = 50, int offsetZ = 50);
 			
         private:
            
@@ -50,6 +53,9 @@ namespace game {
             // Methods to load specific types of resources
             // Load shaders programs
             void LoadMaterial(const std::string name, const char *prefix);
+
+            // Load a texture from an image file: png, jpg, etc.
+            void LoadTexture(const std::string name, const char* filename);
             // Load a text file into memory (could be source code)
             std::string LoadTextFile(const char *filename);
 

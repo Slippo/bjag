@@ -4,6 +4,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <SOIL/SOIL.h>
+#include <glm/gtx/string_cast.hpp>
 
 #include "resource_manager.h"
 
@@ -42,6 +44,9 @@ void ResourceManager::LoadResource(ResourceType type, const std::string name, co
     // Call appropriate method depending on type of resource
     if (type == Material){
         LoadMaterial(name, filename);
+    }
+    else if (type == Texture) {
+        LoadTexture(name, filename);
     } else {
         throw(std::invalid_argument(std::string("Invalid type of resource")));
     }
@@ -574,6 +579,245 @@ void ResourceManager::CreateTorus(std::string object_name, float loop_radius, fl
     AddResource(Mesh, object_name, vbo, ebo, face_num * face_att);
 }
 
+void ResourceManager::CreatePlane(std::string object_name, float** height_map, int length, int width, int offsetX, int offsetZ) {
+
+    const GLuint vertex_num = length * width;
+    const GLuint face_num = length * width * 2;
+
+    const int vertex_att = 11; // attributes
+    const int face_att = 3;
+
+    GLfloat* vertex = NULL; // data buffers
+    GLuint* face = NULL;
+
+    // Allocate memory for buffers
+    try {
+        vertex = new GLfloat[vertex_num * vertex_att]; // 11 attributes per vertex: 3D position (3), 3D normal (3), RGB color (3), 2D texture coordinates (2)
+        face = new GLuint[face_num * face_att]; // 3 indices per face
+    }
+    catch (std::exception& e) {
+        throw e;
+    }
+
+    // Create vertices 
+    float uv_x = 0.0f;
+    float uv_z = 0.0f; // UV coordinates (z becomes y)
+    glm::vec3 vertex_position = glm::vec3(0,0,0);
+    glm::vec3 vertex_normal = glm::vec3(0,0,0);
+    glm::vec3 vertex_color = glm::vec3(0,0,0); // store tangent
+    glm::vec2 vertex_coord = glm::vec2(0,0); // uv mapping
+
+    for (int _z = 0; _z < length; _z++) { // z coordinate loop | [0,1,2,...,length-1]
+        uv_z = (float)_z / (float)(length-1); // 0 to 1
+        for (int _x = 0; _x < width; _x++) { // x coordinate loop | [0,1,2,...,width-1]
+            uv_x = (float)_x / (float)(width-1); // 0 to 1
+
+            vertex_position = glm::vec3(_x, height_map[_x][_z], _z);
+
+            int tile_count = 1;
+            vertex_coord = glm::vec2(uv_x, uv_z); // uv coordinates
+            //std::cout<< glm::to_string(vertex_coord) << "\n";
+            glm::vec3 edge_U, edge_V = glm::vec3(0, 0, 0); // two edges of a triangle; defined by vertex_position and 2 adjacent vertices
+            //glm::vec2 delta_U, delta_V = glm::vec2(0, 0);
+
+
+            std::vector<glm::vec3> adjacent_vertices;
+            //std::vector<glm::vec2> adjacent_uv;
+            glm::vec3 neighbor = glm::vec3(0, 0, 0);
+            //glm::vec2 vert_uv = glm::vec2(0, 0);
+            //                right                 bottom right
+            int order_x[8] = { 1,  1,  0, -1, -1, -1, 0, 1 };
+            int order_z[8] = { 0, -1, -1, -1,  0,  1, 1, 1 };
+            
+            // Iterate over neighbours counter clockwise
+            // Iteration has a different start depending on the case
+            int dx = 0;
+            int dz = 0;
+
+            // TOP LEFT n = 3
+            if (_x == 0 && _z == 0) {
+                //std::cout << "foo" << std::endl;
+                for (int i = 0; i < 3; i++) {
+                    dx = order_x[(i+6)%8];
+                    dz = order_z[(i+6)%8];
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x+dx][_z+dz], _z + dz));
+                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                }
+            }
+            // TOP n = 5
+            else if (_x > 0 && _x < width - 1 && _z == 0) {
+                for (int i = 0; i < 5; i++) {
+                    dx = order_x[(i + 4) % 8];
+                    dz = order_z[(i + 4) % 8];
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
+                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                }
+            }
+            // TOP RIGHT n = 3
+            else if (_x == width - 1 && _z == length - 1) {
+                for (int i = 0; i < 3; i++) {
+                    dx = order_x[(i + 4) % 8];
+                    dz = order_z[(i + 4) % 8];
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
+                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                }
+            }
+            // LEFT n = 5
+            else if (_x == 0 && _z > 0 && _z < length - 1) {
+                for (int i = 0; i < 5; i++) {
+                    dx = order_x[(i + 6) % 8];
+                    dz = order_z[(i + 6) % 8];
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
+                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                }
+            }
+            // MIDDLE n = 8
+            else if (_x > 0 && _x < width - 1 && _z > 0 && _z < length - 1) {
+                for (int i = 0; i < 8; i++) {
+                    dx = order_x[i];
+                    dz = order_z[i];
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
+                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                }
+            }
+            // RIGHT n = 5
+            else if (_x == width - 1 && _z > 0 && _z < length - 1) {
+                for (int i = 0; i < 5; i++) {
+                    dx = order_x[(i + 2) % 8];
+                    dz = order_z[(i + 2) % 8];
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
+                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                }
+            }
+            // BOTTOM LEFT n = 3
+            else if (_x == 0 && _z == length - 1) {
+                for (int i = 0; i < 3; i++) {
+                    dx = order_x[i];
+                    dz = order_z[i];
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
+                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                }
+            }
+            // BOTTOM n = 5
+            else if (_x > 0 && _x < width - 1 && _z == length - 1) {
+                for (int i = 0; i < 5; i++) {
+                    dx = order_x[i];
+                    dz = order_z[i];
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
+                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                }
+            }
+            // BOTTOM RIGHT n = 3
+            else if (_x == width - 1 && _z == length - 1) {
+                for (int i = 0; i < 3; i++) {
+                    dx = order_x[(i+2)%8];
+                    dz = order_z[(i+2)%8];
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
+                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1) ));
+                }
+            }
+            /*
+            for (int i = 0; i < 8; i++) {
+                if (_z + order_z[i] < 0 || _z + order_z[i] > (length - 1) || _x + order_x[i] < 0 || _x + order_x[i] > (width - 1)) { continue; }
+                else {
+                    neighbor = glm::vec3(_x + order_x[i], *height_map[(_x + order_x[i]), (_z + order_z[i])], _z + order_z[i]);
+
+                    vert_uv = glm::vec2((_x + order_x[i]) / (width - 1), (_z + order_z[i]) / (length - 1));
+
+                    adjacent_vertices.push_back(neighbor);
+                    adjacent_uv.push_back(vert_uv);
+                }
+            }
+            */
+            
+            std::vector<glm::vec2> delta_uv;
+            std::vector<glm::vec3> edges;
+            //std::cout << adjacent_vertices.size() << std::endl;
+            if (adjacent_vertices.size() >= 2) {
+                for (size_t n = 0; n < adjacent_vertices.size() - 1; n++) {
+                    
+                    edge_U = adjacent_vertices[n] - vertex_position; //edge 1
+                    edge_V = adjacent_vertices[n + 1] - vertex_position; // edge 2
+
+                    //delta_U = adjacent_uv[n] - vertex_coord;
+                    //delta_V = adjacent_uv[n + 1] - vertex_coord;
+                    //delta_uv.push_back(delta_U);
+                    //delta_uv.push_back(delta_V);
+                    edges.push_back(edge_U);
+                    edges.push_back(edge_V);
+
+                    vertex_normal += glm::normalize(glm::cross(edge_U, edge_V));
+                    
+                }
+            }
+            vertex_normal = glm::normalize(vertex_normal);
+
+            // Calculate tangent
+            if (adjacent_vertices.size() >= 2) {
+
+                // No idea why this one needs to be told what to do
+                if (_x == 1 && _z == 0) {
+                    vertex_color = glm::cross(vertex_normal, adjacent_vertices[1]);
+                    vertex_color = glm::normalize(vertex_color);
+                    //continue;
+                }
+                
+                else {
+                    vertex_color = glm::cross(vertex_normal, adjacent_vertices[0]);
+                    vertex_color = glm::normalize(vertex_color);
+                }
+            }
+            vertex_color = (vertex_color * 0.5f) + 0.5f;
+
+            // move to offset position (centered at 0,0)
+            vertex_position.x -= offsetX;
+            vertex_position.z -= offsetZ;
+
+            // Add vectors to the data buffer
+            for (int k = 0; k < 3; k++) {
+                vertex[(_z * width + _x) * vertex_att + k] = vertex_position[k];
+                vertex[(_z * width + _x) * vertex_att + k + 3] = vertex_normal[k];
+                vertex[(_z * width + _x) * vertex_att + k + 6] = vertex_color[k];
+            }
+            vertex[(_z * width + _x) * vertex_att + 9] = vertex_coord[0];
+            vertex[(_z * width + _x) * vertex_att + 10] = vertex_coord[1];
+        }
+    }
+
+    // Create triangles
+    for (int i = 0; i < length - 1; i++) {
+        for (int j = 0; j < width - 1; j++) {
+            // Two triangles per quad
+            glm::vec3 t1(((i + 1) % length) * width + j,
+                i * width + ((j + 1) % width),
+                i * width + j);
+            glm::vec3 t2(((i + 1) % length) * width + j,
+                ((i + 1) % length) * width + ((j + 1) % width),
+                i * width + ((j + 1) % width));
+            // Add two triangles to the data buffer
+            for (int k = 0; k < 3; k++) {
+                face[(i * width + j) * face_att * 2 + k] = (GLuint)t1[k];
+                face[(i * width + j) * face_att * 2 + k + face_att] = (GLuint)t2[k];
+            }
+        }
+    }
+
+    GLuint vbo, ebo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, vertex_num * vertex_att * sizeof(GLfloat), vertex, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, face_num * face_att * sizeof(GLuint), face, GL_STATIC_DRAW);
+
+    // Free data buffers
+    delete[] vertex;
+    delete[] face;
+
+    // Create resource
+    AddResource(Mesh, object_name, vbo, ebo, face_num * face_att);
+}
 
 void ResourceManager::CreateSphere(std::string object_name, float radius, int num_samples_theta, int num_samples_phi){
 
@@ -674,6 +918,18 @@ void ResourceManager::CreateSphere(std::string object_name, float radius, int nu
 
     // Create resource
     AddResource(Mesh, object_name, vbo, ebo, face_num * face_att);
+}
+
+void ResourceManager::LoadTexture(const std::string name, const char* filename) {
+
+    // Load texture from file
+    GLuint texture = SOIL_load_OGL_texture(filename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 0);
+    if (!texture) {
+        throw(std::ios_base::failure(std::string("Error loading texture ") + std::string(filename) + std::string(": ") + std::string(SOIL_last_result())));
+    }
+
+    // Create resource
+    AddResource(Texture, name, texture, 0);
 }
 
 } // namespace game;

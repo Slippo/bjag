@@ -7,7 +7,7 @@
 
 namespace game {
 
-SceneNode::SceneNode(const std::string name, const Resource *geometry, const Resource *material, int collision){
+SceneNode::SceneNode(const std::string name, const Resource *geometry, const Resource *material, const Resource* texture, int collision){
 
     // Set name of scene node
     name_ = name;
@@ -31,6 +31,14 @@ SceneNode::SceneNode(const std::string name, const Resource *geometry, const Res
     }
 
     material_ = material->GetResource();
+
+    // Set texture
+    if (texture) {
+        texture_ = texture->GetResource();
+    }
+    else {
+        texture_ = 0;
+    }
 
     // Other attributes
     scale_ = glm::vec3(1.0, 1.0, 1.0);
@@ -78,6 +86,11 @@ glm::vec3 SceneNode::GetPivot(void) const {
     return pivot_;
 }
 
+glm::vec3 SceneNode::GetColor(void) const
+{
+    return color_;
+}
+
 void SceneNode::SetPosition(glm::vec3 position){   
     pivot_ = pivot_ + (position - position_);
     position_ = position;
@@ -104,6 +117,10 @@ void SceneNode::SetParentTransf(glm::mat4 transf) {
 
 void SceneNode::SetType(Type type) {
     t_ = type;
+}
+
+void SceneNode::SetColor(glm::vec3 color) {
+    color_ = color;
 }
 
 void SceneNode::Translate(glm::vec3 trans){
@@ -177,7 +194,7 @@ void SceneNode::SetGeometry(const Resource *geometry) {
     size_ = geometry->GetSize();
 }
 
-void SceneNode::Draw(Camera *camera){
+void SceneNode::Draw(Camera *camera, SceneNode* light){
 
     // Select proper material (shader program)
     glUseProgram(material_);
@@ -190,7 +207,7 @@ void SceneNode::Draw(Camera *camera){
     camera->SetupShader(material_);
 
     // Set world matrix and other shader input variables
-    SetupShader(material_);
+    SetupShader(material_, camera, light);
 
     // Draw geometry
     if (mode_ == GL_POINTS){
@@ -207,7 +224,9 @@ void SceneNode::Update(Camera *camera){
 }
 
 
-void SceneNode::SetupShader(GLuint program){
+void SceneNode::SetupShader(GLuint program, Camera* camera, SceneNode* light){
+
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // Set attributes for shaders
     GLint vertex_att = glGetAttribLocation(program, "vertex");
@@ -226,12 +245,6 @@ void SceneNode::SetupShader(GLuint program){
     glVertexAttribPointer(tex_att, 2, GL_FLOAT, GL_FALSE, 11*sizeof(GLfloat), (void *) (9*sizeof(GLfloat)));
     glEnableVertexAttribArray(tex_att);
 
-    GLint current_info = glGetUniformLocation(program, "colour_type");
-    glUniform3f(current_info, GetColor().x, GetColor().y, GetColor().z);
-
-    GLint node_type = glGetUniformLocation(program, "node_type");
-    glUniform1i(node_type, 1);
-
     // World transformation
     glm::mat4 scaling = glm::scale(glm::mat4(1.0), scale_);
     glm::mat4 rotation = glm::mat4_cast(orientation_);
@@ -245,6 +258,27 @@ void SceneNode::SetupShader(GLuint program){
 
     GLint world_mat = glGetUniformLocation(program, "world_mat");
     glUniformMatrix4fv(world_mat, 1, GL_FALSE, glm::value_ptr(transf));
+    
+    // Normal matrix
+    glm::mat4 normal_matrix = glm::transpose(glm::inverse(transf));
+    GLint normal_mat = glGetUniformLocation(program, "normal_mat");
+    glUniformMatrix4fv(normal_mat, 1, GL_FALSE, glm::value_ptr(normal_matrix));
+    
+    // Texture
+    if (texture_) {
+        GLint tex = glGetUniformLocation(program, "texture_map");
+        glUniform1i(tex, 0); // Assign the first texture to the map
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture_); // First texture we bind
+        // Define texture interpolation
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+    }
 
     // Timer
     GLint timer_var = glGetUniformLocation(program, "timer");
@@ -258,6 +292,18 @@ void SceneNode::SetupShader(GLuint program){
     // Type of node
     GLint type_var = glGetUniformLocation(program, "node_type");
     glUniform1i(type_var, t_);
+
+    // View position
+    GLint view_pos_var = glGetUniformLocation(program, "view_pos");
+    glUniform3fv(view_pos_var, 1, glm::value_ptr(camera->GetPosition()));
+
+    // Light position
+    GLint light_pos_var = glGetUniformLocation(program, "light_pos");
+    glUniform3fv(light_pos_var, 1, glm::value_ptr(light->GetPosition()));
+
+    // Object color
+    GLint object_color_var = glGetUniformLocation(program, "object_color");
+    glUniform3fv(object_color_var, 1, glm::value_ptr(color_));
 }
 
 int SceneNode::GetCollision(void) const {

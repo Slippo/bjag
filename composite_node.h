@@ -19,6 +19,7 @@ namespace game {
 	// Supports hierarchical transformations
 	class CompositeNode {
 	public:
+
 		typedef enum Type { None, Kelp, Coral, Stalagmite, Submarine, Part , Anemonie} NodeType; // Object types list
 
 		// Create a named composite node
@@ -48,7 +49,7 @@ namespace game {
 		void Scale(glm::vec3 scale);
 
 		// Draw nodes
-		void Draw(Camera* camera);
+		void Draw(Camera* camera, SceneNode* light);
 
 		// Update all nodes
 		int Update(Camera* camera);

@@ -11,6 +11,7 @@ set(HDRS
  
 set(SRCS
      camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl
+     normal_map_vp.glsl normal_map_fp.glsl
 )
 
 # Add path name to configuration file
@@ -25,7 +26,7 @@ include_directories(${OPENGL_INCLUDE_DIR})
 target_link_libraries(${PROJ_NAME} ${OPENGL_gl_LIBRARY})
 
 # Other libraries needed
-set(LIBRARY_PATH C:/Program\ Files/Libraries/Libraries)
+set(LIBRARY_PATH C:/Software/Libraries)
 include_directories(${LIBRARY_PATH}/include)
 if(NOT WIN32)
     find_library(GLEW_LIBRARY GLEW)

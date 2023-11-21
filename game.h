@@ -7,6 +7,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
+#include <fstream>
 
 #include "scene_graph.h"
 #include "resource_manager.h"
@@ -59,6 +60,11 @@ namespace game {
 
             // Flag to turn animation on/off
             bool animating_;
+
+            // Size of both planes
+            const glm::ivec2 plane_size_ = glm::ivec2(500,500);
+            float** height_map_; // height map for the floor
+            float** height_map_boundary_; // height map for the boundary (stone walls)
 
             // Methods to initialize the game
             void InitWindow(void);
