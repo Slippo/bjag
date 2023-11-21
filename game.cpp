@@ -11,7 +11,7 @@ namespace game {
 // They are written here as global variables, but ideally they should be loaded from a configuration file
 
 // Main window settings
-const std::string window_title_g = "COMP 3501 Assignment 3: Tree";
+const std::string window_title_g = "Bjag";
 const unsigned int window_width_g = 1280;
 const unsigned int window_height_g = 720;
 const bool window_full_screen_g = false;
@@ -114,21 +114,98 @@ void Game::InitEventHandlers(void){
 
 
 void Game::SetupResources(void){
-    // STEMS AND LEAVES
+
+    // POPULATE HEIGHT MAP ARRAY
+    std::ifstream height_file;
+    try {
+        height_file.open(material_directory_g + "\\height_map.pgm");
+        if (!height_file.is_open()) {
+            throw std::ios_base::failure("Error opening height_map.pgm");
+        }
+    }
+    catch (const std::ios_base::failure& e) {
+        std::cout << e.what();
+        std::exit(1);
+    }
+
+    // CHECK FORMATTING; ONLY ACCEPT PGM FILES
+    // PGM FILES START WITH P2 AND ARE FOLLOWED BY THEIR WIDTH x HEIGHT DIMENSIONS
+    // THE REST OF THE FILE CONTAINS THE VERTEX DATA
+    std::string magic_number;
+    std::string comment;
+    int width, height, max_value;
+    height_file >> magic_number >> width >> height >> max_value;
+    if (magic_number != "P2" || width != plane_size_.x || height != plane_size_.y || max_value != 255) {
+        throw std::invalid_argument("Invalid PGM file format or dimensions");
+    }
+
+    int offsetX = plane_size_.x / 2;
+    int offsetZ = plane_size_.y / 2;
+    
+    height_map_ = new float* [plane_size_.x];
+    height_map_boundary_ = new float* [plane_size_.x];
+    for (int i = 0; i < plane_size_.x; i++)
+    {
+        height_map_[i] = new float[plane_size_.y];
+        height_map_boundary_[i] = new float[plane_size_.y];
+    }
+
+    // Generate random starting values
+    for (int z = 0; z < plane_size_.y; z++) {
+        for (int x = 0; x < plane_size_.x; x++) {
+            height_map_[x][z] = rand() / (RAND_MAX / 0.5); // Random height between 0 to 2.0
+            height_map_boundary_[x][z] = -0.1 - (rand() / (RAND_MAX)); // -0.1 to -1.1
+        }
+    }
+
+    // Set heights
+    float h = 0;
+    for (int z = 0; z < plane_size_.y; ++z) {
+        for (int x = 0; x < plane_size_.x; ++x) {
+            height_file >> h;
+            height_map_boundary_[x][z] += h/16; // max height is 16 (255/16) ~= 15.9
+        }
+    }
+    height_file.close();
+
+
+    // Create geometry of a plane
+    resman_.CreatePlane("Plane", height_map_, plane_size_.x, plane_size_.y, offsetX, offsetZ);
+    resman_.CreatePlane("Boundary", height_map_boundary_, plane_size_.x, plane_size_.y, offsetX, offsetZ);
+    std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/normal_map");
+    resman_.LoadResource(Material, "NormalMapMaterial", filename.c_str());
+
+    // Simple cylinder for stems
     resman_.CreateCylinder("Cylinder", 2, 0.15);
-    std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
     resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
 
-    // Sphere for leaves
+    // Simple sphere for leaves
     resman_.CreateSphere("Sphere", 1.0f, 90, 45);
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
     resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
+
+    // Load texture to be used in normal mapping
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_sand.png");
+    resman_.LoadResource(Texture, "NormalMapSand", filename.c_str());
+
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_stone.png");
+    resman_.LoadResource(Texture, "NormalMapStone", filename.c_str());
 }
 
 
 void Game::SetupScene(void){    
     scene_.SetBackgroundColor(viewport_background_color_g);
     
+    // Floor of the game (sand)
+    scene_.AddNode(manipulator->ConstructPlane(&resman_));
+
+    // Boundary "walls" (stone)
+    scene_.AddNode(manipulator->ConstructBoundary(&resman_));
+
+    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,50,0)));
+
     scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(0.0, 0.0, -5.0)));
     scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(-5.0, 0.0, -5.0)));
 }
@@ -136,6 +213,9 @@ void Game::SetupScene(void){
 void Game::MainLoop(void){
     // Loop while the user did not close the window
     while (!glfwWindowShouldClose(window_)){
+
+        SceneNode* world_light = scene_.GetNode("Sphere")->GetNode("Root");
+
         // Animate the scene
         if (animating_){
             static double last_time = 0;
@@ -156,7 +236,7 @@ void Game::MainLoop(void){
         }
 
         // Draw the scene
-        scene_.Draw(&camera_);
+        scene_.Draw(&camera_, world_light);
 
         // Push buffer drawn in the background onto the display
         glfwSwapBuffers(window_);
@@ -182,8 +262,6 @@ void Game::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
     game->camera_.Pitch(sens * -dir.y);
     
     //game->camera_.Roll(0);
-
-    std::cout << glm::to_string(dir) << std::endl;
 
     glfwSetCursorPos(window, width / 2, height / 2); // center the cursor
 }
@@ -221,7 +299,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
 
     // View control
     float rot_factor(2 * glm::pi<float>() / 180); // amount the ship turns per keypress (DOUBLE)
-    float trans_factor = 0.2; // amount the ship steps forward per keypress
+    float trans_factor = 0.5f; // amount the ship steps forward per keypress
     // Look up/down
     if (key == GLFW_KEY_UP){
         game->camera_.Pitch(rot_factor);
@@ -305,7 +383,7 @@ SceneNode* Game::CreateSphereInstance(std::string entity_name, std::string objec
         throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\"")));
     }
     // Create stem instance
-    SceneNode* sphere = new SceneNode(entity_name, geom, mat,1); //collision on for color change
+    SceneNode* sphere = new SceneNode(entity_name, geom, mat, NULL, 1); //collision on for color change
     return sphere;
 }
 
@@ -321,7 +399,7 @@ SceneNode* Game::CreateSceneNodeInstance(std::string entity_name, std::string ob
         throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\"")));
     }
     // Create stem instance
-    SceneNode* node = new SceneNode(entity_name, geom, mat, 0);
+    SceneNode* node = new SceneNode(entity_name, geom, mat, NULL, 0);
     return node;
 }
 } // namespace game

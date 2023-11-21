@@ -28,10 +28,10 @@ namespace game {
     std::vector<SceneNode*>::const_iterator CompositeNode::begin() const { return node_.begin(); }
     std::vector<SceneNode*>::const_iterator CompositeNode::end() const { return node_.end(); }
 
-    void CompositeNode::Draw(Camera* camera) {
+    void CompositeNode::Draw(Camera* camera, SceneNode* light) {
         // Draw all scene nodes
         for (int i = 0; i < node_.size(); i++) {
-            node_[i]->Draw(camera);
+            node_[i]->Draw(camera, light);
         }
     }
 

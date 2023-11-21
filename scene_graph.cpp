@@ -63,7 +63,7 @@ std::vector<CompositeNode *>::const_iterator SceneGraph::begin() const { return 
 std::vector<CompositeNode *>::const_iterator SceneGraph::end() const { return node_.end(); }
 
 
-void SceneGraph::Draw(Camera *camera){
+void SceneGraph::Draw(Camera *camera, SceneNode* light){
 
     // Clear background
     glClearColor(background_color_[0], 
@@ -73,7 +73,7 @@ void SceneGraph::Draw(Camera *camera){
 
     // Draw all scene nodes
     for (int i = 0; i < node_.size(); i++){
-        node_[i]->Draw(camera);
+        node_[i]->Draw(camera, light);
     }
 }
 
