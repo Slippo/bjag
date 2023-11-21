@@ -226,6 +226,12 @@ void SceneNode::SetupShader(GLuint program){
     glVertexAttribPointer(tex_att, 2, GL_FLOAT, GL_FALSE, 11*sizeof(GLfloat), (void *) (9*sizeof(GLfloat)));
     glEnableVertexAttribArray(tex_att);
 
+    GLint current_info = glGetUniformLocation(program, "colour_type");
+    glUniform3f(current_info, GetColor().x, GetColor().y, GetColor().z);
+
+    GLint node_type = glGetUniformLocation(program, "node_type");
+    glUniform1i(node_type, 1);
+
     // World transformation
     glm::mat4 scaling = glm::scale(glm::mat4(1.0), scale_);
     glm::mat4 rotation = glm::mat4_cast(orientation_);

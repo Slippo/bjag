@@ -115,32 +115,42 @@ void Game::InitEventHandlers(void){
 
 void Game::SetupResources(void){
     // SHAPES
+    // Basic
     resman_.CreateCylinder("Cylinder", 2, 0.15);
     resman_.CreateSphere("Sphere", 1.0f, 90, 45);
+    // Stalagmite
     resman_.CreateCylinder("StalagmiteBase", 3.0, 3.0, 30, 15);
     resman_.CreateCone("StalagmiteSpike", 1.0, 0.6, 30, 15);
     resman_.CreateSphere("SubmarineBase", 10.0, 90, 45);
+    // Coral
+    resman_.CreateCylinder("FatStem", 2.0, 0.6, 30, 30);
+    resman_.CreateCylinder("LongStem", 5.0, 0.6, 30, 30);
+    resman_.CreateCylinder("SuperLongStem", 10.0, 0.6, 30, 30);
+    resman_.CreateCylinder("Branch", 3.0, 0.6, 30, 30);
+    resman_.CreateSphere("Tip", 0.6, 90, 45);
 
     // TEXTURES
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
     resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
-    resman_.LoadResource(Material, "Material", filename.c_str());
+    resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());
 }
 
 
 void Game::SetupScene(void){    
     scene_.SetBackgroundColor(viewport_background_color_g);
     
-    scene_.AddNode(manipulator->ConstructStalagmite(&resman_, glm::vec3(10,0,-10)));
-    scene_.GetNode("Stalagmite")->Scale(glm::vec3(2, 2, 1));
+    //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, glm::vec3(10,0,-10)));
+    //scene_.GetNode("Stalagmite")->Scale(glm::vec3(2, 2, 1));
     //scene_.GetNode("Stalagmite")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
     
     //scene_.AddNode(manipulator->ConstructSubmarine(&resman_, glm::vec3(0, 0, -20)));
 
     //scene_.AddNode(manipulator->ConstructKelp(&resman_, 4, glm::vec3(0.0, 0.0, -5.0))); // Example on how to make object
     //scene_.GetNode("Kelp")->Scale(glm::vec3(1,2,1)); // Example on how to transform object after creation
+
+    scene_.AddNode(manipulator->ConstructCoral(&resman_, glm::vec3(-8.0, 0.0, -8.0)));
 }
 
 void Game::MainLoop(void){

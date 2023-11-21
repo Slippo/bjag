@@ -173,6 +173,105 @@ namespace game {
         }
 
         return Submarine;
+
+    CompositeNode* Manipulator::ConstructCoral(ResourceManager* resman_, glm::vec3 position_) {
+
+        CompositeNode* coral = new CompositeNode("Coral");
+
+        //creating main stems
+
+        SceneNode* stem_prime = CreateSceneNodeInstance("Stem_Prime", "SuperLongStem", "ObjectMaterial", resman_);
+
+        stem_prime->SetPosition(position_);
+        stem_prime->SetOrientation(glm::normalize(glm::angleAxis(0.5f, glm::vec3(0.0, 0.0, 1.0))));
+        stem_prime->SetColour(glm::vec3(0.97, 0.51, 0.47));
+        //std::cout << "this is the main stems color: " << glm::to_string(stem_prime->GetColor()) << std::endl;
+        //stem_prime->SetLength(10.0);
+        stem_prime->SetPivot(glm::vec3(0, 5, 0));
+        stem_prime->SetType(SceneNode::Type::Stem);
+        stem_prime->SetScale(glm::vec3(0.2,0.2,0.2));
+        coral->AddNode(stem_prime);
+
+        SceneNode* stem1 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", resman_);
+        stem1->SetPosition(glm::vec3(2.5, -4.5, 0));
+        stem1->Rotate(glm::normalize(glm::angleAxis(1.5f, glm::vec3(0,0,1))));
+        stem1->SetColour(glm::vec3(0.97, 0.51, 0.47));
+        stem_prime->AddChild(stem1);
+        coral->AddNode(stem1);
+
+        SceneNode* stem2 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", resman_);
+        stem2->SetPosition(glm::vec3(6.8, -6.0, 0));
+        stem2->Rotate(glm::normalize(glm::angleAxis(1.0f, glm::vec3(0, 0, 1))));
+        stem2->SetColour(glm::vec3(0.97, 0.51, 0.47));
+        stem_prime->AddChild(stem2);
+        coral->AddNode(stem2);
+
+        SceneNode* stem3 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", resman_);
+        stem3->SetPosition(glm::vec3(1.7, -3.5, 0));
+        stem3->Rotate(glm::normalize(glm::angleAxis(1.0f, glm::vec3(0, 0, 1))));
+        stem3->SetColour(glm::vec3(0.97, 0.51, 0.47));
+        stem2->AddChild(stem3);
+        coral->AddNode(stem3);
+
+        SceneNode* stem4 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", resman_);
+        stem4->SetPosition(glm::vec3(1.9, 2.5, 0));
+        stem4->Rotate(glm::normalize(glm::angleAxis(1.8f, glm::vec3(0, 0, 1))));
+        stem4->SetColour(glm::vec3(0.97, 0.51, 0.47));
+        stem2->AddChild(stem4);
+        coral->AddNode(stem4);
+
+        SceneNode* stem5 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", resman_);
+        stem5->SetPosition(glm::vec3(1.8, 2.5, 1.5));
+        stem5->Rotate(glm::normalize(glm::angleAxis(-1.8f, glm::vec3(0, 1, 1))));
+        stem5->SetColour(glm::vec3(0.97, 0.51, 0.47));
+        stem2->AddChild(stem5);
+        coral->AddNode(stem5);
+
+        SceneNode* stem6 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", resman_);
+        stem6->SetPosition(glm::vec3(1.8, 2.5, -1.5));
+        stem6->Rotate(glm::normalize(glm::angleAxis(1.8f, glm::vec3(0, 1, 1))));
+        stem6->SetColour(glm::vec3(0.97, 0.51, 0.47));
+        stem2->AddChild(stem6);
+        coral->AddNode(stem6);
+
+        SceneNode* stem7 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", resman_);
+        stem7->SetPosition(glm::vec3(1.8, 2.5, -1.5));
+        stem7->Rotate(glm::normalize(glm::angleAxis(1.8f, glm::vec3(0, 1, 1))));
+        stem7->SetColour(glm::vec3(0.97, 0.51, 0.47));
+        stem_prime->AddChild(stem7);
+        coral->AddNode(stem7);
+
+        SceneNode* stem8 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", resman_);
+        stem8->SetPosition(glm::vec3(-1.8, 2.5, -1.5));
+        stem8->Rotate(glm::normalize(glm::angleAxis(1.8f, glm::vec3(1, 1, 0))));
+        stem8->SetColour(glm::vec3(0.97, 0.51, 0.47));
+        stem_prime->AddChild(stem8);
+        coral->AddNode(stem8);
+
+        SceneNode* stem9 = CreateSceneNodeInstance("Stem1", "Branch", "ObjectMaterial", resman_);
+        stem9->SetPosition(glm::vec3(1.0, 5, 0));
+        stem9->Rotate(glm::normalize(glm::angleAxis(1.8f, glm::vec3(0, 0, 1))));
+        stem9->SetColour(glm::vec3(0.97, 0.51, 0.47));
+        stem_prime->AddChild(stem9);
+        coral->AddNode(stem9);
+
+        SceneNode* stem10 = CreateSceneNodeInstance("Stem1", "Branch", "ObjectMaterial", resman_);
+        stem10->SetPosition(glm::vec3(1.0, 6, 0));
+        stem10->Rotate(glm::normalize(glm::angleAxis(2.5f, glm::vec3(0, 0, 1))));
+        stem10->SetColour(glm::vec3(0.97, 0.51, 0.47));
+        stem_prime->AddChild(stem10);
+        coral->AddNode(stem10);
+
+        SceneNode* stem11 = CreateSceneNodeInstance("Stem1", "Branch", "ObjectMaterial", resman_);
+        stem11->SetPosition(glm::vec3(-0.6, 6, 0));
+        stem11->Rotate(glm::normalize(glm::angleAxis(3.5f, glm::vec3(0, 0, 1))));
+        stem11->SetColour(glm::vec3(0.97, 0.51, 0.47));
+        stem_prime->AddChild(stem11);
+        coral->AddNode(stem11);
+
+
+
+        return coral;
     }
 
 	// (2) Animate hierarchical objects
