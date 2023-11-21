@@ -141,11 +141,11 @@ void Game::SetupResources(void){
 void Game::SetupScene(void){    
     scene_.SetBackgroundColor(viewport_background_color_g);
     
-    scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
-    scene_.GetNode("Stalagmite1")->Scale(glm::vec3(2, 2, 1));
+    //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
+    //scene_.GetNode("Stalagmite1")->Scale(glm::vec3(2, 2, 1));
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
     
-    //scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(0, 0, -20)));
+    scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(0, 0, -20)));
 
     //scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(-8.0, 5.0, -20.0)));
     //scene_.GetNode("Coral1")->Scale(glm::vec3(2, 3, 2));

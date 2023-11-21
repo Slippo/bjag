@@ -147,15 +147,17 @@ namespace game {
         Submarine->SetType(CompositeNode::Type::Submarine);
 
         // Base of submarine
-        SceneNode* root = CreateSceneNodeInstance("Root", "SubmarineBase", "KelpMaterial", resman_);
+        SceneNode* root = CreateSceneNodeInstance("Root", "SubmarineBase", "ObjectMaterial", resman_);
+        root->SetColour(glm::vec3(1.0, 0.9, 0.3));
         root->SetScale(glm::vec3(1.2, 0.5, 0.7));
         root->SetPosition(position_);
         Submarine->SetRoot(root);
 
         // Front window
         SceneNode* front_window = CreateSceneNodeInstance("FrontWindow", "SubmarineBase", "ObjectMaterial", resman_);
-        front_window->SetScale(glm::vec3(0.4, 0.3, 0.5));
-        front_window->SetPosition(root->GetPosition() + glm::vec3(-7, 1, 15));
+        front_window->SetColour(glm::vec3(0.6, 0.8, 1.0));
+        front_window->Scale(glm::vec3(0.5, 0.5, 0.6));
+        front_window->Translate(glm::vec3(-5.7, 0, 0));
         front_window->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
         Submarine->AddNode(front_window);
 
@@ -164,16 +166,42 @@ namespace game {
         for (int i = 0; i < 2; i++) {
             int x = 0;
             for (int j = 0; j < 4; j++) {
-                SceneNode* side_window = CreateSceneNodeInstance("SideWindow", "SubmarineBase", "Material", resman_);
-                side_window->SetScale(glm::vec3(0.1, 0.1, 0.1));
-                float z = 6.5;
-                if (j == 0 || j == 3) { z = 6; }
-                side_window->SetPosition(root->GetPosition() + glm::vec3(flip * (x - 5), 0, flip * z));
+                SceneNode* side_window = CreateSceneNodeInstance("SideWindow", "SubmarineBase", "ObjectMaterial", resman_);
+                side_window->SetColour(glm::vec3(0.6, 0.8, 1.0));
+                side_window->Scale(glm::vec3(0.1, 0.2, 0.1));
+                float z = 9.5;
+                if (j == 0 || j == 3) { z = 8.5; }
+                side_window->Translate(glm::vec3(flip * (x - 5), 0, flip * z));
                 Submarine->AddNode(side_window);
                 x += 3;
             }
             flip = -1;
         }
+
+        // Legs
+        SceneNode* leg1 = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", resman_);
+        leg1->SetColour(glm::vec3(0.4, 0.4, 0.4));
+        leg1->Scale(glm::vec3(2.0, 4.0, 2.0));
+        leg1->Translate(glm::vec3(5, -10, 5));
+        Submarine->AddNode(leg1);
+
+        SceneNode* leg2 = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", resman_);
+        leg2->SetColour(glm::vec3(0.4, 0.4, 0.4));
+        leg2->Scale(glm::vec3(2.0, 4.0, 2.0));
+        leg2->Translate(glm::vec3(5, -10, -5));
+        Submarine->AddNode(leg2);
+
+        SceneNode* leg3 = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", resman_);
+        leg3->SetColour(glm::vec3(0.4, 0.4, 0.4));
+        leg3->Scale(glm::vec3(2.0, 4.0, 2.0));
+        leg3->Translate(glm::vec3(-5, -10, 5));
+        Submarine->AddNode(leg3);
+
+        SceneNode* leg4 = CreateSceneNodeInstance("Leg", "Cylinder", "ObjectMaterial", resman_);
+        leg4->SetColour(glm::vec3(0.4, 0.4, 0.4));
+        leg4->Scale(glm::vec3(2.0, 4.0, 2.0));
+        leg4->Translate(glm::vec3(-5, -10, -5));
+        Submarine->AddNode(leg4);
 
         return Submarine;
     }
