@@ -480,14 +480,14 @@ Manipulator::~Manipulator() {}
         return seaweed;
     }
 
-    void Manipulator::ConstructSeaweedPatch(ResourceManager* resman_, std::vector<CompositeNode*>* output_list, int num_strands, int length, int width, glm::vec3 position_) {
+    void Manipulator::ConstructSeaweedPatch(ResourceManager* resman_, SceneGraph* scene_, int num_strands, int length, int width, glm::vec3 position_) {
         
         for (int i = 0; i < num_strands; i++) {
             int random_x = rand() % length + 1; // Random int between 1-length
             int random_z = rand() % width + 1; // Random int between 1-width
             int random_length = rand() % 6 + 1; // Random int between 1-6
             CompositeNode* strand = ConstructSeaweed(resman_, "Seaweed", random_length, position_ + glm::vec3(random_x, 0, random_z));
-            output_list->push_back(strand);
+            scene_->AddNode(strand);
         }
     }
 
