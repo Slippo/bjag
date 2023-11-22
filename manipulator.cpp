@@ -310,6 +310,43 @@ Manipulator::~Manipulator() {}
         leg4->AddChild(leg4_a);
         Submarine->AddNode(leg4_a);
 
+        // Turbine
+        SceneNode* turbine = CreateSceneNodeInstance("Turbine", "Cylinder", "NormalMapMaterial", "NormalMapMetal", resman_);
+        turbine->SetColor(glm::vec3(0.4, 0.4, 0.4));
+        turbine->SetTileCount(1);
+        turbine->Scale(glm::vec3(10, 0.1, 25));
+        turbine->Translate(glm::vec3(10.5, 1, 0));
+        turbine->Rotate(glm::angleAxis(3*glm::pi<float>(), glm::vec3(0, 0, 1)));
+        turbine->SetSpecularCoefficient(3);
+        turbine->SetSpecularPower(400);
+        turbine->SetLambertianCoefficient(1);
+        Submarine->AddNode(turbine);
+
+        // Lights
+        SceneNode* light1 = CreateSceneNodeInstance("Light", "Sphere", "ObjectMaterial", "", resman_);
+        light1->SetColor(glm::vec3(0.5, 1.0, 0.5));
+        light1->Scale(glm::vec3(0.3, 0.6, 0.3));
+        light1->Translate(glm::vec3(-6, 5.5, 6));
+        Submarine->AddNode(light1);
+
+        SceneNode* light2 = CreateSceneNodeInstance("Light", "Sphere", "ObjectMaterial", "", resman_);
+        light2->SetColor(glm::vec3(0.5, 1.0, 0.5));
+        light2->Scale(glm::vec3(0.3, 0.6, 0.3));
+        light2->Translate(glm::vec3(6, 5.5, 6));
+        Submarine->AddNode(light2);
+
+        SceneNode* light3 = CreateSceneNodeInstance("Light", "Sphere", "ObjectMaterial", "", resman_);
+        light3->SetColor(glm::vec3(0.5, 1.0, 0.5));
+        light3->Scale(glm::vec3(0.3, 0.6, 0.3));
+        light3->Translate(glm::vec3(-6, 5.5, -6));
+        Submarine->AddNode(light3);
+
+        SceneNode* light4 = CreateSceneNodeInstance("Light", "Sphere", "ObjectMaterial", "", resman_);
+        light4->SetColor(glm::vec3(0.5, 1.0, 0.5));
+        light4->Scale(glm::vec3(0.3, 0.6, 0.3));
+        light4->Translate(glm::vec3(6, 5.5, -6));
+        Submarine->AddNode(light4);
+
         return Submarine;
     }
 
@@ -411,32 +448,47 @@ Manipulator::~Manipulator() {}
         return coral;
     }
 
-    CompositeNode* Manipulator::ConstructSeaweed(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
+    CompositeNode* Manipulator::ConstructSeaweed(ResourceManager* resman_, std::string name_, int length_, glm::vec3 position_) {
 
         CompositeNode* seaweed = new CompositeNode(name_);
         seaweed->SetType(CompositeNode::Type::Seaweed);
 
         // Create root node
-        SceneNode* root = CreateSceneNodeInstance("Root", "LowResCylinder", "NormalMapMaterial", "NormalMapGrass", resman_);
+        SceneNode* root = CreateSceneNodeInstance("Root", "LowPolyCylinder", "NormalMapMaterial", "NormalMapGrass", resman_);
         root->SetColor(glm::vec3(0.7, 1.0, 0.7));
         root->SetTileCount(1);
-        root->SetScale(glm::vec3(1.0, 2.0, 1.0));
+        root->SetScale(glm::vec3(1.0, 3.0, 1.0));
         root->SetPosition(position_);
         root->SetPivot(glm::vec3(0, -2.0, 0));
         seaweed->SetRoot(root);
 
-        for (int i = 2; i < 5; i++) {
-            SceneNode* piece = CreateSceneNodeInstance("Piece", "LowResCylinder", "NormalMapMaterial", "NormalMapGrass", resman_);
+        SceneNode* last_piece = nullptr;
+        for (int i = 2; i < length_ + 2; i++) {
+            SceneNode* piece = CreateSceneNodeInstance("Piece", "LowPolyCylinder", "NormalMapMaterial", "NormalMapGrass", resman_);
             piece->SetColor(glm::vec3(0.7, 1.0, 0.7));
             piece->SetTileCount(1);
-            piece->Scale(glm::vec3(1.0 / i + 0.25, i, 1.0 / i + 0.25));
-            piece->Translate(glm::vec3(0, i - 1, 0));
-            piece->SetPivot(glm::vec3(0, -(i - 1), 0));
-            root->AddChild(piece);
+            piece->Scale(glm::vec3(0.75, 0.75, 0.75));
+            piece->Translate(glm::vec3(0, 0.75, 0));
+            piece->SetPivot(glm::vec3(0, -0.75, 0));
+            if (last_piece != nullptr) {
+                last_piece->AddChild(piece);
+            }
             seaweed->AddNode(piece);
+            last_piece = piece;
         }
 
         return seaweed;
+    }
+
+    void Manipulator::ConstructSeaweedPatch(ResourceManager* resman_, std::vector<CompositeNode*>* output_list, int num_strands, int length, int width, glm::vec3 position_) {
+        
+        for (int i = 0; i < num_strands; i++) {
+            int random_x = rand() % length + 1; // Random int between 1-length
+            int random_z = rand() % width + 1; // Random int between 1-width
+            int random_length = rand() % 6 + 1; // Random int between 1-6
+            CompositeNode* strand = ConstructSeaweed(resman_, "Seaweed", random_length, position_ + glm::vec3(random_x, 0, random_z));
+            output_list->push_back(strand);
+        }
     }
 
 	// (2) Animate hierarchical objects
@@ -455,6 +507,10 @@ Manipulator::~Manipulator() {}
                     AnimateKelp(current_, time_, theta_);
                 }
 
+                else if (current_->GetType() == CompositeNode::Type::Submarine) {
+                    AnimateSubmarine(current_, time_, theta_);
+                }
+
             }
         }
     }
@@ -467,9 +523,26 @@ Manipulator::~Manipulator() {}
 	}
 
     void Manipulator::AnimateSeaweed(CompositeNode* node_, double time_, float theta_) {
+        
         node_->Orbit(glm::angleAxis(theta_, glm::vec3(1, 1, 1)));
+        node_->GetRoot()->GetChild(0)->Orbit(glm::angleAxis(theta_, glm::vec3(-1, -1, -1)));
+        node_->GetRoot()->GetChild(0)->GetChild(0)->Orbit(glm::angleAxis(theta_, glm::vec3(1, 1, 1)));
+        node_->GetRoot()->GetChild(0)->GetChild(0)->Orbit(glm::angleAxis(theta_, glm::vec3(-1, -1, -1)));
+    }
+
+    void Manipulator::AnimateSubmarine(CompositeNode* node_, double time_, float theta_) {
         for (int i = 0; i < node_->GetRoot()->GetChildCount(); i++) {
-            node_->GetRoot()->GetChild(i)->Orbit(glm::angleAxis(theta_, glm::vec3(1, 1, 1))); 
+            if (node_->GetRoot()->GetChild(i)->GetName() == "Light") { // Animate lights, they alternate between green and red
+                if ((int) time_ % 2 == 0) {
+                    node_->GetRoot()->GetChild(i)->SetColor(glm::vec3(0.5, 1.0, 0.5));
+                }
+                else {
+                    node_->GetRoot()->GetChild(i)->SetColor(glm::vec3(1.0, 0.5, 0.5));
+                }
+            }
+            else if (node_->GetRoot()->GetChild(i)->GetName() == "Turbine") {
+                node_->GetRoot()->GetChild(i)->Rotate(glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(1, 0, 0)));
+            }
         }
     }
 

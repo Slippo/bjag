@@ -183,7 +183,7 @@ void Game::SetupResources(void){
     resman_.CreateCylinder("Branch", 3.0, 0.6, 30, 30);
     resman_.CreateSphere("Tip", 0.6, 90, 45);
     // Seaweed
-    resman_.CreateCylinder("LowResCylinder", 1.0, 0.6, 10, 9);
+    resman_.CreateCylinder("LowPolyCylinder", 1.0, 0.6, 10, 9);
     // Plane
     resman_.CreatePlane("Plane", height_map_, plane_size_.x, plane_size_.y, offsetX, offsetZ);
     resman_.CreatePlane("Boundary", height_map_boundary_, plane_size_.x, plane_size_.y, offsetX, offsetZ);
@@ -233,16 +233,23 @@ void Game::SetupScene(void){
     //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
     
-    scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(0, 10, -20)));
+    //scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(0, 7, -20)));
 
     //scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(-8.0, 5.0, -20.0)));
     //scene_.GetNode("Coral1")->Scale(glm::vec3(2,5, 2));
 
-    //scene_.AddNode(manipulator->ConstructSeaweed(&resman_, "Seaweed1", glm::vec3(0, 0, -5)));
+    //scene_.AddNode(manipulator->ConstructSeaweed(&resman_, "Seaweed1", 4, glm::vec3(0, 0, -5)));
 
     //scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp1", 4, glm::vec3(0.0, 0.0, -5.0))); // Example on how to make object
     //scene_.GetNode("Kelp1")->Scale(glm::vec3(1,2,1)); // Example on how to transform object after creation
 
+    // Seaweed instancer call, can generate random seaweed with dimensions / density
+    std::vector<CompositeNode*> kelp_list;
+    manipulator->ConstructSeaweedPatch(&resman_, &kelp_list, 100, 100, 100, glm::vec3(0, 0, -5));
+    for (int i = 0; i < kelp_list.size(); i++) {
+        scene_.AddNode(kelp_list[i]);
+    }
+    kelp_list.clear();
 }
 
 void Game::MainLoop(void){
