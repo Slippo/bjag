@@ -85,16 +85,16 @@ int SceneGraph::Update(Camera* camera, ResourceManager* resman) {
         node_[i]->Update(camera);
     }
 
-    while (index < node_.size())
-    {
-        if (node_[index]->GetRoot()->GetCollision() == 2)
-        {
-            for (int i = 0; i < node_[index]->GetNode()->GetSize(); i++)
-            {
+    // while (index < node_.size())
+    // {
+    //     if (node_[index]->GetRoot()->GetCollision() == 2)
+    //     {
+    //         for (int i = 0; i < node_[index]->GetNode()->GetSize(); i++)
+    //         {
 
-            }
-        }
-    }
+    //         }
+    //     }
+    // }
 
     return 0;
 }
