@@ -374,28 +374,28 @@ namespace game {
         CompositeNode* part = new CompositeNode(name_);
         part->SetType(CompositeNode::Type::Part);
 
-        SceneNode* root_node = CreateSceneNodeInstance("root_node", "MainBody", "ObjectMaterial", "", resman_);
+        SceneNode* root_node = CreateSceneNodeInstance("root_node", "MainBody", "CombinedMaterial", "MetalTexture", resman_);
 
         root_node->SetPosition(position_);
         root_node->SetColor(glm::vec3(0.501, 0.501, 0.501));
         part->SetRoot(root_node);
         //part->AddNode(root_node);
 
-        SceneNode* node1 = CreateSceneNodeInstance("root_node", "Exhaust", "ObjectMaterial", "", resman_);
+        SceneNode* node1 = CreateSceneNodeInstance("root_node", "Exhaust", "CombinedMaterial", "MetalTexture", resman_);
 
         node1->SetPosition(glm::vec3(0.0, 6, 0));
         node1->SetColor(glm::vec3(0.501, 0.501, 0.501));
         root_node->AddChild(node1);
         part->AddNode(node1);
 
-        SceneNode* node2 = CreateSceneNodeInstance("root_node", "Exhaust", "ObjectMaterial", "", resman_);
+        SceneNode* node2 = CreateSceneNodeInstance("root_node", "Exhaust", "CombinedMaterial", "MetalTexture", resman_);
 
         node2->SetPosition(glm::vec3(-1.5, 5, 0));
         node2->SetColor(glm::vec3(0.501, 0.501, 0.501));
         root_node->AddChild(node2);
         part->AddNode(node2);
 
-        SceneNode* node3 = CreateSceneNodeInstance("root_node", "Exhaust", "ObjectMaterial", "", resman_);
+        SceneNode* node3 = CreateSceneNodeInstance("root_node", "Exhaust", "CombinedMaterial", "MetalTexture", resman_);
 
         node3->SetPosition(glm::vec3(1.0, 1.5, 0));
         node3->SetOrientation(glm::normalize(glm::angleAxis(-1.0f, glm::vec3(0, 0, 1))));
@@ -481,6 +481,22 @@ namespace game {
             }
 
             return seaweed;
+
+        }
+
+        CompositeNode* Manipulator::ConstructRock(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
+
+            CompositeNode* rock = new CompositeNode(name_);
+            rock->SetType(CompositeNode::Type::Rock);
+
+            // Create root node
+            SceneNode* root = CreateSceneNodeInstance("Root", "Rock_Sphere", "NormalMapMaterial", "NormalMapRock", resman_);
+           // root->SetScale(glm::vec3(1.0, 2.0, 1.0));
+            root->SetPosition(position_);
+            root->SetColor(glm::vec3(0.49, 0.498, 0.486));
+            rock->SetRoot(root);
+
+            return rock;
 
         }
 

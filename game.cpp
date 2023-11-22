@@ -115,6 +115,7 @@ void Game::InitEventHandlers(void){
 
 void Game::SetupResources(void){
 
+    
     // POPULATE HEIGHT MAP ARRAY
     std::ifstream height_file;
     try {
@@ -128,6 +129,7 @@ void Game::SetupResources(void){
         std::exit(1);
     }
 
+    /*
     // CHECK FORMATTING; ONLY ACCEPT PGM FILES
     // PGM FILES START WITH P2 AND ARE FOLLOWED BY THEIR WIDTH x HEIGHT DIMENSIONS
     // THE REST OF THE FILE CONTAINS THE VERTEX DATA
@@ -142,8 +144,10 @@ void Game::SetupResources(void){
     int offsetX = plane_size_.x / 2;
     int offsetZ = plane_size_.y / 2;
     
+    
     height_map_ = new float* [plane_size_.x];
     height_map_boundary_ = new float* [plane_size_.x];
+    
     for (int i = 0; i < plane_size_.x; i++)
     {
         height_map_[i] = new float[plane_size_.y];
@@ -167,6 +171,8 @@ void Game::SetupResources(void){
         }
     }
     height_file.close();
+    */
+    
   
     // SHAPES
     // Basic
@@ -191,12 +197,17 @@ void Game::SetupResources(void){
     resman_.CreateCylinder("Tentacle", 0.5, 0.1);
     // Seaweed
     resman_.CreateCylinder("LowResCylinder", 1.0, 0.6, 6, 6);
+    //rock
+    resman_.CreateSphere("Rock_Sphere", 2, 40, 20);
+
+    /*
     // Plane
     resman_.CreatePlane("Plane", height_map_, plane_size_.x, plane_size_.y, offsetX, offsetZ);
     resman_.CreatePlane("Boundary", height_map_boundary_, plane_size_.x, plane_size_.y, offsetX, offsetZ);
+    */
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/normal_map");
     resman_.LoadResource(Material, "NormalMapMaterial", filename.c_str());
-
+    
     // TEXTURES
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
     resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
@@ -210,6 +221,24 @@ void Game::SetupResources(void){
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_stone.png");
     resman_.LoadResource(Texture, "NormalMapStone", filename.c_str());
+
+    //normal map for rock
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/Pebbles_026_normal.png");
+    resman_.LoadResource(Texture, "NormalMapRock", filename.c_str());
+
+    
+    // shader for 3-term lighting and texture combined effect
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/combined");
+    resman_.LoadResource(Material, "CombinedMaterial", filename.c_str());
+
+    // Load texture to be used on the object
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/rocky.png");
+    resman_.LoadResource(Texture, "RockyTexture", filename.c_str());
+
+    //metal
+    //filename = std::string(MATERIAL_DIRECTORY) + std::string("/Metal_Corrugated_0111_.png");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/rough-metallic-surface-texture.jpg");
+    resman_.LoadResource(Texture, "MetalTexture", filename.c_str());
 }
 
 
@@ -217,10 +246,10 @@ void Game::SetupScene(void){
     scene_.SetBackgroundColor(viewport_background_color_g);
     
     // Floor of the game (sand)
-    scene_.AddNode(manipulator->ConstructPlane(&resman_));
+   // scene_.AddNode(manipulator->ConstructPlane(&resman_));
 
     // Boundary "walls" (stone)
-    scene_.AddNode(manipulator->ConstructBoundary(&resman_));
+   // scene_.AddNode(manipulator->ConstructBoundary(&resman_));
 
     // Light source ("sun")
     scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,50,0)));
@@ -230,15 +259,18 @@ void Game::SetupScene(void){
     
     //scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(0, 0, -20)));
 
-    //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part", glm::vec3(0, -5, -20)));
+    scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part", glm::vec3(0, 5, 0)));
+    scene_.GetNode("Mechanical_Part")->Scale(glm::vec3(0.2, 0.2, 0.2));
 
-    scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
+   // scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
+    
+    scene_.AddNode(manipulator->ConstructRock(&resman_, "ROCK", glm::vec3(0, 0, 0)));
+    scene_.GetNode("ROCK")->Scale(glm::vec3(0.8, 0.5, 0.5));
 
-
-    //scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(-8.0, 5.0, -20.0)));
+    //scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(0.0, -5.0, 0.0)));
     //scene_.GetNode("Coral1")->Scale(glm::vec3(2,5, 2));
 
-    scene_.AddNode(manipulator->ConstructSeaweed(&resman_, "Seaweed1", 4, glm::vec3(0, 0, -5)));
+    //scene_.AddNode(manipulator->ConstructSeaweed(&resman_, "Seaweed1", 4, glm::vec3(0, 0, -5)));
 
     //scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp1", 4, glm::vec3(0.0, 0.0, -5.0))); // Example on how to make object
     //scene_.GetNode("Kelp1")->Scale(glm::vec3(1,2,1)); // Example on how to transform object after creation
@@ -257,10 +289,16 @@ void Game::MainLoop(void){
             double current_time = glfwGetTime();
             float mytheta = glm::pi<float>() / 64;
             if ((current_time - last_time) > 0.05){
+                scene_.GetNode("Mechanical_Part")->Rotate(glm::angleAxis(0.1f, glm::vec3(0, 1, 1)));
+
                 scene_.Update(&camera_, &resman_);
                 manipulator->AnimateAll(&scene_, current_time, mytheta);
+
+                
+
                 last_time = current_time;
             }
+            
         }
 
         // Process camera/player forward movement
