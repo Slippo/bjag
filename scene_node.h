@@ -30,7 +30,7 @@ namespace game {
     class SceneNode {
 
         public:
-            typedef enum Type { KelpStem, KelpLeaf, KelpTip} NodeType;
+            typedef enum Type { KelpStem, KelpLeaf, KelpTip, MachinePart} NodeType;
             // Create scene node from given resources
             SceneNode(const std::string name, const Resource *geometry, const Resource *material, const Resource* texture, int collision);
 
@@ -63,11 +63,8 @@ namespace game {
             void SetPivot(glm::vec3 pivot);
             void SetParentTransf(glm::mat4 transf);
             void SetType(Type type);
-<<<<<<< HEAD
             void SetColor(glm::vec3 color);
-=======
             void SetRadius(float r);
->>>>>>> c4e19d7 (Added jumping, changed to velocity based movement, and partially added in logic for collision)
             
             // Perform transformations on node
             void Translate(glm::vec3 trans);
@@ -109,11 +106,7 @@ namespace game {
             glm::quat orientation_; // Orientation of node
             glm::mat4 orbit_; // orbit motion + rotation
             glm::vec3 scale_; // Scale of node
-<<<<<<< HEAD
             glm::vec3 color_ = glm::vec3(1,0,1);
-            int collision_; // Collision state of the node (0 = no collision, 1 = collidable, 2 = has been collided with)
-=======
->>>>>>> c4e19d7 (Added jumping, changed to velocity based movement, and partially added in logic for collision)
             glm::vec3 pivot_; // the point at which the node orbits (locally)
             glm::mat4 parent_transf_ = glm::mat4(1.0f);
             Type t_; // for use in shader. Types allow for differentiation between stems and leaves

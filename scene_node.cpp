@@ -121,6 +121,7 @@ void SceneNode::SetType(Type type) {
 
 void SceneNode::SetColor(glm::vec3 color) {
     color_ = color;
+}
 
 SceneNode::Type SceneNode::GetType()
 {
