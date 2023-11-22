@@ -26,6 +26,22 @@ namespace game
         }
     }
 
+    void GameCollision::CollisionEventCompositeNode(Camera* camera, CompositeNode* obj)
+    {
+        if (glm::length(camera->GetPosition() - obj->GetRoot()->GetPosition()) <= (camera->GetRadius() + obj->GetRoot()->GetRadius()))
+        {
+            if (obj->GetType() == 7 && obj->GetRoot()->GetCollision() == 1)
+            {
+                PlayerSeaweedCollision(camera, obj);
+            }
+        }
+    }
+
+    void GameCollision::PlayerSeaweedCollision(Camera* camera, CompositeNode* obj)
+    {
+        obj->GetRoot()->SetCollision(2);
+    }
+
     void GameCollision::PlayerMachinePartCollision(Camera* camera, SceneNode* obj)
     {
         obj->SetCollision(2);

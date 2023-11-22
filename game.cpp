@@ -21,8 +21,8 @@ float camera_near_clip_distance_g = 0.01;
 float camera_far_clip_distance_g = 1000.0;
 float camera_fov_g = 60.0; // Field-of-view of camera (degrees)
 const glm::vec3 viewport_background_color_g(0.0, 0.0, 0.0);
-glm::vec3 camera_position_g(0.0, 0.0, 8.0);
-glm::vec3 camera_look_at_g(0.0, 0.0, 0.0);
+glm::vec3 camera_position_g(0.0, 5.0, 8.0);
+glm::vec3 camera_look_at_g(0.0, 0, 0.0);
 glm::vec3 camera_up_g(0.0, 1.0, 0.0);
 
 // Materials 
@@ -300,7 +300,7 @@ void Game::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
     float sens = 0.025;
 
     game->camera_.Yaw(sens * -dir.x);
-    //game->camera_.Pitch(sens * -dir.y);
+    game->camera_.Pitch(sens * -dir.y);
     
     //game->camera_.Roll(0);
 

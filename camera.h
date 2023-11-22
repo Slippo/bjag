@@ -43,6 +43,7 @@ namespace game {
             glm::vec3 GetForward(void) const;
             glm::vec3 GetSide(void) const;
             glm::vec3 GetUp(void) const;
+            glm::vec3 GetForwardMovement(void) const;
             float GetSpeed(void) const;
             float GetMaxSpeed(void) const;
             float GetMinSpeed(void) const;
@@ -69,16 +70,19 @@ namespace game {
 
         private:
             float speed_; // Current speed factor
-            float max_speed_ = 0.3f; // Maximum speed factor
-            float min_speed_ = -0.3f; // Minimum speed factor
+            float max_speed_ = 0.5f; // Maximum speed factor
+            float min_speed_ = -0.5f; // Minimum speed factor
             float jump_limit_ = 1.5f;
             float jump_ = 0.0;
+            float old_y_ = 0.0;
             glm::vec3 position_; // Position of camera
             //glm::quat orientation_; // Orientation of camera
             glm::quat orientation_;
+            glm::quat movement_orientation_;
             glm::vec3 forward_; // Initial forward vector (-Z)
             glm::vec3 side_; // Initial side vector (+X)
             glm::vec3 up_; // Initial up vector (+Y)
+            glm::vec3 movement_forward_;
             glm::mat4 view_matrix_; // View matrix
             glm::mat4 projection_matrix_; // Projection matrix
             CameraState state_;
