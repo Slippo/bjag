@@ -449,6 +449,7 @@ namespace game {
     }
 
     CompositeNode* Manipulator::ConstructSeaweed(ResourceManager* resman_, std::string name_, int length_, glm::vec3 position_) {
+        
         CompositeNode* seaweed = new CompositeNode(name_);
         seaweed->SetType(CompositeNode::Type::Seaweed);
 
@@ -481,13 +482,14 @@ namespace game {
   
     void Manipulator::ConstructSeaweedPatch(ResourceManager* resman_, SceneGraph* scene_, int num_strands, int length, int width, glm::vec3 position_) {
 
-          for (int i = 0; i < num_strands; i++) {
-          int random_x = rand() % length + 1; // Random int between 1-length
-          int random_z = rand() % width + 1; // Random int between 1-width
-          int random_length = rand() % 6 + 1; // Random int between 1-6
-          CompositeNode* strand = ConstructSeaweed(resman_, "Seaweed", random_length, position_ + glm::vec3(random_x, 0, random_z));
-          scene_->AddNode(strand);
-     }
+        for (int i = 0; i < num_strands; i++) {
+            int random_x = rand() % length + 1; // Random int between 1-length
+            int random_z = rand() % width + 1; // Random int between 1-width
+            int random_length = rand() % 6 + 1; // Random int between 1-6
+            CompositeNode* strand = ConstructSeaweed(resman_, "Seaweed", random_length, position_ + glm::vec3(random_x, 0, random_z));
+            scene_->AddNode(strand);
+        }
+    }
 
     CompositeNode* Manipulator::ConstructPart(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
 
@@ -573,31 +575,6 @@ namespace game {
           }
       
           return an;
-    }
-
-    CompositeNode* Manipulator::ConstructSeaweed(ResourceManager * resman_, std::string name_, int length_compexity, glm::vec3 position_) {
-
-        CompositeNode* seaweed = new CompositeNode(name_);
-        seaweed->SetType(CompositeNode::Type::Seaweed);
-
-        // Create root node
-        SceneNode* root = CreateSceneNodeInstance("Root", "LowResCylinder", "KelpMaterial", "", resman_);
-        root->SetScale(glm::vec3(1.0, 2.0, 1.0));
-        root->SetPosition(position_);
-        root->SetPivot(glm::vec3(0, -2.0, 0));
-        seaweed->SetRoot(root);
-
-        for (int i = 2; i < length_compexity + 1; i++) {
-            SceneNode* piece = CreateSceneNodeInstance("Piece", "LowResCylinder", "KelpMaterial", "", resman_);
-            piece->Scale(glm::vec3(1.0 / i + 0.25, i, 1.0 / i + 0.25));
-            piece->Translate(glm::vec3(0, i - 1, 0));
-            piece->SetPivot(glm::vec3(0, -(i - 1), 0));
-            root->AddChild(piece);
-            seaweed->AddNode(piece);
-        }
-
-        return seaweed;
-
     }
 
     // (2) Animate hierarchical objects
