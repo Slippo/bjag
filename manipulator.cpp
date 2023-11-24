@@ -2,13 +2,13 @@
 #include <iostream>
 
 namespace game {
-	
-Manipulator::Manipulator() {}
-Manipulator::~Manipulator() {}
 
-	// (1) Construct hierarchical objects
-	CompositeNode* Manipulator::ConstructKelp(ResourceManager* resman_, std::string name_, int branch_complexity, glm::vec3 position_) {
-        
+    Manipulator::Manipulator() {}
+    Manipulator::~Manipulator() {}
+
+    // (1) Construct hierarchical objects
+    CompositeNode* Manipulator::ConstructKelp(ResourceManager* resman_, std::string name_, int branch_complexity, glm::vec3 position_) {
+
         CompositeNode* kelp = new CompositeNode(name_);
         kelp->SetType(CompositeNode::Type::Kelp);
 
@@ -87,7 +87,7 @@ Manipulator::~Manipulator() {}
         }
         return kelp;
     }
-    
+
 
     CompositeNode* Manipulator::ConstructPlane(ResourceManager* resman_) {
         CompositeNode* plane = new CompositeNode("Plane");
@@ -103,7 +103,7 @@ Manipulator::~Manipulator() {}
         CompositeNode* boundary = new CompositeNode("Boundary");
 
         SceneNode* root = CreateSceneNodeInstance("Root", "Boundary", "NormalMapMaterial", "NormalMapStone", resman_);
-        root->SetColor(glm::vec3(0.6,0.6,0.7));
+        root->SetColor(glm::vec3(0.6, 0.6, 0.7));
         boundary->SetRoot(root);
 
         return boundary;
@@ -134,7 +134,7 @@ Manipulator::~Manipulator() {}
         for (int i = 0; i < 8; i++) {
             // Base (graudally gets taller & thinner)
             SceneNode* part = CreateSceneNodeInstance("Base", "StalagmiteBase", "KelpMaterial", "", resman_);
-            part->Scale(glm::vec3(s,i*s,s));
+            part->Scale(glm::vec3(s, i * s, s));
             part->Translate(glm::vec3(0, h, 0));
             stalagmite->AddNode(part);
             s -= 0.1;
@@ -449,7 +449,6 @@ Manipulator::~Manipulator() {}
     }
 
     CompositeNode* Manipulator::ConstructSeaweed(ResourceManager* resman_, std::string name_, int length_, glm::vec3 position_) {
-
         CompositeNode* seaweed = new CompositeNode(name_);
         seaweed->SetType(CompositeNode::Type::Seaweed);
 
@@ -479,19 +478,129 @@ Manipulator::~Manipulator() {}
 
         return seaweed;
     }
-
+  
     void Manipulator::ConstructSeaweedPatch(ResourceManager* resman_, SceneGraph* scene_, int num_strands, int length, int width, glm::vec3 position_) {
-        
-        for (int i = 0; i < num_strands; i++) {
-            int random_x = rand() % length + 1; // Random int between 1-length
-            int random_z = rand() % width + 1; // Random int between 1-width
-            int random_length = rand() % 6 + 1; // Random int between 1-6
-            CompositeNode* strand = ConstructSeaweed(resman_, "Seaweed", random_length, position_ + glm::vec3(random_x, 0, random_z));
-            scene_->AddNode(strand);
-        }
+
+          for (int i = 0; i < num_strands; i++) {
+          int random_x = rand() % length + 1; // Random int between 1-length
+          int random_z = rand() % width + 1; // Random int between 1-width
+          int random_length = rand() % 6 + 1; // Random int between 1-6
+          CompositeNode* strand = ConstructSeaweed(resman_, "Seaweed", random_length, position_ + glm::vec3(random_x, 0, random_z));
+          scene_->AddNode(strand);
+     }
+
+    CompositeNode* Manipulator::ConstructPart(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
+
+        CompositeNode* part = new CompositeNode(name_);
+        part->SetType(CompositeNode::Type::Part);
+
+        SceneNode* root_node = CreateSceneNodeInstance("root_node", "MainBody", "ObjectMaterial", "", resman_);
+
+        root_node->SetPosition(position_);
+        root_node->SetColor(glm::vec3(0.501, 0.501, 0.501));
+        part->SetRoot(root_node);
+        //part->AddNode(root_node);
+
+        SceneNode* node1 = CreateSceneNodeInstance("root_node", "Exhaust", "ObjectMaterial", "", resman_);
+
+        node1->SetPosition(glm::vec3(0.0, 6, 0));
+        node1->SetColor(glm::vec3(0.501, 0.501, 0.501));
+        root_node->AddChild(node1);
+        part->AddNode(node1);
+
+        SceneNode* node2 = CreateSceneNodeInstance("root_node", "Exhaust", "ObjectMaterial", "", resman_);
+
+        node2->SetPosition(glm::vec3(-1.5, 5, 0));
+        node2->SetColor(glm::vec3(0.501, 0.501, 0.501));
+        root_node->AddChild(node2);
+        part->AddNode(node2);
+
+        SceneNode* node3 = CreateSceneNodeInstance("root_node", "Exhaust", "ObjectMaterial", "", resman_);
+
+        node3->SetPosition(glm::vec3(1.0, 1.5, 0));
+        node3->SetOrientation(glm::normalize(glm::angleAxis(-1.0f, glm::vec3(0, 0, 1))));
+        node3->SetColor(glm::vec3(0.501, 0.501, 0.501));
+        node1->AddChild(node3);
+        part->AddNode(node3);
+      
+        return part;
+    }
+  
+    CompositeNode* Manipulator::ConstructAnemonie(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
+          CompositeNode* an = new CompositeNode(name_);
+          an->SetType(CompositeNode::Type::Anemonie);
+
+          SceneNode* root_node = CreateSceneNodeInstance("root_node", "Base", "ObjectMaterial", "", resman_);
+
+          root_node->SetPosition(position_);
+          root_node->SetColor(glm::vec3(1, 0.83, 0.501));
+          an->SetRoot(root_node);
+
+          SceneNode* node1 = CreateSceneNodeInstance("root_node", "Middle", "ObjectMaterial", "", resman_);
+
+          node1->SetPosition(glm::vec3(0, 0.6, 0));
+          node1->SetColor(glm::vec3(1, 0.83, 0.501));
+          root_node->AddChild(node1);
+          an->AddNode(node1);
+
+          float theta = 2 * glm::pi<float>();
+          float offset = 0.2f;
+          float stem_len = 2.0f;
+
+          for (int i = 0; i < 10; i++) {
+              float frac = float(i) / (10);
+              SceneNode* branch = CreateSceneNodeInstance("Branch", "Cylinder", "ObjectMaterial", "", resman_);
+              branch->SetType(SceneNode::Type::KelpStem); // type specified for shader
+              branch->SetPosition(glm::vec3(0, 1, 0)); // 2 units above the root
+              branch->SetPivot(glm::vec3(0, -stem_len / 2, 0));
+              // Orbit about the pivot to set the starting orientation
+              branch->Orbit(glm::angleAxis(theta / 12, glm::vec3(1.5 * cos(theta * frac), 0, 1.5 * sin(theta * frac))));
+              branch->SetColor(glm::vec3(1, 0.654, 0.043));
+              node1->AddChild(branch);
+              an->AddNode(branch);
+
+              for (int k = 0; k < 4; k++) {
+                  float frac = float(k) / 4;
+                  SceneNode* sub_branch = CreateSceneNodeInstance("SubBranch", "Tentacle", "ObjectMaterial", "", resman_);
+                  sub_branch->SetType(SceneNode::Type::KelpStem);
+                  sub_branch->SetPosition(glm::vec3(0, 1, 0));
+                  sub_branch->SetPivot(glm::vec3(0, -(0.5), 0));
+                  sub_branch->Orbit(glm::angleAxis(-theta / 16.0f, glm::vec3(cos(theta * frac), 0, sin(theta * frac))));
+                  sub_branch->SetColor(glm::vec3(1, 0.83, 0.501));
+                  branch->AddChild(sub_branch);
+                  an->AddNode(sub_branch);
+              }
+          }
+      
+          return an;
     }
 
-	// (2) Animate hierarchical objects
+    CompositeNode* Manipulator::ConstructSeaweed(ResourceManager * resman_, std::string name_, int length_compexity, glm::vec3 position_) {
+
+        CompositeNode* seaweed = new CompositeNode(name_);
+        seaweed->SetType(CompositeNode::Type::Seaweed);
+
+        // Create root node
+        SceneNode* root = CreateSceneNodeInstance("Root", "LowResCylinder", "KelpMaterial", "", resman_);
+        root->SetScale(glm::vec3(1.0, 2.0, 1.0));
+        root->SetPosition(position_);
+        root->SetPivot(glm::vec3(0, -2.0, 0));
+        seaweed->SetRoot(root);
+
+        for (int i = 2; i < length_compexity + 1; i++) {
+            SceneNode* piece = CreateSceneNodeInstance("Piece", "LowResCylinder", "KelpMaterial", "", resman_);
+            piece->Scale(glm::vec3(1.0 / i + 0.25, i, 1.0 / i + 0.25));
+            piece->Translate(glm::vec3(0, i - 1, 0));
+            piece->SetPivot(glm::vec3(0, -(i - 1), 0));
+            root->AddChild(piece);
+            seaweed->AddNode(piece);
+        }
+
+        return seaweed;
+
+    }
+
+    // (2) Animate hierarchical objects
     void Manipulator::AnimateAll(SceneGraph* scene_, double time_, float theta_) {
         CompositeNode* current_;
         for (int i = 0; i < scene_->GetSize(); i++) {
@@ -514,13 +623,6 @@ Manipulator::~Manipulator() {}
             }
         }
     }
-
-	void Manipulator::AnimateKelp(CompositeNode* node_, double time_, float theta_) {
-        node_->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_), 0, 0.05 * sin(1 - time_))));
-        for (int i = 0; i < node_->GetRoot()->GetChildCount(); i++) {
-            node_->GetRoot()->GetChild(i)->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_), 0, 0.05 * sin(1 - time_))));
-        }
-	}
 
     void Manipulator::AnimateSeaweed(CompositeNode* node_, double time_, float theta_) {
         
@@ -545,20 +647,27 @@ Manipulator::~Manipulator() {}
             }
         }
     }
+              
+    void Manipulator::AnimateKelp(CompositeNode * node_, double time_, float theta_) {
+        node_->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_), 0, 0.05 * sin(1 - time_))));
+        for (int i = 0; i < node_->GetRoot()->GetChildCount(); i++) {
+            node_->GetRoot()->GetChild(i)->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_), 0, 0.05 * sin(1 - time_))));
+        }
+    }
 
-	// Copied from game.cpp
-	SceneNode* Manipulator::CreateSceneNodeInstance(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name, ResourceManager* resman_) {
+    // Copied from game.cpp
+    SceneNode* Manipulator::CreateSceneNodeInstance(std::string entity_name, std::string object_name, std::string material_name, std::string texture_name, ResourceManager * resman_) {
 
-		// Get resources
-		Resource* geom = resman_->GetResource(object_name);
-		if (!geom) {
-			throw(GameException(std::string("Could not find resource \"") + object_name + std::string("\"")));
-		}
+        // Get resources
+        Resource* geom = resman_->GetResource(object_name);
+        if (!geom) {
+            throw(GameException(std::string("Could not find resource \"") + object_name + std::string("\"")));
+        }
 
-		Resource* mat = resman_->GetResource(material_name);
-		if (!mat) {
-			throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\"")));
-		}
+        Resource* mat = resman_->GetResource(material_name);
+        if (!mat) {
+            throw(GameException(std::string("Could not find resource \"") + material_name + std::string("\"")));
+        }
 
         Resource* tex = NULL;
         if (texture_name != "") {
@@ -568,8 +677,8 @@ Manipulator::~Manipulator() {}
             }
         }
 
-		// Create object instance
-		SceneNode* obj = new SceneNode(entity_name, geom, mat, tex, 0);
-		return obj;
-	}
+        // Create object instance
+        SceneNode* obj = new SceneNode(entity_name, geom, mat, tex, 0);
+        return obj;
+    }
 }
