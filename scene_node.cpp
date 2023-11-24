@@ -127,6 +127,26 @@ SceneNode::Type SceneNode::GetType()
 {
     return t_;
 }
+  
+void SceneNode::SetTileCount(int count) {
+    tile_count_ = count;
+}
+
+void SceneNode::SetLambertianCoefficient(float coefficient) {
+    lambertian_coefficient_ = coefficient;
+}
+
+void SceneNode::SetSpecularCoefficient(float coefficient) {
+    specular_coefficient_ = coefficient;
+}
+
+void SceneNode::SetSpecularPower(float power) {
+    specular_power_ = power;
+}
+
+void SceneNode::SetAmbientLighting(float ambient) {
+    ambient_lighting_ = ambient;
+}
 
 void SceneNode::Translate(glm::vec3 trans){
     position_ += trans;
@@ -309,6 +329,23 @@ void SceneNode::SetupShader(GLuint program, Camera* camera, SceneNode* light){
     // Object color
     GLint object_color_var = glGetUniformLocation(program, "object_color");
     glUniform3fv(object_color_var, 1, glm::value_ptr(color_));
+
+    // Tile count
+    GLint tile_count_var = glGetUniformLocation(program, "tile_count");
+    glUniform1i(tile_count_var, tile_count_);
+
+    // Lighting
+    GLint lambertian_coefficient_var = glGetUniformLocation(program, "lambertian_coefficient");
+    glUniform1f(lambertian_coefficient_var, lambertian_coefficient_);
+
+    GLint specular_coefficient_var = glGetUniformLocation(program, "specular_coefficient");
+    glUniform1f(specular_coefficient_var, specular_coefficient_);
+
+    GLint specular_power_var = glGetUniformLocation(program, "specular_power");
+    glUniform1f(specular_power_var, specular_power_);
+
+    GLint ambient_lighting_var = glGetUniformLocation(program, "ambient_lighting");
+    glUniform1f(ambient_lighting_var, ambient_lighting_);
 }
 
 int SceneNode::GetCollision(void) const {

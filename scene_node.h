@@ -65,6 +65,11 @@ namespace game {
             void SetType(Type type);
             void SetColor(glm::vec3 color);
             void SetRadius(float r);
+            void SetTileCount(int count);
+            void SetLambertianCoefficient(float coefficient);
+            void SetSpecularCoefficient(float coefficient);
+            void SetSpecularPower(float power);
+            void SetAmbientLighting(float ambient);
             
             // Perform transformations on node
             void Translate(glm::vec3 trans);
@@ -107,15 +112,22 @@ namespace game {
             glm::mat4 orbit_; // orbit motion + rotation
             glm::vec3 scale_; // Scale of node
             glm::vec3 color_ = glm::vec3(1,0,1);
+            int tile_count_ = 10; // The # of tiles for the texture mapping
+            int collision_; // Collision state of the node (0 = no collision, 1 = collidable, 2 = has been collided with)
             glm::vec3 pivot_; // the point at which the node orbits (locally)
             glm::mat4 parent_transf_ = glm::mat4(1.0f);
             Type t_; // for use in shader. Types allow for differentiation between stems and leaves
-
+      
             // For collision
             float radius_;
             bool remove_;
             int collision_; // Collision state of the node (0 = no collision, 1 = collidable, 2 = has been collided with)
-
+      
+            // LIGHTING
+            float lambertian_coefficient_ = 0.7;
+            float specular_coefficient_ = 0.2;
+            float specular_power_ = 278.0;
+            float ambient_lighting_ = 0.1;
 
             // Set matrices that transform the node in a shader program
             virtual void SetupShader(GLuint program, Camera* camera, SceneNode* light);
