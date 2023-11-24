@@ -123,6 +123,11 @@ void SceneNode::SetColor(glm::vec3 color) {
     color_ = color;
 }
 
+SceneNode::Type SceneNode::GetType()
+{
+    return t_;
+}
+  
 void SceneNode::SetTileCount(int count) {
     tile_count_ = count;
 }
@@ -348,6 +353,15 @@ int SceneNode::GetCollision(void) const {
 }
 void SceneNode::SetCollision(int collision) {
     collision_ = collision;
+}
+
+float SceneNode::GetRadius(void) const {
+    return radius_;
+}
+
+void SceneNode::SetRadius(float r)
+{
+    radius_ = r;
 }
 
 } // namespace game;

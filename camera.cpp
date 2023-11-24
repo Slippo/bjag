@@ -9,7 +9,10 @@
 
 namespace game {
 
-Camera::Camera(void){}
+Camera::Camera(void){
+    state_ = walking;
+    jump_ = 0.0;
+}
 
 Camera::~Camera(){}
 
@@ -37,6 +40,16 @@ void Camera::SetMaxSpeed(float speed) {
     max_speed_ = speed;
 }
 
+void Camera::SetRadius(float r)
+{
+    radius_ = r;
+}
+
+void Camera::SetDead(bool d)
+{
+    dead_ = d;
+}
+
 void Camera::Translate(glm::vec3 trans){
     position_ += trans;
 }
@@ -50,6 +63,11 @@ void Camera::Rotate(glm::quat rot){
 glm::vec3 Camera::GetForward(void) const {
     glm::vec3 current_forward = orientation_ * forward_;
     return -current_forward; // Return -forward since the camera coordinate system points in the opposite direction
+}
+
+glm::vec3 Camera::GetForwardMovement(void) const {
+    glm::vec3 current_forward = movement_orientation_ * movement_forward_;
+    return -current_forward;
 }
 
 glm::vec3 Camera::GetSide(void) const {
@@ -74,6 +92,15 @@ float Camera::GetMinSpeed(void) const {
     return min_speed_;
 }
 
+float Camera::GetRadius(void) const
+{
+    return radius_;
+}
+
+bool Camera::IsDead(void) const
+{
+    return dead_;
+}
 void Camera::Pitch(float angle){
     glm::quat rotation = glm::angleAxis(angle, GetSide());
     orientation_ = rotation * orientation_;
@@ -82,15 +109,93 @@ void Camera::Pitch(float angle){
 
 void Camera::Yaw(float angle){
     //glm::quat rotation = glm::angleAxis(angle, GetUp());
-    glm::quat rotation = glm::angleAxis(angle, glm::vec3(0,1,0));
+    glm::quat rotation = glm::angleAxis(angle, glm::vec3(0, 1, 0));
     orientation_ = rotation * orientation_;
     orientation_ = glm::normalize(orientation_);
+
+    movement_orientation_ = rotation * movement_orientation_;
+    movement_orientation_ = glm::normalize(movement_orientation_);
 }
 
 void Camera::Roll(float angle){
     glm::quat rotation = glm::angleAxis(angle,GetForward());
     orientation_ = rotation * orientation_;
     orientation_ = glm::normalize(orientation_);
+}
+
+void Camera::Jump()
+{
+    if (state_ == walking)
+    {
+        old_y_ = position_.y;
+        state_ = jumping;
+    }
+
+    //if (state_ == jumping)
+    //{
+     //   if (position_.y <= 2.0)
+      //  {
+        //    position_.y += 0.1;
+       // }
+        //else
+       // {
+        //    state_ = falling;
+       // }
+    //}
+    //else
+    //{
+     //   position_.y -= 0.1;
+
+ //       if (position_.y <= 0.0)
+   //     {
+     //       position_.y = 0.0;
+       // }
+    //}
+}
+void Camera::Update()
+{
+    position_ += (GetForwardMovement() * speed_);
+       
+    std::cout << state_ << std::endl;
+    std::cout << position_.x << ", " << position_.y << ", " << position_.z << std::endl;
+    if (state_ == falling)
+    {
+        jump_ -= 0.05f;
+        position_ = position_ - glm::vec3(0.0, 0.05f, 0.0);
+        if (jump_ <= 0.0f)
+        {
+            jump_ = 0.0f;
+            state_ = walking;
+            //position_.y = old_y_;
+        }
+
+    }
+    else if (state_ == jumping)
+    {
+        jump_ += 0.10f;
+        position_ = position_ + glm::vec3(0.0, 0.10f, 0.0);
+
+        if (jump_ >= jump_limit_)
+        {
+            state_ = falling;
+            //jump_ = jump_limit_;
+            //position_.y = jump_limit_;
+        }
+    }
+
+
+}
+void Camera::UpdateVelocity(float backwards)
+{
+    speed_ += (0.05 * backwards);
+    if (speed_ >= GetMaxSpeed())
+    {
+        speed_ = max_speed_;
+    }
+    if (speed_ <= GetMinSpeed())
+    {
+        speed_ = min_speed_;
+    }
 }
 
 void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up){
@@ -103,9 +208,12 @@ void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up){
     side_ = glm::normalize(side_);
     up_ = glm::normalize(up);
 
+    movement_forward_ = glm::vec3(forward_.x, 0.0, forward_.z);
+
     // Reset orientation and position of camera
     position_ = position;
     orientation_ = glm::quat();
+    movement_orientation_ = glm::quat();
 }
 
 void Camera::SetProjection(GLfloat fov, GLfloat near, GLfloat far, GLfloat w, GLfloat h){

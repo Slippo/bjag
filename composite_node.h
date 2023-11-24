@@ -20,7 +20,7 @@ namespace game {
 	class CompositeNode {
 	public:
 
-		typedef enum Type { None, Kelp, Coral, Stalagmite, Submarine, Part , Anemonie, Seaweed} NodeType; // Object types list
+		typedef enum Type { None, Kelp, Coral, Stalagmite, Submarine, Part , Anemonie, Seaweed } NodeType; // Object types list
 
 		// Create a named composite node
 		CompositeNode(const std::string name);

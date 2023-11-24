@@ -30,8 +30,7 @@ namespace game {
     class SceneNode {
 
         public:
-
-            typedef enum Type { KelpStem, KelpLeaf, KelpTip} NodeType;
+            typedef enum Type { KelpStem, KelpLeaf, KelpTip, MachinePart} NodeType;
             // Create scene node from given resources
             SceneNode(const std::string name, const Resource *geometry, const Resource *material, const Resource* texture, int collision);
 
@@ -65,6 +64,7 @@ namespace game {
             void SetParentTransf(glm::mat4 transf);
             void SetType(Type type);
             void SetColor(glm::vec3 color);
+            void SetRadius(float r);
             void SetTileCount(int count);
             void SetLambertianCoefficient(float coefficient);
             void SetSpecularCoefficient(float coefficient);
@@ -91,6 +91,9 @@ namespace game {
             GLsizei GetSize(void) const;
             GLuint GetMaterial(void) const;
             int GetCollision(void) const;
+            float GetRadius(void) const;
+            Type GetType(void);
+
 
             // Setter for geometry to change models
             void SetGeometry(const Resource *geometry);
@@ -114,7 +117,12 @@ namespace game {
             glm::vec3 pivot_; // the point at which the node orbits (locally)
             glm::mat4 parent_transf_ = glm::mat4(1.0f);
             Type t_; // for use in shader. Types allow for differentiation between stems and leaves
-
+      
+            // For collision
+            float radius_;
+            bool remove_;
+            int collision_; // Collision state of the node (0 = no collision, 1 = collidable, 2 = has been collided with)
+      
             // LIGHTING
             float lambertian_coefficient_ = 0.7;
             float specular_coefficient_ = 0.2;

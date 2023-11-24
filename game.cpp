@@ -22,7 +22,7 @@ float camera_far_clip_distance_g = 1000.0;
 float camera_fov_g = 60.0; // Field-of-view of camera (degrees)
 const glm::vec3 viewport_background_color_g(0.0, 0.0, 0.0);
 glm::vec3 camera_position_g(0.0, 5.0, 8.0);
-glm::vec3 camera_look_at_g(0.0, 2.5, 0.0);
+glm::vec3 camera_look_at_g(0.0, 0, 0.0);
 glm::vec3 camera_up_g(0.0, 1.0, 0.0);
 
 // Materials 
@@ -222,6 +222,10 @@ void Game::SetupResources(void){
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_metal.png");
     resman_.LoadResource(Texture, "NormalMapMetal", filename.c_str());
+  
+    resman_.CreateCone("MachinePart", 2.0, 1.0, 10, 10);
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
+    resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());
 }
 
 
@@ -274,16 +278,18 @@ void Game::MainLoop(void){
                 scene_.Update(&camera_, &resman_);
                 manipulator->AnimateAll(&scene_, current_time, mytheta);
                 last_time = current_time;
+                camera_.Update();
+                //std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
+
             }
         }
 
         // Process camera/player forward movement
-        camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
-        if (camera_.GetSpeed() > 0) {
-            camera_.SetSpeed(camera_.GetSpeed() * 0.98);
+        //camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
+        //if (camera_.GetSpeed() > 0) {
+        //    camera_.SetSpeed(camera_.GetSpeed() * 0.98);
 
-        }
-
+        //}
         // Draw the scene
         scene_.Draw(&camera_, world_light);
 
@@ -311,6 +317,8 @@ void Game::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
     game->camera_.Pitch(sens * -dir.y);
     
     //game->camera_.Roll(0);
+
+    //std::cout << glm::to_string(dir) << std::endl;
 
     glfwSetCursorPos(window, width / 2, height / 2); // center the cursor
 }
@@ -368,16 +376,24 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
     //forward backward side movement (strafe)
     if (key == GLFW_KEY_A){
       
-        game->camera_.Translate(-glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
+        //game->camera_.UpdateVelocity(1);
+        //game->camera_.Translate(-glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
     }
-    if (key == GLFW_KEY_D){
-        
-        game->camera_.Translate(glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
+    if (key == GLFW_KEY_D)
+    {
+        //game->camera_.UpdateVelocity(-1);
+        //game->camera_.Translate(glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
+    }
+
+    if (key == GLFW_KEY_E)
+    {
+        //game->camera_.SetState(0);
+        game->camera_.Jump();
+        //game->camera_.Translate(glm::vec3(0.0, game->camera_.GetUp(), 0.0) * trans_factor);
     }
    
     // Accelerate and break
     if (key == GLFW_KEY_W){
-      
         /* //old architecture from acceleration based model
         float new_speed = game->camera_.GetSpeed() + 0.005f;
         
@@ -387,8 +403,8 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         else {
             game->camera_.SetSpeed(game->camera_.GetMaxSpeed());
         }*/
-
-        game->camera_.Translate(glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
+        game->camera_.UpdateVelocity(1);
+        //game->camera_.Translate(glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
     }
     if (key == GLFW_KEY_S){
      
@@ -400,8 +416,8 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         else {
             game->camera_.SetSpeed(0.0f);
         }*/
-
-        game->camera_.Translate(-glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
+        game->camera_.UpdateVelocity(-1);
+        //game->camera_.Translate(-glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
     }
 }
 
