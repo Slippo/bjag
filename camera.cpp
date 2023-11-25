@@ -156,8 +156,8 @@ void Camera::Update()
 {
     position_ += (GetForwardMovement() * speed_);
        
-    std::cout << state_ << std::endl;
-    std::cout << position_.x << ", " << position_.y << ", " << position_.z << std::endl;
+    //std::cout << state_ << std::endl;
+    //std::cout << position_.x << ", " << position_.y << ", " << position_.z << std::endl;
     if (state_ == falling)
     {
         jump_ -= 0.05f;
