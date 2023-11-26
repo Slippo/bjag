@@ -94,6 +94,7 @@ namespace game {
 
         SceneNode* root = CreateSceneNodeInstance("Root", "Plane", "NormalMapMaterial", "NormalMapSand", resman_);
         root->SetColor(glm::vec3(1, 0.9, 0.5));
+        
         plane->SetRoot(root);
 
         return plane;
@@ -112,7 +113,8 @@ namespace game {
     CompositeNode* Manipulator::ConstructSun(ResourceManager* resman, glm::vec3 position) {
         CompositeNode* sphere = new CompositeNode("Sphere");
 
-        SceneNode* root = CreateSceneNodeInstance("Root", "Sphere", "NormalMapMaterial", "", resman);
+        SceneNode* root = CreateSceneNodeInstance("Root", "Sphere", "ObjectMaterial", "", resman);
+        root->SetColor(glm::vec3(1,1,0));
         root->SetPosition(position);
         sphere->SetRoot(root);
 

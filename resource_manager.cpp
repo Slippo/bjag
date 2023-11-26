@@ -579,7 +579,7 @@ void ResourceManager::CreateTorus(std::string object_name, float loop_radius, fl
     AddResource(Mesh, object_name, vbo, ebo, face_num * face_att);
 }
 
-void ResourceManager::CreatePlane(std::string object_name, float** height_map, int length, int width, int offsetX, int offsetZ) {
+void ResourceManager::CreatePlane(std::string object_name, std::vector<float> height_map, int length, int width, int offsetX, int offsetZ) {
 
     const GLuint vertex_num = length * width;
     const GLuint face_num = length * width * 2;
@@ -607,32 +607,45 @@ void ResourceManager::CreatePlane(std::string object_name, float** height_map, i
     glm::vec3 vertex_color = glm::vec3(0,0,0); // store tangent
     glm::vec2 vertex_coord = glm::vec2(0,0); // uv mapping
 
-    for (int _z = 0; _z < length; _z++) { // z coordinate loop | [0,1,2,...,length-1]
+    glm::vec3 edge_U = glm::vec3(0, 0, 0);
+    glm::vec3 edge_V = glm::vec3(0, 0, 0);
+
+    int iter_length = height_map.size() / width;
+    int iter_width = height_map.size() / length;
+
+    std::vector<glm::vec3> adjacent_vertices;
+    adjacent_vertices.reserve(8);
+
+    std::vector<glm::vec3> edges;
+    edges.reserve(8);
+
+    int dx = 0;
+    int dz = 0;
+
+    for (int _z = 0; _z < iter_length; _z++) { // z coordinate loop | [0,1,2,...,length-1]
         uv_z = (float)_z / (float)(length-1); // 0 to 1
-        for (int _x = 0; _x < width; _x++) { // x coordinate loop | [0,1,2,...,width-1]
+        for (int _x = 0; _x < iter_width; _x++) { // x coordinate loop | [0,1,2,...,width-1]
             uv_x = (float)_x / (float)(width-1); // 0 to 1
 
-            vertex_position = glm::vec3(_x, height_map[_x][_z], _z);
-
-            int tile_count = 1;
+            vertex_position = glm::vec3(_x, height_map[_x + width*_z], _z);
             vertex_coord = glm::vec2(uv_x, uv_z); // uv coordinates
-            //std::cout<< glm::to_string(vertex_coord) << "\n";
-            glm::vec3 edge_U, edge_V = glm::vec3(0, 0, 0); // two edges of a triangle; defined by vertex_position and 2 adjacent vertices
-            //glm::vec2 delta_U, delta_V = glm::vec2(0, 0);
-
-
-            std::vector<glm::vec3> adjacent_vertices;
-            //std::vector<glm::vec2> adjacent_uv;
-            glm::vec3 neighbor = glm::vec3(0, 0, 0);
-            //glm::vec2 vert_uv = glm::vec2(0, 0);
+            adjacent_vertices.clear();
+            
             //                right                 bottom right
             int order_x[8] = { 1,  1,  0, -1, -1, -1, 0, 1 };
             int order_z[8] = { 0, -1, -1, -1,  0,  1, 1, 1 };
             
+
+            /// NOTEWORTHY
+            /// THIS SEQUENCE OF "IF" STATEMENTS IS A HUGE
+            /// BOTTLE NECK!!! THIS SHOULD BE MOVED TO A FUNCTION...
+            /// LOW VALUES (200X200) ARE ACCEPTABLE, BUT AVOID 
+            /// HIGHER SIZES OF PLANE (500X500) UNTIL THIS IS FIXED
+
             // Iterate over neighbours counter clockwise
             // Iteration has a different start depending on the case
-            int dx = 0;
-            int dz = 0;
+            dx = 0;
+            dz = 0;
 
             // TOP LEFT n = 3
             if (_x == 0 && _z == 0) {
@@ -640,8 +653,7 @@ void ResourceManager::CreatePlane(std::string object_name, float** height_map, i
                 for (int i = 0; i < 3; i++) {
                     dx = order_x[(i+6)%8];
                     dz = order_z[(i+6)%8];
-                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x+dx][_z+dz], _z + dz));
-                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx + width * (_z + dz)], _z + dz));
                 }
             }
             // TOP n = 5
@@ -649,8 +661,7 @@ void ResourceManager::CreatePlane(std::string object_name, float** height_map, i
                 for (int i = 0; i < 5; i++) {
                     dx = order_x[(i + 4) % 8];
                     dz = order_z[(i + 4) % 8];
-                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
-                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx + width * (_z + dz)], _z + dz));
                 }
             }
             // TOP RIGHT n = 3
@@ -658,8 +669,9 @@ void ResourceManager::CreatePlane(std::string object_name, float** height_map, i
                 for (int i = 0; i < 3; i++) {
                     dx = order_x[(i + 4) % 8];
                     dz = order_z[(i + 4) % 8];
-                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
-                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                    if (_x + dx + width * (_z + dz) < height_map.capacity() && _x + dx + width * (_z + dz) >= 0) {
+                        adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx + width * (_z + dz)], _z + dz));
+                    }
                 }
             }
             // LEFT n = 5
@@ -667,8 +679,7 @@ void ResourceManager::CreatePlane(std::string object_name, float** height_map, i
                 for (int i = 0; i < 5; i++) {
                     dx = order_x[(i + 6) % 8];
                     dz = order_z[(i + 6) % 8];
-                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
-                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx + width * (_z + dz)], _z + dz));
                 }
             }
             // MIDDLE n = 8
@@ -676,8 +687,7 @@ void ResourceManager::CreatePlane(std::string object_name, float** height_map, i
                 for (int i = 0; i < 8; i++) {
                     dx = order_x[i];
                     dz = order_z[i];
-                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
-                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx + width * (_z + dz)], _z + dz));
                 }
             }
             // RIGHT n = 5
@@ -685,8 +695,7 @@ void ResourceManager::CreatePlane(std::string object_name, float** height_map, i
                 for (int i = 0; i < 5; i++) {
                     dx = order_x[(i + 2) % 8];
                     dz = order_z[(i + 2) % 8];
-                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
-                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx + width * (_z + dz)], _z + dz));
                 }
             }
             // BOTTOM LEFT n = 3
@@ -694,8 +703,7 @@ void ResourceManager::CreatePlane(std::string object_name, float** height_map, i
                 for (int i = 0; i < 3; i++) {
                     dx = order_x[i];
                     dz = order_z[i];
-                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
-                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx + width * (_z + dz)], _z + dz));
                 }
             }
             // BOTTOM n = 5
@@ -703,8 +711,7 @@ void ResourceManager::CreatePlane(std::string object_name, float** height_map, i
                 for (int i = 0; i < 5; i++) {
                     dx = order_x[i];
                     dz = order_z[i];
-                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
-                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1)));
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx + width * (_z + dz)], _z + dz));
                 }
             }
             // BOTTOM RIGHT n = 3
@@ -712,39 +719,19 @@ void ResourceManager::CreatePlane(std::string object_name, float** height_map, i
                 for (int i = 0; i < 3; i++) {
                     dx = order_x[(i+2)%8];
                     dz = order_z[(i+2)%8];
-                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx][_z + dz], _z + dz));
-                    //adjacent_uv.push_back(glm::vec2((_x + dx) / (width - 1), (_z + dz) / (length - 1) ));
+                    adjacent_vertices.push_back(glm::vec3(_x + dx, height_map[_x + dx + width * (_z + dz)], _z + dz));
                 }
             }
-            /*
-            for (int i = 0; i < 8; i++) {
-                if (_z + order_z[i] < 0 || _z + order_z[i] > (length - 1) || _x + order_x[i] < 0 || _x + order_x[i] > (width - 1)) { continue; }
-                else {
-                    neighbor = glm::vec3(_x + order_x[i], *height_map[(_x + order_x[i]), (_z + order_z[i])], _z + order_z[i]);
-
-                    vert_uv = glm::vec2((_x + order_x[i]) / (width - 1), (_z + order_z[i]) / (length - 1));
-
-                    adjacent_vertices.push_back(neighbor);
-                    adjacent_uv.push_back(vert_uv);
-                }
-            }
-            */
             
-            std::vector<glm::vec2> delta_uv;
-            std::vector<glm::vec3> edges;
-            //std::cout << adjacent_vertices.size() << std::endl;
+            edges.clear();
+
+
             if (adjacent_vertices.size() >= 2) {
                 for (size_t n = 0; n < adjacent_vertices.size() - 1; n++) {
                     
                     edge_U = adjacent_vertices[n] - vertex_position; //edge 1
                     edge_V = adjacent_vertices[n + 1] - vertex_position; // edge 2
-
-                    //delta_U = adjacent_uv[n] - vertex_coord;
-                    //delta_V = adjacent_uv[n + 1] - vertex_coord;
-                    //delta_uv.push_back(delta_U);
-                    //delta_uv.push_back(delta_V);
-                    edges.push_back(edge_U);
-                    edges.push_back(edge_V);
+                    edges.insert(edges.end(), {edge_U, edge_V});
 
                     vertex_normal += glm::normalize(glm::cross(edge_U, edge_V));
                     

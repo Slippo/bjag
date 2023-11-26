@@ -43,7 +43,7 @@ namespace game {
 
             // Create the geometry for a plane
             // Used to make the floor and the boundaries of the game
-            void CreatePlane(std::string object_name, float** height_map, int length = 100, int width = 100, int offsetX = 50, int offsetZ = 50);
+            void CreatePlane(std::string object_name, std::vector<float>, int length = 100, int width = 100, int offsetX = 50, int offsetZ = 50);
 			
         private:
            

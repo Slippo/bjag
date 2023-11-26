@@ -7,163 +7,163 @@
 
 namespace game {
 
-// Some configuration constants
-// They are written here as global variables, but ideally they should be loaded from a configuration file
+    // Some configuration constants
+    // They are written here as global variables, but ideally they should be loaded from a configuration file
 
-// Main window settings
-const std::string window_title_g = "Bjag";
-const unsigned int window_width_g = 1280;
-const unsigned int window_height_g = 720;
-const bool window_full_screen_g = false;
+    // Main window settings
+    const std::string window_title_g = "Bjag";
+    const unsigned int window_width_g = 1920;
+    const unsigned int window_height_g = 1080;
+    const bool window_full_screen_g = false;
 
-// Viewport and camera settings
-float camera_near_clip_distance_g = 0.01;
-float camera_far_clip_distance_g = 1000.0;
-float camera_fov_g = 60.0; // Field-of-view of camera (degrees)
-const glm::vec3 viewport_background_color_g(0.0, 0.0, 0.0);
-glm::vec3 camera_position_g(0.0, 5.0, 8.0);
-glm::vec3 camera_look_at_g(0.0, 0, 0.0);
-glm::vec3 camera_up_g(0.0, 1.0, 0.0);
+    // Viewport and camera settings
+    float camera_near_clip_distance_g = 0.01;
+    float camera_far_clip_distance_g = 1000.0;
+    float camera_fov_g = 60.0; // Field-of-view of camera (degrees)
+    const glm::vec3 viewport_background_color_g(0.5, 0.5, 1.0);
+    glm::vec3 camera_position_g(0.0, 5.0, 8.0);
+    glm::vec3 camera_look_at_g(0.0, 2.5, 0.0);
+    glm::vec3 camera_up_g(0.0, 1.0, 0.0);
 
-// Materials 
-const std::string material_directory_g = MATERIAL_DIRECTORY;
+    // Materials 
+    const std::string material_directory_g = MATERIAL_DIRECTORY;
 
-// Manipulator
-Manipulator* manipulator = new Manipulator();
+    // Manipulator
+    Manipulator* manipulator = new Manipulator();
 
-Game::Game(void){
+    Game::Game(void) {
 
-    // Don't do work in the constructor, leave it for the Init() function
-}
-
-
-void Game::Init(void){
-
-    // Run all initialization steps
-    InitWindow();
-    InitView();
-    InitEventHandlers();
-
-    // Set variables
-    animating_ = true;
-}
-
-       
-void Game::InitWindow(void){
-
-    // Initialize the window management library (GLFW)
-    if (!glfwInit()){
-        throw(GameException(std::string("Could not initialize the GLFW library")));
+        // Don't do work in the constructor, leave it for the Init() function
     }
 
-    // Create a window and its OpenGL context
-    if (window_full_screen_g){
-        window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), glfwGetPrimaryMonitor(), NULL);
-    } else {
-        window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), NULL, NULL);
+
+    void Game::Init(void) {
+
+        // Run all initialization steps
+        InitWindow();
+        InitView();
+        InitEventHandlers();
+
+        // Set variables
+        animating_ = true;
     }
-    if (!window_){
-        glfwTerminate();
-        throw(GameException(std::string("Could not create window")));
-    }
-
-    // Make the window's context the current 
-    glfwMakeContextCurrent(window_);
-
-    // Initialize the GLEW library to access OpenGL extensions
-    // Need to do it after initializing an OpenGL context
-    glewExperimental = GL_TRUE;
-    GLenum err = glewInit();
-    if (err != GLEW_OK){
-        throw(GameException(std::string("Could not initialize the GLEW library: ")+std::string((const char *) glewGetErrorString(err))));
-    }
-}
 
 
-void Game::InitView(void){
-    // Set up z-buffer
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    void Game::InitWindow(void) {
 
-    // Set viewport
-    int width, height;
-    glfwGetFramebufferSize(window_, &width, &height);
-    glViewport(0, 0, width, height);
-
-    // Set up camera
-    // Set current view
-    camera_.SetView(camera_position_g, camera_look_at_g, camera_up_g);
-    // Set projection
-    camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
-    // Set acceleration
-    camera_.SetSpeed(0.0f);
-    // Hide mouse
-    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-}
-
-void Game::InitEventHandlers(void){
-
-    // Set event callbacks
-    glfwSetKeyCallback(window_, KeyCallback);
-    glfwSetFramebufferSizeCallback(window_, ResizeCallback);
-    glfwSetCursorPosCallback(window_, CursorPosCallback);
-
-    // Set pointer to game object, so that callbacks can access it
-    glfwSetWindowUserPointer(window_, (void *) this);
-}
-
-
-void Game::SetupResources(void){
-
-    // POPULATE HEIGHT MAP ARRAY
-    std::ifstream height_file;
-    try {
-        height_file.open(material_directory_g + "\\height_map.pgm");
-        if (!height_file.is_open()) {
-            throw std::ios_base::failure("Error opening height_map.pgm");
+        // Initialize the window management library (GLFW)
+        if (!glfwInit()) {
+            throw(GameException(std::string("Could not initialize the GLFW library")));
         }
-    }
-    catch (const std::ios_base::failure& e) {
-        std::cout << e.what();
-        std::exit(1);
-    }
 
-    // CHECK FORMATTING; ONLY ACCEPT PGM FILES
-    // PGM FILES START WITH P2 AND ARE FOLLOWED BY THEIR WIDTH x HEIGHT DIMENSIONS
-    // THE REST OF THE FILE CONTAINS THE VERTEX DATA
-    std::string magic_number;
-    std::string comment;
-    int width, height, max_value;
-    height_file >> magic_number >> width >> height >> max_value;
-    if (magic_number != "P2" || width != plane_size_.x || height != plane_size_.y || max_value != 255) {
-        throw std::invalid_argument("Invalid PGM file format or dimensions");
-    }
+        // Create a window and its OpenGL context
+        if (window_full_screen_g) {
+            window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), glfwGetPrimaryMonitor(), NULL);
+        }
+        else {
+            window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), NULL, NULL);
+        }
+        if (!window_) {
+            glfwTerminate();
+            throw(GameException(std::string("Could not create window")));
+        }
 
-    int offsetX = plane_size_.x / 2;
-    int offsetZ = plane_size_.y / 2;
-    
-    height_map_ = new float* [plane_size_.x];
-    height_map_boundary_ = new float* [plane_size_.x];
-    for (int i = 0; i < plane_size_.x; i++)
-    {
-        height_map_[i] = new float[plane_size_.y];
-        height_map_boundary_[i] = new float[plane_size_.y];
-    }
+        // Make the window's context the current 
+        glfwMakeContextCurrent(window_);
 
-    // Generate random starting values
-    for (int z = 0; z < plane_size_.y; z++) {
-        for (int x = 0; x < plane_size_.x; x++) {
-            height_map_[x][z] = rand() / (RAND_MAX / 0.5); // Random height between 0 to 2.0
-            height_map_boundary_[x][z] = -0.1 - (rand() / (RAND_MAX)); // -0.1 to -1.1
+        // Initialize the GLEW library to access OpenGL extensions
+        // Need to do it after initializing an OpenGL context
+        glewExperimental = GL_TRUE;
+        GLenum err = glewInit();
+        if (err != GLEW_OK) {
+            throw(GameException(std::string("Could not initialize the GLEW library: ") + std::string((const char*)glewGetErrorString(err))));
         }
     }
 
+
+    void Game::InitView(void) {
+        // Set up z-buffer
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+
+
+        // Set viewport
+        int width, height;
+        glfwGetFramebufferSize(window_, &width, &height);
+        glViewport(0, 0, width, height);
+
+        // Set up camera
+        // Set current view
+        camera_.SetView(camera_position_g, camera_look_at_g, camera_up_g);
+        // Set projection
+        camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
+        // Set acceleration
+        camera_.SetSpeed(0.0f);
+        // Hide mouse
+        glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
+    void Game::InitEventHandlers(void) {
+
+        // Set event callbacks
+        glfwSetKeyCallback(window_, KeyCallback);
+        glfwSetFramebufferSizeCallback(window_, ResizeCallback);
+        glfwSetCursorPosCallback(window_, CursorPosCallback);
+
+        // Set pointer to game object, so that callbacks can access it
+        glfwSetWindowUserPointer(window_, (void*)this);
+    }
+
+
+    void Game::SetupResources(void) {
+
+
+
+        // POPULATE HEIGHT MAP ARRAY
+        std::ifstream height_file;
+        try {
+            height_file.open(material_directory_g + "\\height_map.pgm");
+            if (!height_file.is_open()) {
+                throw std::ios_base::failure("Error opening height_map.pgm");
+            }
+        }
+        catch (const std::ios_base::failure& e) {
+            std::cout << e.what();
+            std::exit(1);
+        }
+
+        // CHECK FORMATTING; ONLY ACCEPT PGM FILES
+        // PGM FILES START WITH P2 AND ARE FOLLOWED BY THEIR WIDTH x HEIGHT DIMENSIONS
+        // THE REST OF THE FILE CONTAINS THE VERTEX DATA
+        std::string magic_number;
+        std::string comment;
+        int width, height, max_value;
+        height_file >> magic_number >> width >> height >> max_value;
+        if (magic_number != "P2" || width != plane_size_.x || height != plane_size_.y || max_value != 255) {
+            throw std::invalid_argument("Invalid PGM file format or dimensions");
+        }
+
+        height_map_.reserve(width * height);
+        height_map_boundary_.reserve(width * height);
+
+        int offsetX = plane_size_.x / 2;
+        int offsetZ = plane_size_.y / 2;
+        srand(3535);
+        // Generate random starting values
+        
+        for (int z = 0; z < height_map_.capacity() && z < height_map_boundary_.capacity(); z++) {
+            height_map_.insert(height_map_.end(), rand() / (float)(RAND_MAX / 0.5)); // Random height between 0 to 2.0
+            height_map_boundary_.insert(height_map_boundary_.end() , -0.1f - (float)(rand() / (RAND_MAX))); // -0.1 to -1.1
+        }
+    height_map_.resize(height_map_.capacity());
+    height_map_boundary_.resize(height_map_boundary_.capacity());
     // Set heights
+    
     float h = 0;
-    for (int z = 0; z < plane_size_.y; ++z) {
-        for (int x = 0; x < plane_size_.x; ++x) {
+    for (int z = 0; z < height_map_boundary_.size() / width; ++z) {
+        for (int x = 0; x < height_map_boundary_.size() / height; ++x) {
             height_file >> h;
-            height_map_boundary_[x][z] += h/16; // max height is 16 (255/16) ~= 15.9
+            height_map_boundary_[x + width*z] += h/8; // max height is 16 (255/16) ~= 15.9
         }
     }
     height_file.close();
@@ -192,8 +192,8 @@ void Game::SetupResources(void){
     // Seaweed
     resman_.CreateCylinder("LowPolyCylinder", 1.0, 0.6, 10, 9);
     // Plane
-    resman_.CreatePlane("Plane", height_map_, plane_size_.x, plane_size_.y, offsetX, offsetZ);
-    resman_.CreatePlane("Boundary", height_map_boundary_, plane_size_.x, plane_size_.y, offsetX, offsetZ);
+    resman_.CreatePlane("Plane", height_map_, height_map_.size() / width, height_map_.size()/height, offsetX, offsetZ);
+    resman_.CreatePlane("Boundary", height_map_boundary_, height_map_boundary_.capacity() / width, height_map_boundary_.capacity() / height, offsetX, offsetZ);
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/normal_map");
     resman_.LoadResource(Material, "NormalMapMaterial", filename.c_str());
 
@@ -233,13 +233,14 @@ void Game::SetupScene(void){
     scene_.SetBackgroundColor(viewport_background_color_g);
     
     // Floor of the game (sand)
-    scene_.AddNode(manipulator->ConstructPlane(&resman_));
+    scene_.AddNode(manipulator->ConstructPlane(&resman_)); // name is "Plane"
+    //scene_.GetNode("Plane")
 
     // Boundary "walls" (stone)
     scene_.AddNode(manipulator->ConstructBoundary(&resman_));
 
     // Light source ("sun")
-    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,50,0)));
+    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,100,0)));
   
     //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
@@ -356,7 +357,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
 
     // View control
     float rot_factor(2 * glm::pi<float>() / 180); // amount the ship turns per keypress (DOUBLE)
-    float trans_factor = 0.5f; // amount the ship steps forward per keypress
+    float trans_factor = 0.7f; // amount the ship steps forward per keypress
     // Look up/down
     if (key == GLFW_KEY_UP){
         game->camera_.Pitch(rot_factor);
