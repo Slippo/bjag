@@ -126,7 +126,7 @@ namespace game {
             float lambertian_coefficient_ = 0.7;
             float specular_coefficient_ = 0.2;
             float specular_power_ = 278.0;
-            float ambient_lighting_ = 0.1;
+            float ambient_lighting_ = 0.2;
 
             // Set matrices that transform the node in a shader program
             virtual void SetupShader(GLuint program, Camera* camera, SceneNode* light);

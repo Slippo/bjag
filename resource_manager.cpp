@@ -236,8 +236,12 @@ void ResourceManager::CreateCylinder(std::string object_name, float height, floa
     //================== bottom vertex
 
     vertex_position = glm::vec3(0, -0.5 * height, 0); // location of top middle of cylinder
-    vertex_normal = glm::vec3(0, -1, 0);
+    vertex_normal = glm::vec3(0, 1, 0);
+    
     // leave the color and uv alone
+    // use color for tangents
+
+
 
     for (int k = 0; k < 3; k++) {
         vertex[bottomvertex * vertex_att + k] = vertex_position[k];

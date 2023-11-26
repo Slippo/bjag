@@ -458,7 +458,7 @@ namespace game {
         // Create root node
         SceneNode* root = CreateSceneNodeInstance("Root", "LowPolyCylinder", "NormalMapMaterial", "NormalMapGrass", resman_);
         root->SetColor(glm::vec3(0.7, 1.0, 0.7));
-        root->SetTileCount(1);
+        root->SetTileCount(6);
         root->SetScale(glm::vec3(1.0, 3.0, 1.0));
         root->SetPosition(position_);
         root->SetPivot(glm::vec3(0, -2.0, 0));
@@ -468,7 +468,7 @@ namespace game {
         for (int i = 2; i < length_ + 2; i++) {
             SceneNode* piece = CreateSceneNodeInstance("Piece", "LowPolyCylinder", "NormalMapMaterial", "NormalMapGrass", resman_);
             piece->SetColor(glm::vec3(0.7, 1.0, 0.7));
-            piece->SetTileCount(1);
+            piece->SetTileCount(6);
             piece->Scale(glm::vec3(0.75, 0.75, 0.75));
             piece->Translate(glm::vec3(0, 0.75, 0));
             piece->SetPivot(glm::vec3(0, -0.75, 0));
@@ -489,6 +489,9 @@ namespace game {
             int random_z = rand() % width + 1; // Random int between 1-width
             int random_length = rand() % 6 + 1; // Random int between 1-6
             CompositeNode* strand = ConstructSeaweed(resman_, "Seaweed", random_length, position_ + glm::vec3(random_x, 0, random_z));
+            strand->GetRoot()->SetSpecularPower(0.2);
+            strand->GetRoot()->SetLambertianCoefficient(0.4);
+            strand->GetRoot()->SetTileCount(12);
             scene_->AddNode(strand);
         }
     }

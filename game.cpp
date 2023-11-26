@@ -211,7 +211,7 @@ namespace game {
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_stone.png");
     resman_.LoadResource(Texture, "NormalMapStone", filename.c_str());
 
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_grass.png");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_grass2.png");
     resman_.LoadResource(Texture, "NormalMapGrass", filename.c_str());
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_scales.png");
