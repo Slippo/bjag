@@ -122,7 +122,7 @@ namespace game {
         // POPULATE HEIGHT MAP ARRAY
         std::ifstream height_file;
         try {
-            height_file.open(material_directory_g + "\\height_map2.pgm");
+            height_file.open(material_directory_g + "\\height_map.pgm");
             if (!height_file.is_open()) {
                 throw std::ios_base::failure("Error opening height_map.pgm");
             }
