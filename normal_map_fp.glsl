@@ -53,9 +53,9 @@ void main()
     float specular = pow(spec_angle, specular_power); // NOTE: This one too (so lammbertian coefficient, specular coefficient, ambient, specular power)
     
     vec4 obj_col = vec4(object_color, 1.0);
-    vec4 blue = vec4(0.5,0.5,1.0,0.5);
+    vec4 blue = vec4(0.5,0.5,1.0,0.45); // tinge everything blue!
     if (gl_FrontFacing){
-        gl_FragColor = (ambient + lambertian_coefficient*lambertian + specular_coefficient*specular)*obj_col; // NOTE: These three coefficients
+        gl_FragColor = blue*(ambient + lambertian_coefficient*lambertian + specular_coefficient*specular)*obj_col; // NOTE: These three coefficients
 
     } else {
         gl_FragColor = 0.25*ambient*blue*obj_col;

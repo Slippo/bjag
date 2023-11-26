@@ -233,7 +233,8 @@ void Game::SetupScene(void){
     scene_.SetBackgroundColor(viewport_background_color_g);
     
     // Floor of the game (sand)
-    scene_.AddNode(manipulator->ConstructPlane(&resman_));
+    scene_.AddNode(manipulator->ConstructPlane(&resman_)); // name is "Plane"
+    //scene_.GetNode("Plane")
 
     // Boundary "walls" (stone)
     scene_.AddNode(manipulator->ConstructBoundary(&resman_));

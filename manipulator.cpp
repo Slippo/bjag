@@ -94,6 +94,7 @@ namespace game {
 
         SceneNode* root = CreateSceneNodeInstance("Root", "Plane", "NormalMapMaterial", "NormalMapSand", resman_);
         root->SetColor(glm::vec3(1, 0.9, 0.5));
+        
         plane->SetRoot(root);
 
         return plane;
