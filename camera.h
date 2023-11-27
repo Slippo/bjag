@@ -29,6 +29,9 @@ namespace game {
             void SetSpeed(float speed);
             void SetMaxSpeed(float speed);
             void SetRadius(float r);
+            void SetTimer(float t);
+            void IncreaseTimer(float t);
+            void DecreaseTimer(float t);
             void SetDead(bool d);
             inline void SetState(CameraState t) { state_ = t; }
 
@@ -48,6 +51,7 @@ namespace game {
             float GetMaxSpeed(void) const;
             float GetMinSpeed(void) const;
             float GetRadius(void) const;
+            float GetTimer(void) const;
             bool IsDead(void) const;
             inline CameraState GetState() { return state_; }
 
@@ -75,6 +79,7 @@ namespace game {
             float jump_limit_ = 1.5f;
             float jump_ = 0.0;
             float old_y_ = 0.0;
+            float timer_ = 240.0; // Oxygen / health / game time
             glm::vec3 position_; // Position of camera
             //glm::quat orientation_; // Orientation of camera
             glm::quat orientation_;

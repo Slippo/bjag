@@ -45,6 +45,18 @@ void Camera::SetRadius(float r)
     radius_ = r;
 }
 
+void Camera::SetTimer(float t) {
+    timer_ = t;
+}
+
+void Camera::IncreaseTimer(float t) {
+    timer_ += t;
+}
+
+void Camera::DecreaseTimer(float t) {
+    timer_ -= t;
+}
+
 void Camera::SetDead(bool d)
 {
     dead_ = d;
@@ -95,6 +107,10 @@ float Camera::GetMinSpeed(void) const {
 float Camera::GetRadius(void) const
 {
     return radius_;
+}
+
+float Camera::GetTimer(void) const {
+    return timer_;
 }
 
 bool Camera::IsDead(void) const
