@@ -25,7 +25,7 @@ include_directories(${OPENGL_INCLUDE_DIR})
 target_link_libraries(${PROJ_NAME} ${OPENGL_gl_LIBRARY})
 
 # Other libraries needed
-set(LIBRARY_PATH C:/Software/Libraries)
+set(LIBRARY_PATH C:\Users\bense\Libraries)
 include_directories(${LIBRARY_PATH}/include)
 if(NOT WIN32)
     find_library(GLEW_LIBRARY GLEW)

@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <iostream>
 
 
 namespace game {
@@ -17,7 +18,7 @@ namespace game {
             Camera(void);
             ~Camera();
 
-            enum CameraState { walking = 0, jumping = 1, falling = 2 };
+            enum CameraState { walking = 0, jumping = 1, at_rest = 2 };
  
             // Get global camera attributes
             glm::vec3 GetPosition(void) const;
@@ -33,6 +34,11 @@ namespace game {
             inline void SetState(CameraState t) { state_ = t; }
 
             void UpdateVelocity(float backwards);
+            inline void SetVelocity(float new_vel) { 
+                
+                speed_ = new_vel; 
+                std::cout << "velocity :" << speed_ << std::endl;
+            }
             void Update();
             
             // Perform global transformations of camera
@@ -74,7 +80,7 @@ namespace game {
             float min_speed_ = -0.5f; // Minimum speed factor
             float jump_limit_ = 1.5f;
             float jump_ = 0.0;
-            float old_y_ = 0.0;
+            float base_y_position_ = 0.0;
             glm::vec3 position_; // Position of camera
             //glm::quat orientation_; // Orientation of camera
             glm::quat orientation_;

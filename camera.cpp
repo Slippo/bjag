@@ -9,6 +9,12 @@
 
 namespace game {
 
+//define constant acceleration factor
+    float base_vel = 10.0f;
+    float jump_height = 10.0f;
+    float gravity = 5.8f;
+    float t_;
+
 Camera::Camera(void){
     state_ = walking;
     jump_ = 0.0;
@@ -127,59 +133,38 @@ void Camera::Jump()
 {
     if (state_ == walking)
     {
-        old_y_ = position_.y;
+        base_y_position_ = position_.y;
         state_ = jumping;
+        t_ = 0.0; //set timer to zero just to make sure
+     
     }
-
-    //if (state_ == jumping)
-    //{
-     //   if (position_.y <= 2.0)
-      //  {
-        //    position_.y += 0.1;
-       // }
-        //else
-       // {
-        //    state_ = falling;
-       // }
-    //}
-    //else
-    //{
-     //   position_.y -= 0.1;
-
- //       if (position_.y <= 0.0)
-   //     {
-     //       position_.y = 0.0;
-       // }
-    //}
 }
 void Camera::Update()
 {
     position_ += (GetForwardMovement() * speed_);
+    
+    
+    if (state_ == jumping)
+    {
+      
+        //y position is calculated using kinematic equation of vertical motion, factoring in gravity, base y position,
+        //basevelocity, and time (jump height is also specified here)
+        position_.y = base_y_position_ + (0.5 * (jump_height + (base_vel - (gravity * t_))) * t_);
+
+        //timer is increemented here, 0.1 for each recorded frame
+        t_ += 0.1;
+
+        //distance from base y position to current y is calculated here
+        float distance = position_.y - base_y_position_;
        
-    //std::cout << state_ << std::endl;
-    //std::cout << position_.x << ", " << position_.y << ", " << position_.z << std::endl;
-    if (state_ == falling)
-    {
-        jump_ -= 0.05f;
-        position_ = position_ - glm::vec3(0.0, 0.05f, 0.0);
-        if (jump_ <= 0.0f)
+        //if the timer has been going for a while (to account for the initial push-off from the ground), and the distance
+        //from the ground is small enough, set state to walking and reset timer to 0
+        if (t_ > 2.0 && distance < 0.5)
         {
-            jump_ = 0.0f;
+            
+            t_ = 0.0;
             state_ = walking;
-            //position_.y = old_y_;
-        }
-
-    }
-    else if (state_ == jumping)
-    {
-        jump_ += 0.10f;
-        position_ = position_ + glm::vec3(0.0, 0.10f, 0.0);
-
-        if (jump_ >= jump_limit_)
-        {
-            state_ = falling;
-            //jump_ = jump_limit_;
-            //position_.y = jump_limit_;
+       
         }
     }
 
@@ -190,13 +175,17 @@ void Camera::UpdateVelocity(float backwards)
     speed_ += (0.05 * backwards);
     if (speed_ >= GetMaxSpeed())
     {
+      
         speed_ = max_speed_;
+
     }
     if (speed_ <= GetMinSpeed())
     {
+     
         speed_ = min_speed_;
     }
 }
+
 
 void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up){
     // Store initial forward and side vectors
