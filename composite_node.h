@@ -32,11 +32,14 @@ namespace game {
 		
 		// Getters
 		SceneNode* GetNode(std::string node_name) const;
+		inline std::vector<SceneNode*> GetAllNodes() const { return node_; }
 		inline std::string GetName(void) const { return name_; }
 		SceneNode* GetRoot() const;
 		Type GetType() const { return t_; }
 		std::vector<SceneNode*>::const_iterator begin() const;
 		std::vector<SceneNode*>::const_iterator end() const;
+
+		void ClearNodes();
 
 		// Setters
 		void SetRoot(SceneNode* root);

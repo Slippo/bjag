@@ -46,6 +46,7 @@ namespace game {
 
         // Set variables
         animating_ = true;
+        moving_ = false;
     }
 
 
@@ -98,7 +99,8 @@ namespace game {
         // Set projection
         camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
         // Set acceleration
-        camera_.SetSpeed(0.0f);
+        camera_.SetForwardSpeed(0.0f);
+        camera_.SetSideSpeed(0.0f);
         // Hide mouse
         glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
@@ -221,9 +223,9 @@ namespace game {
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_metal.png");
     resman_.LoadResource(Texture, "NormalMapMetal", filename.c_str());
   
-    resman_.CreateCone("MachinePart", 2.0, 1.0, 10, 10);
+    /*resman_.CreateCone("MachinePart", 2.0, 1.0, 10, 10);
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
-    resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());
+    resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());*/
 }
 
 void Game::SetupScene(void){    
@@ -249,7 +251,9 @@ void Game::SetupScene(void){
     scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(-17, 7.5, -33)));
     //scene_.GetNode("Submarine")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(1, 1, 1)));
 
-    //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part", glm::vec3(0, 4, 0)));
+     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(-15.62, 6, 65.15)));
+     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part2", glm::vec3(-52.9159, 5, 37.026)));
+     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part3", glm::vec3(31.991, 5, 67.4984)));
 
     //scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
 
@@ -271,23 +275,30 @@ void Game::MainLoop(void){
     while (!glfwWindowShouldClose(window_)){
 
         SceneNode* world_light = scene_.GetNode("Sphere")->GetRoot();
-
+        float delta_time = 0.0f;
         // Animate the scene
         if (animating_){
             static double last_time = 0;
             double current_time = glfwGetTime();
             float mytheta = glm::pi<float>() / 64;
+
+            delta_time = current_time - last_time;
             if ((current_time - last_time) > 0.05){
                 camera_.DecreaseTimer(current_time - last_time); // Decrease remaining player time limit / oxygen
                 scene_.Update(&camera_, &resman_);
                 manipulator->AnimateAll(&scene_, current_time, mytheta);
                 last_time = current_time;
-                camera_.Update();
 
-                //std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
+                for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++)
+                {
+                    collision_.CollisionEventCompositeNode(&camera_, *iterator);
+                }
+                std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
 
             }
         }
+        camera_.Update(delta_time);
+
 
         // Process camera/player forward movement
         //camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
@@ -338,9 +349,11 @@ void Game::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
 
 void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
 
+
     // Get user data with a pointer to the game class
     void* ptr = glfwGetWindowUserPointer(window);
     Game *game = (Game *) ptr;
+
   
     // Quit game if 'q' is pressed
     if (key == GLFW_KEY_Q && action == GLFW_PRESS){
@@ -363,7 +376,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
                   << "\nFOR: " << forw
                   << "\nSID: " << side
                   << "\n UP: " << up
-                  << "\nSPD: " << game->camera_.GetSpeed() << std::endl;
+                  << "\nSPD: " << game->camera_.GetForwardSpeed() << std::endl;
         
     }
 
@@ -405,23 +418,27 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         //game->camera_.Translate(glm::vec3(0.0, game->camera_.GetUp(), 0.0) * trans_factor);
     }
    
-    if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
-        game->camera_.SetVelocity(0.0);
-    }
     // Accelerate and break
-    if (key == GLFW_KEY_W){
+    if (key == GLFW_KEY_W && glfwGetKey(window, key) == GLFW_PRESS) {
+        /* //old architecture from acceleration based model
+        float new_speed = game->camera_.GetSpeed() + 0.005f;
         
-   
-        game->camera_.UpdateVelocity(1);
-        
+        if (new_speed < game->camera_.GetMaxSpeed()) {
+            game->camera_.SetSpeed(new_speed);
+        }
+        else {
+            game->camera_.SetSpeed(game->camera_.GetMaxSpeed());
+        }*/
+        game->pressed_.insert(key);
+        game->camera_.UpdateForwardVelocity(1);
+        //game->camera_.Translate(glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
     }
-    
-    if (key == GLFW_KEY_S && action == GLFW_RELEASE) {
-        game->camera_.SetVelocity(0.0);
-        
+    else if (key == GLFW_KEY_W && action == GLFW_RELEASE)
+    {
+        game->pressed_.erase(key);
     }
 
-    if (key == GLFW_KEY_S){
+    if (key == GLFW_KEY_S && glfwGetKey(window, key) == GLFW_PRESS){
      
         /* //old architecture from acceleration based model
         float new_speed = game->camera_.GetSpeed() - 0.05f;
@@ -431,9 +448,47 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         else {
             game->camera_.SetSpeed(0.0f);
         }*/
- 
-        game->camera_.UpdateVelocity(-1);
+
+        game->pressed_.insert(key);
+        game->camera_.UpdateForwardVelocity(-1);
         //game->camera_.Translate(-glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
+    }
+
+    else if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+    {
+        game->pressed_.erase(key);
+    }
+
+    if (key == GLFW_KEY_D &&  glfwGetKey(window, key) == GLFW_PRESS)
+    {
+
+        game->pressed_.insert(key);
+        game->camera_.UpdateSideVelocity(1);
+    }
+    else if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+    {
+        game->pressed_.erase(key);
+    }
+
+    if (key == GLFW_KEY_A && glfwGetKey(window, key) == GLFW_PRESS)
+    {
+        game->pressed_.insert(key);
+        game->camera_.UpdateSideVelocity(-1);
+    }
+    else if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+    {
+        game->pressed_.erase(key);
+    }
+
+
+    if (game->pressed_.find(GLFW_KEY_W) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_S) == game->pressed_.end())
+    {
+        game->camera_.SetForwardSpeed(0);
+    }
+
+    if (game->pressed_.find(GLFW_KEY_D) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_A) == game->pressed_.end())
+    {
+        game->camera_.SetSideSpeed(0);
     }
 }
 
