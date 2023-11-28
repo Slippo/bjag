@@ -535,6 +535,24 @@ namespace game {
       
         return part;
     }
+
+    CompositeNode* Manipulator::ConstructParticleSystem(ResourceManager* resman_, std::string entity_name, std::string object_name, std::string material_name, std::string texture_name, glm::vec3 position_) {
+        CompositeNode* system = new CompositeNode(object_name);
+        system->SetType(CompositeNode::Type::ParticleSystem);
+
+        game::SceneNode* particles = CreateSceneNodeInstance(object_name, entity_name, material_name, texture_name, resman_);
+        particles->SetPosition(position_);
+        particles->SetType(SceneNode::Type::ParticleSystem);
+        particles->SetScale(glm::vec3(2, 2, 2));
+        system->SetRoot(particles);
+
+
+        return system;
+
+
+
+
+    }
   
     CompositeNode* Manipulator::ConstructAnemonie(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
           CompositeNode* an = new CompositeNode(name_);

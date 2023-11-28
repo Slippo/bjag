@@ -35,6 +35,9 @@ namespace game {
             CompositeNode* GetNode(std::string node_name) const;
             CompositeNode* GetNode(int index) const;
 
+            // Create a scene node from the specified resources
+            CompositeNode* CreateNode(std::string node_name, Resource* geometry, Resource* material, Resource* texture = NULL);
+
             // Background color
             void SetBackgroundColor(glm::vec3 color);
             glm::vec3 GetBackgroundColor(void) const;

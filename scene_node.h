@@ -30,7 +30,7 @@ namespace game {
     class SceneNode {
 
         public:
-            typedef enum Type { KelpStem, KelpLeaf, KelpTip, MachinePart} NodeType;
+            typedef enum Type { KelpStem, KelpLeaf, KelpTip, MachinePart, ParticleSystem} NodeType;
             // Create scene node from given resources
             SceneNode(const std::string name, const Resource *geometry, const Resource *material, const Resource* texture, int collision);
 

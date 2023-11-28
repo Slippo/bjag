@@ -94,6 +94,9 @@ namespace game {
             // The scene node instance is used to make the cylinders (stems/branches)
             SceneNode* CreateSphereInstance(std::string entity_name, std::string object_name, std::string material_name);
             SceneNode* CreateSceneNodeInstance(std::string entity_name, std::string object_name, std::string material_name);
+
+
+
     }; // class Game
 
 } // namespace game

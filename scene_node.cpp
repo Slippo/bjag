@@ -7,7 +7,7 @@
 
 namespace game {
 
-SceneNode::SceneNode(const std::string name, const Resource *geometry, const Resource *material, const Resource* texture, int collision){
+SceneNode::SceneNode(const std::string name, const Resource *geometry, const Resource *material, const Resource* texture, int collision = 0){
 
     // Set name of scene node
     name_ = name;
@@ -305,6 +305,16 @@ void SceneNode::SetupShader(GLuint program, Camera* camera, SceneNode* light){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+
+        if (t_ == ParticleSystem) {
+            //enable alpha blending for transparency of textured particles
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+        else {
+            glDisable(GL_BLEND);
+        }
+        
     }
 
     // Timer
