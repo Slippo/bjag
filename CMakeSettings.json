@@ -13,7 +13,7 @@
       "variables": [
         {
           "name": "GLUT_LIBRARY",
-          "value": "C:/Program Files/Libraries/Libraries/lib/freeglut.lib",
+          "value": "C:/Users/bense/Libraries/lib/freeglut.lib",
           "type": "FILEPATH"
         }
       ]
@@ -31,7 +31,7 @@
       "variables": [
         {
           "name": "GLUT_LIBRARY",
-          "value": "C:/Program Files/Libraries/Libraries/lib/freeglut.lib",
+          "value": "C:/Users/bense/Libraries/lib/freeglut.lib",
           "type": "FILEPATH"
         }
       ]

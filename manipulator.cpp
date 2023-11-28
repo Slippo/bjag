@@ -585,6 +585,23 @@ namespace game {
           return an;
     }
 
+    CompositeNode* Manipulator::ConstructRock(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
+
+        CompositeNode* rock = new CompositeNode(name_);
+        rock->SetType(CompositeNode::Type::Rock);
+
+        // Create root node
+        SceneNode* root = CreateSceneNodeInstance("Root", "Rock_Sphere", "NormalMapMaterial", "NormalMapRock", resman_);
+        // root->SetScale(glm::vec3(1.0, 2.0, 1.0));
+        root->SetPosition(position_);
+        root->SetColor(glm::vec3(0.49, 0.498, 0.486));
+        rock->SetRoot(root);
+
+        return rock;
+
+    }
+
+
     // (2) Animate hierarchical objects
     void Manipulator::AnimateAll(SceneGraph* scene_, double time_, float theta_) {
         CompositeNode* current_;
@@ -608,64 +625,6 @@ namespace game {
             }
         }
     }
-
-
-        CompositeNode* Manipulator::ConstructSeaweed(ResourceManager * resman_, std::string name_, int length_compexity, glm::vec3 position_) {
-
-            CompositeNode* seaweed = new CompositeNode(name_);
-            seaweed->SetType(CompositeNode::Type::Seaweed);
-
-            // Create root node
-            SceneNode* root = CreateSceneNodeInstance("Root", "LowResCylinder", "KelpMaterial", "", resman_);
-            root->SetScale(glm::vec3(1.0, 2.0, 1.0));
-            root->SetPosition(position_);
-            root->SetPivot(glm::vec3(0, -2.0, 0));
-            seaweed->SetRoot(root);
-
-            for (int i = 2; i < length_compexity + 1; i++) {
-                SceneNode* piece = CreateSceneNodeInstance("Piece", "LowResCylinder", "KelpMaterial", "", resman_);
-                piece->Scale(glm::vec3(1.0 / i + 0.25, i, 1.0 / i + 0.25));
-                piece->Translate(glm::vec3(0, i - 1, 0));
-                piece->SetPivot(glm::vec3(0, -(i - 1), 0));
-                root->AddChild(piece);
-                seaweed->AddNode(piece);
-            }
-
-            return seaweed;
-
-        }
-
-        CompositeNode* Manipulator::ConstructRock(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
-
-            CompositeNode* rock = new CompositeNode(name_);
-            rock->SetType(CompositeNode::Type::Rock);
-
-            // Create root node
-            SceneNode* root = CreateSceneNodeInstance("Root", "Rock_Sphere", "NormalMapMaterial", "NormalMapRock", resman_);
-           // root->SetScale(glm::vec3(1.0, 2.0, 1.0));
-            root->SetPosition(position_);
-            root->SetColor(glm::vec3(0.49, 0.498, 0.486));
-            rock->SetRoot(root);
-
-            return rock;
-
-        }
-
-        // (2) Animate hierarchical objects
-        void Manipulator::AnimateAll(SceneGraph * scene_, double time_, float theta_) {
-            CompositeNode* current_;
-            for (int i = 0; i < scene_->GetSize(); i++) {
-                current_ = scene_->GetNode(i);
-                if (current_ != nullptr) {
-
-                    // Animate all kelp instances
-                    if (current_->GetType() == CompositeNode::Type::Kelp) {
-                        AnimateKelp(current_, time_, theta_);
-                    }
-
-                    else if (current_->GetType() == CompositeNode::Type::Seaweed) {
-                        AnimateKelp(current_, time_, theta_);
-                    }
 
     void Manipulator::AnimateSeaweed(CompositeNode* node_, double time_, float theta_) {
         
