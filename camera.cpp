@@ -186,7 +186,6 @@ void Camera::Jump()
 }
 void Camera::Update(float delta_time)
 {
-<<<<<<< HEAD
     position_ += (GetForwardMovement() * forward_speed_ * delta_time);
     position_ += (GetSideMovement() * side_speed_ * delta_time);    
     
@@ -217,7 +216,7 @@ void Camera::Update(float delta_time)
         }
 
     }
-    else if (state_ == jumping)
+    /*else if (state_ == jumping)
     {
         jump_ += 0.5f;
 
@@ -232,7 +231,7 @@ void Camera::Update(float delta_time)
             position_ = position_ + (glm::vec3(0.0, 0.50f, 0.0) * delta_time);
 
         }
-    }
+    }*/
 
 
 }
@@ -259,7 +258,6 @@ void Camera::UpdateSideVelocity(float left)
     if (side_speed_ <= GetMinSpeed())
     {
         side_speed_ = min_speed_;
->>>>>>> 6496830 (Fixed movement, added collision, and placed machine parts)
     }
 }
 

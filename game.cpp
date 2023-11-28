@@ -417,9 +417,6 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         //game->camera_.Translate(glm::vec3(0.0, game->camera_.GetUp(), 0.0) * trans_factor);
     }
    
-    if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
-        game->camera_.SetVelocity(0.0);
-    }
     // Accelerate and break
     if (key == GLFW_KEY_W && glfwGetKey(window, key) == GLFW_PRESS) {
         /* //old architecture from acceleration based model
