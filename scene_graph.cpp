@@ -85,16 +85,21 @@ int SceneGraph::Update(Camera* camera, ResourceManager* resman) {
         node_[i]->Update(camera);
     }
 
-    // while (index < node_.size())
-    // {
-    //     if (node_[index]->GetRoot()->GetCollision() == 2)
-    //     {
-    //         for (int i = 0; i < node_[index]->GetNode()->GetSize(); i++)
-    //         {
-
-    //         }
-    //     }
-    // }
+     while (index < node_.size())
+     {
+         if (node_[index]->GetRoot()->GetCollision() == 2)
+         {
+             for (SceneNode* node : node_[index]->GetAllNodes())
+             {
+                 delete node;
+             }
+             node_[index]->ClearNodes();
+             delete node_[index]->GetRoot();
+             node_.erase(node_.begin() + index);
+             continue;
+         }
+         index = index + 1;
+    }
 
     return 0;
 }

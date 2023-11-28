@@ -51,6 +51,9 @@ namespace game {
             glm::vec3 GetScale(void) const;
             glm::vec3 GetPivot(void) const;
             glm::vec3 GetColor(void) const;
+            inline glm::vec3 GetPositionCollision(void) const {
+                return position_collision_;
+            }
             std::vector<SceneNode*>::const_iterator begin() const;
             std::vector<SceneNode*>::const_iterator end() const;
             //inline glm::vec3 GetColor(void) { return colour; }
@@ -108,6 +111,7 @@ namespace game {
             GLuint material_; // Reference to shader program
             GLuint texture_; // Reference to texture resource
             glm::vec3 position_; // Position of node
+            glm::vec3 position_collision_;
             glm::quat orientation_; // Orientation of node
             glm::mat4 orbit_; // orbit motion + rotation
             glm::vec3 scale_; // Scale of node

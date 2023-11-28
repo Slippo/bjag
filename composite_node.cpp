@@ -37,6 +37,12 @@ namespace game {
 
     void CompositeNode::SetRoot(SceneNode* root) {
         root_ = root;
+        root_->SetRadius(0.9f);
+    }
+
+    void CompositeNode::ClearNodes()
+    {
+        node_.clear();
     }
 
     // Transformations
