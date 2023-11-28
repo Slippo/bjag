@@ -18,6 +18,7 @@ namespace game {
 Camera::Camera(void){
     state_ = walking;
     jump_ = 0.0;
+    radius_ = 1.0f;
 }
 
 Camera::~Camera(){}
@@ -38,8 +39,13 @@ void Camera::SetOrientation(glm::quat orientation){
     orientation_ = orientation;
 }
 
-void Camera::SetSpeed(float speed) {
-    speed_ = speed;
+void Camera::SetForwardSpeed(float speed) {
+    forward_speed_ = speed;
+}
+
+void Camera::SetSideSpeed(float speed)
+{
+    side_speed_ = speed;
 }
 
 void Camera::SetMaxSpeed(float speed) {
@@ -95,6 +101,12 @@ glm::vec3 Camera::GetForwardMovement(void) const {
     return -current_forward;
 }
 
+glm::vec3 Camera::GetSideMovement(void) const
+{
+    glm::vec3 current_side = movement_orientation_ * movement_side_;
+    return current_side;
+}
+
 glm::vec3 Camera::GetSide(void) const {
     glm::vec3 current_side = orientation_ * side_;
     return current_side;
@@ -105,8 +117,13 @@ glm::vec3 Camera::GetUp(void) const {
     return current_up;
 }
 
-float Camera::GetSpeed(void) const {
-    return speed_;
+float Camera::GetForwardSpeed(void) const {
+    return forward_speed_;
+}
+
+float Camera::GetSideSpeed(void) const
+{
+    return side_speed_;
 }
 
 float Camera::GetMaxSpeed(void) const {
@@ -167,14 +184,14 @@ void Camera::Jump()
      
     }
 }
-void Camera::Update()
+void Camera::Update(float delta_time)
 {
-    position_ += (GetForwardMovement() * speed_);
-    
+<<<<<<< HEAD
+    position_ += (GetForwardMovement() * forward_speed_ * delta_time);
+    position_ += (GetSideMovement() * side_speed_ * delta_time);    
     
     if (state_ == jumping)
     {
-      
         //y position is calculated using kinematic equation of vertical motion, factoring in gravity, base y position,
         //basevelocity, and time (jump height is also specified here)
         position_.y = base_y_position_ + (0.5 * (jump_height + (base_vel - (gravity * t_))) * t_);
@@ -192,25 +209,57 @@ void Camera::Update()
             
             t_ = 0.0;
             state_ = walking;
-       
+            //position_.y = old_y_;
+        }
+        else
+        {
+            position_ = position_ - (glm::vec3(0.0, 0.4f, 0.0) * delta_time);
+        }
+
+    }
+    else if (state_ == jumping)
+    {
+        jump_ += 0.5f;
+
+        if (jump_ >= jump_limit_)
+        {
+            state_ = falling;
+            //jump_ = jump_limit_;
+            //position_.y = jump_limit_;
+        }
+        else
+        {
+            position_ = position_ + (glm::vec3(0.0, 0.50f, 0.0) * delta_time);
+
         }
     }
 
 
 }
-void Camera::UpdateVelocity(float backwards)
+void Camera::UpdateForwardVelocity(float backwards)
 {
-    speed_ += (0.05 * backwards);
-    if (speed_ >= GetMaxSpeed())
+    forward_speed_ += (0.15 * backwards);
+    if (forward_speed_ >= GetMaxSpeed())
     {
-      
-        speed_ = max_speed_;
-
+        forward_speed_ = max_speed_;
     }
-    if (speed_ <= GetMinSpeed())
+    if (forward_speed_ <= GetMinSpeed())
     {
-     
-        speed_ = min_speed_;
+        forward_speed_ = min_speed_;
+    }
+}
+
+void Camera::UpdateSideVelocity(float left)
+{
+    side_speed_ += (0.15 * left);
+    if (side_speed_ >= GetMaxSpeed())
+    {
+        side_speed_ = max_speed_;
+    }
+    if (side_speed_ <= GetMinSpeed())
+    {
+        side_speed_ = min_speed_;
+>>>>>>> 6496830 (Fixed movement, added collision, and placed machine parts)
     }
 }
 
@@ -226,6 +275,8 @@ void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up){
     up_ = glm::normalize(up);
 
     movement_forward_ = glm::vec3(forward_.x, 0.0, forward_.z);
+    movement_side_ = glm::cross(glm::vec3(0, 1, 0), movement_forward_);
+    movement_side_ = glm::normalize(movement_side_);
 
     // Reset orientation and position of camera
     position_ = position;

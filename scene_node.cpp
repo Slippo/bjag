@@ -45,6 +45,7 @@ SceneNode::SceneNode(const std::string name, const Resource *geometry, const Res
     orbit_ = glm::mat4(1.0f);
     pivot_ = position_;
     collision_ = collision;
+    radius_ = 0.2f;
 }
 
 
@@ -277,6 +278,7 @@ void SceneNode::SetupShader(GLuint program, Camera* camera, SceneNode* light){
     glm::mat4 translation = glm::translate(glm::mat4(1.0), position_);
     glm::mat4 transf = parent_transf_ * translation * orbit * rotation * scaling; // why this sequence?
 
+    position_collision_ = glm::vec3(transf * glm::vec4(position_, 1.0));
     for (int i = 0; i < children_.size(); i++) {
         children_[i]->SetParentTransf(transf);
     }

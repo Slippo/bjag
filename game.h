@@ -8,6 +8,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 #include <fstream>
+#include <set>
 
 #include "scene_graph.h"
 #include "resource_manager.h"
@@ -15,6 +16,7 @@
 #include "composite_node.h"
 #include "manipulator.h"
 #include "GL/freeglut.h"
+#include "game_collision.h"
 
 namespace game {
 
@@ -59,8 +61,14 @@ namespace game {
             // Camera abstraction
             Camera camera_;
 
+            GameCollision collision_;
+
             // Flag to turn animation on/off
             bool animating_;
+
+            bool moving_;
+
+            std::set<int> pressed_;
 
             // Size of both planes
             const glm::ivec2 plane_size_ = glm::ivec2(200,200);

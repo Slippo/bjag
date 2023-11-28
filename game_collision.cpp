@@ -15,7 +15,7 @@ namespace game
         {
             if (obj->GetType() == 1 && obj->GetCollision() == 1)
             {
-                PlayerMachinePartCollision(camera, obj);
+                //PlayerMachinePartCollision(camera, obj);
             }
 
             //else if (obj->GetType() == 1)
@@ -28,13 +28,20 @@ namespace game
 
     void GameCollision::CollisionEventCompositeNode(Camera* camera, CompositeNode* obj)
     {
-        if (glm::length(camera->GetPosition() - obj->GetRoot()->GetPosition()) <= (camera->GetRadius() + obj->GetRoot()->GetRadius()))
+
+        glm::vec3 position_ = glm::vec3(obj->GetRoot()->GetPosition().x, camera->GetPosition().y, obj->GetRoot()->GetPosition().z);
+
+        if (glm::length(camera->GetPosition() - position_) <= (camera->GetRadius() + obj->GetRoot()->GetRadius()))
         {
-            if (obj->GetType() == 7 && obj->GetRoot()->GetCollision() == 1)
+            // std::cout << "Collision detected" << std::endl;
+            if (obj->GetType() == 5 && obj->GetRoot()->GetCollision() == 1)
             {
-                PlayerSeaweedCollision(camera, obj);
+                // PlayerSeaweedCollision(camera, obj);
+                PlayerMachinePartCollision(camera, obj);
+                return;
             }
         }
+       
     }
 
     void GameCollision::PlayerSeaweedCollision(Camera* camera, CompositeNode* obj)
@@ -42,8 +49,8 @@ namespace game
         obj->GetRoot()->SetCollision(2);
     }
 
-    void GameCollision::PlayerMachinePartCollision(Camera* camera, SceneNode* obj)
+    void GameCollision::PlayerMachinePartCollision(Camera* camera, CompositeNode* obj)
     {
-        obj->SetCollision(2);
+        obj->GetRoot()->SetCollision(2);
     }
 }
