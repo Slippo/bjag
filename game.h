@@ -15,8 +15,8 @@
 #include "camera.h"
 #include "composite_node.h"
 #include "manipulator.h"
-#include "GL/freeglut.h"
 #include "game_collision.h"
+#include "text_renderer.h"
 
 namespace game {
 
@@ -61,6 +61,7 @@ namespace game {
             // Camera abstraction
             Camera camera_;
 
+            // Collision handler
             GameCollision collision_;
 
             // Flag to turn animation on/off
@@ -84,10 +85,6 @@ namespace game {
             static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
             static void ResizeCallback(GLFWwindow* window, int width, int height);
             static void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
-
-            // HUD
-            void UpdateHUD();
-            void DisplayText(glm::vec2 position, glm::vec3 colour, void* font, const char* text); // For outputting text using freeglut
 
             // Kelp tree/bush nodes
             // The sphere used to make leaves

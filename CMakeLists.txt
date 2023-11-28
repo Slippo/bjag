@@ -6,11 +6,11 @@ project(${PROJ_NAME})
 
 # Specify project files: header files and source files
 set(HDRS
-      camera.h composite_node.h  game.h  resource.h resource_manager.h scene_graph.h scene_node.h manipulator.h game_collision.h
+      camera.h composite_node.h  game.h  resource.h resource_manager.h scene_graph.h scene_node.h manipulator.h game_collision.h text_renderer.h
 )
  
 set(SRCS
-     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl game_collision.cpp
+     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl text_shader_vp.glsl text_shader_fp.glsl game_collision.cpp text_renderer.cpp
 )
 
 # Add path name to configuration file
@@ -24,24 +24,28 @@ find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
 target_link_libraries(${PROJ_NAME} ${OPENGL_gl_LIBRARY})
 
+# Require Freetype library
+find_package(freetype REQUIRED)
+include_directories(${})
+
 # Other libraries needed
-set(LIBRARY_PATH D:/Carleton/Third\ Year/COMP3501/Libraries)
+set(LIBRARY_PATH C:/Program\ Files/Libraries/Libraries)
 include_directories(${LIBRARY_PATH}/include)
 if(NOT WIN32)
     find_library(GLEW_LIBRARY GLEW)
     find_library(GLFW_LIBRARY glfw)
     find_library(SOIL_LIBRARY SOIL)
-    find_library(GLUT_LIBRARY GLUT)
+    find_library(FREETYPE_LIBRARY Freetype)
 elseif(WIN32)
     find_library(GLEW_LIBRARY glew32s HINTS ${LIBRARY_PATH}/lib)
     find_library(GLFW_LIBRARY glfw3 HINTS ${LIBRARY_PATH}/lib)
     find_library(SOIL_LIBRARY SOIL HINTS ${LIBRARY_PATH}/lib)
-    find_library(GLUT_LIBRARY GLUT HINTS ${LIBRARY_PATH}/lib)
+    find_library(FREETYPE_LIBRARY Freetype HINTS ${LIBRARY_PATH}/lib)
 endif(NOT WIN32)
 target_link_libraries(${PROJ_NAME} ${GLEW_LIBRARY})
 target_link_libraries(${PROJ_NAME} ${GLFW_LIBRARY})
 target_link_libraries(${PROJ_NAME} ${SOIL_LIBRARY})
-target_link_libraries(${PROJ_NAME} ${GLUT_LIBRARY})
+target_link_libraries(${PROJ_NAME} ${FREETYPE_LIBRARY})
 
 # The rules here are specific to Windows Systems
 if(WIN32)

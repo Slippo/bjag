@@ -31,6 +31,9 @@ namespace game {
     // Manipulator
     Manipulator* manipulator = new Manipulator();
 
+    // Text Renderer
+    //TextRenderer* text_renderer = new TextRenderer();
+
     Game::Game(void) {
 
         // Don't do work in the constructor, leave it for the Init() function
@@ -116,7 +119,6 @@ namespace game {
         glfwSetWindowUserPointer(window_, (void*)this);
     }
 
-
     void Game::SetupResources(void) {
 
         // POPULATE HEIGHT MAP ARRAY
@@ -194,8 +196,13 @@ namespace game {
     // Plane
     resman_.CreatePlane("Plane", height_map_, height_map_.size() / width, height_map_.size()/height, offsetX, offsetZ);
     resman_.CreatePlane("Boundary", height_map_boundary_, height_map_boundary_.capacity() / width, height_map_boundary_.capacity() / height, offsetX, offsetZ);
+
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/normal_map");
     resman_.LoadResource(Material, "NormalMapMaterial", filename.c_str());
+
+    // Text shader
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/text_shader");
+    resman_.LoadResource(Material, "TextShader", filename.c_str());
 
     // TEXTURES
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
@@ -245,7 +252,7 @@ void Game::SetupScene(void){
     // Light source ("sun")
     scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,100,0)));
   
-    //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
+    scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
     
     scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(-17, 7.5, -33)));
@@ -267,7 +274,7 @@ void Game::SetupScene(void){
     //scene_.GetNode("Kelp1")->Scale(glm::vec3(1,2,1)); // Example on how to transform object after creation
 
     // Seaweed instancer call, can generate random seaweed using given dimensions / density
-    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 50, 50, glm::vec3(0, 0, -5));
+    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 8, 55, 45, glm::vec3(-20, 0, -30));
 }
 
 void Game::MainLoop(void){
@@ -309,8 +316,8 @@ void Game::MainLoop(void){
         // Draw the scene
         scene_.Draw(&camera_, world_light);
 
-        // HUD
-        UpdateHUD();
+        TextRenderer* text_renderer = new TextRenderer();
+        text_renderer->RenderText(resman_.GetResource("TextShader")->GetResource(), glm::vec2(0, 0), 1.0, glm::vec3(1, 0, 0), "HELLO");
 
         // Push buffer drawn in the background onto the display
         glfwSwapBuffers(window_);
@@ -506,24 +513,6 @@ void Game::ResizeCallback(GLFWwindow* window, int width, int height){
 Game::~Game(){
     
     glfwTerminate();
-}
-
-void Game::UpdateHUD() {
-    // Oxygen timer
-    DisplayText(glm::vec2(-0.95, 0.9), glm::vec3(0, 0, 0), GLUT_BITMAP_TIMES_ROMAN_24, ("OXYGEN REMAINING: " + (std::to_string((int)camera_.GetTimer()))).c_str());
-    // Mechanical part counter
-    DisplayText(glm::vec2(-0.95, 0.8), glm::vec3(1.0, 0.0, 0.0), GLUT_BITMAP_TIMES_ROMAN_24, ("PARTS COLLECTED: " + (std::to_string((int)camera_.GetTimer()))).c_str());
-}
-
-void Game::DisplayText(glm::vec2 position, glm::vec3 colour, void* font, const char* text) {
-    // *NOTE: For some reason, the text is being dynamically lit... enabling GL_FOG at least makes the text black, for now.
-    glEnable(GL_FOG);
-    glRasterPos2f(position.x, position.y); // Set text position
-    glColor3fv(glm::value_ptr(colour));
-    //glColor3f(1, 1, 1);
-    for (int i = 0; i < (int)strlen(text); i++) { // "Print" each character of text to window
-        glutBitmapCharacter(font, text[i]);
-    }
 }
 
 SceneNode* Game::CreateSphereInstance(std::string entity_name, std::string object_name, std::string material_name) {
