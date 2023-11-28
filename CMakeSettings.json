@@ -9,7 +9,14 @@
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
-      "ctestCommandArgs": ""
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "GLUT_LIBRARY",
+          "value": "C:/Program Files/Libraries/Libraries/lib/freeglut.lib",
+          "type": "FILEPATH"
+        }
+      ]
     },
     {
       "name": "x86-Debug",
@@ -21,7 +28,13 @@
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x86" ],
-      "variables": []
+      "variables": [
+        {
+          "name": "GLUT_LIBRARY",
+          "value": "C:/Program Files/Libraries/Libraries/lib/freeglut.lib",
+          "type": "FILEPATH"
+        }
+      ]
     }
   ]
 }

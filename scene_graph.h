@@ -12,6 +12,7 @@
 #include "resource.h"
 #include "resource_manager.h"
 #include "camera.h"
+#include "GL/freeglut.h"
 
 namespace game {
 

@@ -12,8 +12,8 @@ namespace game {
 
     // Main window settings
     const std::string window_title_g = "Bjag";
-    const unsigned int window_width_g = 1920;
-    const unsigned int window_height_g = 1080;
+    const unsigned int window_width_g = 1280;
+    const unsigned int window_height_g = 720;
     const bool window_full_screen_g = false;
 
     // Viewport and camera settings
@@ -116,8 +116,6 @@ namespace game {
 
 
     void Game::SetupResources(void) {
-
-
 
         // POPULATE HEIGHT MAP ARRAY
         std::ifstream height_file;
@@ -228,8 +226,11 @@ namespace game {
     resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());
 }
 
-
 void Game::SetupScene(void){    
+
+    camera_.SetTimer(480); // Starting player time limit / oxygen
+
+    
     scene_.SetBackgroundColor(viewport_background_color_g);
     
     // Floor of the game (sand)
@@ -245,9 +246,9 @@ void Game::SetupScene(void){
     //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
     
-    //scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(0, 7, -20)));
+    scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(0, 7, -20)));
 
-    scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part", glm::vec3(0, 4, 0)));
+    //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part", glm::vec3(0, 4, 0)));
 
     //scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
 
@@ -276,10 +277,12 @@ void Game::MainLoop(void){
             double current_time = glfwGetTime();
             float mytheta = glm::pi<float>() / 64;
             if ((current_time - last_time) > 0.05){
+                camera_.DecreaseTimer(current_time - last_time); // Decrease remaining player time limit / oxygen
                 scene_.Update(&camera_, &resman_);
                 manipulator->AnimateAll(&scene_, current_time, mytheta);
                 last_time = current_time;
                 camera_.Update();
+
                 //std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
 
             }
@@ -294,11 +297,19 @@ void Game::MainLoop(void){
         // Draw the scene
         scene_.Draw(&camera_, world_light);
 
+        // HUD
+        UpdateHUD();
+
         // Push buffer drawn in the background onto the display
         glfwSwapBuffers(window_);
 
         // Update other events like input handling
         glfwPollEvents();
+
+        // Win condition
+        if (camera_.CheckWinCondition() == true) {
+            glfwSetWindowShouldClose(window_, true);
+        }
     }
 }
 
@@ -436,6 +447,24 @@ void Game::ResizeCallback(GLFWwindow* window, int width, int height){
 Game::~Game(){
     
     glfwTerminate();
+}
+
+void Game::UpdateHUD() {
+    // Oxygen timer
+    DisplayText(glm::vec2(-0.95, 0.9), glm::vec3(0, 0, 0), GLUT_BITMAP_TIMES_ROMAN_24, ("OXYGEN REMAINING: " + (std::to_string((int)camera_.GetTimer()))).c_str());
+    // Mechanical part counter
+    DisplayText(glm::vec2(-0.95, 0.8), glm::vec3(1.0, 0.0, 0.0), GLUT_BITMAP_TIMES_ROMAN_24, ("PARTS COLLECTED: " + (std::to_string((int)camera_.GetTimer()))).c_str());
+}
+
+void Game::DisplayText(glm::vec2 position, glm::vec3 colour, void* font, const char* text) {
+    // *NOTE: For some reason, the text is being dynamically lit... enabling GL_FOG at least makes the text black, for now.
+    glEnable(GL_FOG);
+    glRasterPos2f(position.x, position.y); // Set text position
+    glColor3fv(glm::value_ptr(colour));
+    //glColor3f(1, 1, 1);
+    for (int i = 0; i < (int)strlen(text); i++) { // "Print" each character of text to window
+        glutBitmapCharacter(font, text[i]);
+    }
 }
 
 SceneNode* Game::CreateSphereInstance(std::string entity_name, std::string object_name, std::string material_name) {
