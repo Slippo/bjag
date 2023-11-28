@@ -30,6 +30,10 @@ namespace game {
             void SetSpeed(float speed);
             void SetMaxSpeed(float speed);
             void SetRadius(float r);
+            void SetTimer(float t);
+            void IncreaseTimer(float t);
+            void DecreaseTimer(float t);
+            void AddPart(); // Increase num_parts_
             void SetDead(bool d);
             inline void SetState(CameraState t) { state_ = t; }
 
@@ -54,7 +58,9 @@ namespace game {
             float GetMaxSpeed(void) const;
             float GetMinSpeed(void) const;
             float GetRadius(void) const;
+            float GetTimer(void) const;
             bool IsDead(void) const;
+            bool CheckWinCondition(void) const;
             inline CameraState GetState() { return state_; }
 
             // Perform relative transformations of camera
@@ -81,6 +87,8 @@ namespace game {
             float jump_limit_ = 1.5f;
             float jump_ = 0.0;
             float base_y_position_ = 0.0;
+            float timer_ = 240.0; // Oxygen / health / game time
+            int num_parts_ = 0; // Game win condition, goes up when submarine part is collected
             glm::vec3 position_; // Position of camera
             //glm::quat orientation_; // Orientation of camera
             glm::quat orientation_;
@@ -96,6 +104,9 @@ namespace game {
             // For collision
             float radius_;
             bool dead_;
+
+            // Win condition
+            bool win_condition_ = false;
 
             // Create view matrix from current camera parameters
             void SetupViewMatrix(void);

@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "composite_node.h"
 #include "manipulator.h"
+#include "GL/freeglut.h"
 
 namespace game {
 
@@ -76,6 +77,9 @@ namespace game {
             static void ResizeCallback(GLFWwindow* window, int width, int height);
             static void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 
+            // HUD
+            void UpdateHUD();
+            void DisplayText(glm::vec2 position, glm::vec3 colour, void* font, const char* text); // For outputting text using freeglut
 
             // Kelp tree/bush nodes
             // The sphere used to make leaves
