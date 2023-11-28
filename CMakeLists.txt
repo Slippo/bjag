@@ -10,7 +10,7 @@ set(HDRS
 )
  
 set(SRCS
-     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl game_collision.cpp
+     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl game_collision.cpp environment_fp.glsl environment_gp.glsl environment_vp.glsl combined_fp.glsl combined_vp.glsl particle_vent_vp.glsl particle_vent_gp.glsl particle_vent_fp.glsl star_fp.glsl star_gp.glsl star_vp.glsl
 )
 
 # Add path name to configuration file
