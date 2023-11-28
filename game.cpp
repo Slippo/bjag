@@ -246,7 +246,8 @@ void Game::SetupScene(void){
     //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
     
-    scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(0, 7, -20)));
+    scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(-17, 7.5, -33)));
+    //scene_.GetNode("Submarine")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(1, 1, 1)));
 
     //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part", glm::vec3(0, 4, 0)));
 
