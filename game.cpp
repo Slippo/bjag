@@ -118,7 +118,6 @@ namespace game {
 
 
     void Game::SetupResources(void) {
-
         // POPULATE HEIGHT MAP ARRAY
         std::ifstream height_file;
         try {
@@ -131,6 +130,7 @@ namespace game {
             std::cout << e.what();
             std::exit(1);
         }
+
 
         // CHECK FORMATTING; ONLY ACCEPT PGM FILES
         // PGM FILES START WITH P2 AND ARE FOLLOWED BY THEIR WIDTH x HEIGHT DIMENSIONS
@@ -167,6 +167,8 @@ namespace game {
         }
     }
     height_file.close();
+    */
+    
   
     // SHAPES
     // Basic
@@ -189,14 +191,16 @@ namespace game {
     resman_.CreateCylinder("Base", 0.5, 1);
     resman_.CreateSphere("Middle", 1.0, 30);
     resman_.CreateCylinder("Tentacle", 0.5, 0.1);
+    // Rock
+    resman_.CreateSphere("Rock_Sphere", 2, 40, 20);
     // Seaweed
     resman_.CreateCylinder("LowPolyCylinder", 1.0, 0.6, 10, 9);
     // Plane
     resman_.CreatePlane("Plane", height_map_, height_map_.size() / width, height_map_.size()/height, offsetX, offsetZ);
-    resman_.CreatePlane("Boundary", height_map_boundary_, height_map_boundary_.capacity() / width, height_map_boundary_.capacity() / height, offsetX, offsetZ);
+
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/normal_map");
     resman_.LoadResource(Material, "NormalMapMaterial", filename.c_str());
-
+    
     // TEXTURES
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
     resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
@@ -210,6 +214,26 @@ namespace game {
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_stone.png");
     resman_.LoadResource(Texture, "NormalMapStone", filename.c_str());
+
+    //normal map for rock
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/Pebbles_026_normal.png");
+    resman_.LoadResource(Texture, "NormalMapRock", filename.c_str());
+
+    
+    // shader for 3-term lighting and texture combined effect
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/combined");
+    resman_.LoadResource(Material, "CombinedMaterial", filename.c_str());
+
+    // Load texture to be used on the object
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/rocky.png");
+    resman_.LoadResource(Texture, "RockyTexture", filename.c_str());
+
+    //metal
+    //filename = std::string(MATERIAL_DIRECTORY) + std::string("/Metal_Corrugated_0111_.png");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/rough-metallic-surface-texture.jpg");
+    resman_.LoadResource(Texture, "MetalTexture", filename.c_str());
+}
+
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_grass2.png");
     resman_.LoadResource(Texture, "NormalMapGrass", filename.c_str());
@@ -236,11 +260,12 @@ void Game::SetupScene(void){
     scene_.SetBackgroundColor(viewport_background_color_g);
     
     // Floor of the game (sand)
+
     scene_.AddNode(manipulator->ConstructPlane(&resman_)); // name is "Plane"
     //scene_.GetNode("Plane")
 
     // Boundary "walls" (stone)
-    scene_.AddNode(manipulator->ConstructBoundary(&resman_));
+   // scene_.AddNode(manipulator->ConstructBoundary(&resman_));
 
     // Light source ("sun")
     scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,100,0)));
@@ -251,14 +276,19 @@ void Game::SetupScene(void){
     scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(-17, 7.5, -33)));
     //scene_.GetNode("Submarine")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(1, 1, 1)));
 
+
      scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(-15.62, 6, 65.15)));
      scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part2", glm::vec3(-52.9159, 5, 37.026)));
      scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part3", glm::vec3(31.991, 5, 67.4984)));
 
     //scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
 
+   // scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
+    
+    scene_.AddNode(manipulator->ConstructRock(&resman_, "ROCK", glm::vec3(0, 0, 0)));
+    scene_.GetNode("ROCK")->Scale(glm::vec3(0.8, 0.5, 0.5));
 
-    //scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(-8.0, 5.0, -20.0)));
+    //scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(0.0, -5.0, 0.0)));
     //scene_.GetNode("Coral1")->Scale(glm::vec3(2,5, 2));
 
     //scene_.AddNode(manipulator->ConstructSeaweed(&resman_, "Seaweed1", 4, glm::vec3(0, 0, -5)));
@@ -284,9 +314,14 @@ void Game::MainLoop(void){
 
             delta_time = current_time - last_time;
             if ((current_time - last_time) > 0.05){
+
                 camera_.DecreaseTimer(current_time - last_time); // Decrease remaining player time limit / oxygen
+
                 scene_.Update(&camera_, &resman_);
                 manipulator->AnimateAll(&scene_, current_time, mytheta);
+
+                
+
                 last_time = current_time;
 
                 for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++)
@@ -296,6 +331,7 @@ void Game::MainLoop(void){
                 std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
 
             }
+            
         }
         camera_.Update(delta_time);
 
