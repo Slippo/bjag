@@ -347,7 +347,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
     }
 
     // Stop animation if space bar is pressed
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
+    if (key == GLFW_KEY_E && action == GLFW_PRESS){
         game->animating_ = (game->animating_ == true) ? false : true;
     }
 
@@ -397,27 +397,29 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         //game->camera_.Translate(glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
     }
 
-    if (key == GLFW_KEY_E)
+    if (key == GLFW_KEY_SPACE)
     {
         //game->camera_.SetState(0);
         game->camera_.Jump();
         //game->camera_.Translate(glm::vec3(0.0, game->camera_.GetUp(), 0.0) * trans_factor);
     }
    
+    if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
+        game->camera_.SetVelocity(0.0);
+    }
     // Accelerate and break
     if (key == GLFW_KEY_W){
-        /* //old architecture from acceleration based model
-        float new_speed = game->camera_.GetSpeed() + 0.005f;
         
-        if (new_speed < game->camera_.GetMaxSpeed()) {
-            game->camera_.SetSpeed(new_speed);
-        }
-        else {
-            game->camera_.SetSpeed(game->camera_.GetMaxSpeed());
-        }*/
+   
         game->camera_.UpdateVelocity(1);
-        //game->camera_.Translate(glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
+        
     }
+    
+    if (key == GLFW_KEY_S && action == GLFW_RELEASE) {
+        game->camera_.SetVelocity(0.0);
+        
+    }
+
     if (key == GLFW_KEY_S){
      
         /* //old architecture from acceleration based model
@@ -428,6 +430,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         else {
             game->camera_.SetSpeed(0.0f);
         }*/
+ 
         game->camera_.UpdateVelocity(-1);
         //game->camera_.Translate(-glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
     }

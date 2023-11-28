@@ -506,6 +506,7 @@ namespace game {
         root_node->SetPosition(position_);
         root_node->SetColor(glm::vec3(0.501, 0.501, 0.501));
         part->SetRoot(root_node);
+        root_node->Scale(glm::vec3(0.05, 0.05, 0.05));
         //part->AddNode(root_node);
 
         SceneNode* node1 = CreateSceneNodeInstance("root_node", "Exhaust", "ObjectMaterial", "", resman_);
