@@ -305,6 +305,11 @@ void Game::MainLoop(void){
 
         // Update other events like input handling
         glfwPollEvents();
+
+        // Win condition
+        if (camera_.CheckWinCondition() == true) {
+            glfwSetWindowShouldClose(window_, true);
+        }
     }
 }
 
@@ -448,7 +453,7 @@ void Game::UpdateHUD() {
     // Oxygen timer
     DisplayText(glm::vec2(-0.95, 0.9), glm::vec3(0, 0, 0), GLUT_BITMAP_TIMES_ROMAN_24, ("OXYGEN REMAINING: " + (std::to_string((int)camera_.GetTimer()))).c_str());
     // Mechanical part counter
-    //DisplayText(glm::vec2(-0.95, 0.8), glm::vec3(1.0, 0.0, 0.0), GLUT_BITMAP_TIMES_ROMAN_24, ("PARTS COLLECTED: " + (std::to_string((int)camera_.GetTimer()))).c_str());
+    DisplayText(glm::vec2(-0.95, 0.8), glm::vec3(1.0, 0.0, 0.0), GLUT_BITMAP_TIMES_ROMAN_24, ("PARTS COLLECTED: " + (std::to_string((int)camera_.GetTimer()))).c_str());
 }
 
 void Game::DisplayText(glm::vec2 position, glm::vec3 colour, void* font, const char* text) {
