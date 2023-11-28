@@ -16,7 +16,14 @@
 	std::cerr << exception_object.what() << std::endl
 
 // Main function that builds and runs the game
-int main(void){
+int main(){
+
+    // Initialize freeglut with default parameters
+    int argc = 1;
+    char* argv[1] = { (char*)"N/A" };
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+
     game::Game app; // Game application 
 
     try {

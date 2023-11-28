@@ -7,167 +7,163 @@
 
 namespace game {
 
-// Some configuration constants
-// They are written here as global variables, but ideally they should be loaded from a configuration file
+    // Some configuration constants
+    // They are written here as global variables, but ideally they should be loaded from a configuration file
 
-// Main window settings
-const std::string window_title_g = "Bjag";
-const unsigned int window_width_g = 1280;
-const unsigned int window_height_g = 720;
-const bool window_full_screen_g = false;
+    // Main window settings
+    const std::string window_title_g = "Bjag";
+    const unsigned int window_width_g = 1280;
+    const unsigned int window_height_g = 720;
+    const bool window_full_screen_g = false;
 
-// Viewport and camera settings
-float camera_near_clip_distance_g = 0.01;
-float camera_far_clip_distance_g = 1000.0;
-float camera_fov_g = 60.0; // Field-of-view of camera (degrees)
-const glm::vec3 viewport_background_color_g(0.0, 0.0, 0.0);
-glm::vec3 camera_position_g(0.0, 5.0, 8.0);
-glm::vec3 camera_look_at_g(0.0, 2.5, 0.0);
-glm::vec3 camera_up_g(0.0, 1.0, 0.0);
+    // Viewport and camera settings
+    float camera_near_clip_distance_g = 0.01;
+    float camera_far_clip_distance_g = 1000.0;
+    float camera_fov_g = 60.0; // Field-of-view of camera (degrees)
+    const glm::vec3 viewport_background_color_g(0.5, 0.5, 1.0);
+    glm::vec3 camera_position_g(0.0, 5.0, 8.0);
+    glm::vec3 camera_look_at_g(0.0, 2.5, 0.0);
+    glm::vec3 camera_up_g(0.0, 1.0, 0.0);
 
-// Materials 
-const std::string material_directory_g = MATERIAL_DIRECTORY;
+    // Materials 
+    const std::string material_directory_g = MATERIAL_DIRECTORY;
 
-// Manipulator
-Manipulator* manipulator = new Manipulator();
+    // Manipulator
+    Manipulator* manipulator = new Manipulator();
 
-Game::Game(void){
+    Game::Game(void) {
 
-    // Don't do work in the constructor, leave it for the Init() function
-}
-
-
-void Game::Init(void){
-
-    // Run all initialization steps
-    InitWindow();
-    InitView();
-    InitEventHandlers();
-
-    // Set variables
-    animating_ = true;
-}
-
-       
-void Game::InitWindow(void){
-
-    // Initialize the window management library (GLFW)
-    if (!glfwInit()){
-        throw(GameException(std::string("Could not initialize the GLFW library")));
+        // Don't do work in the constructor, leave it for the Init() function
     }
 
-    // Create a window and its OpenGL context
-    if (window_full_screen_g){
-        window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), glfwGetPrimaryMonitor(), NULL);
-    } else {
-        window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), NULL, NULL);
+
+    void Game::Init(void) {
+
+        // Run all initialization steps
+        InitWindow();
+        InitView();
+        InitEventHandlers();
+
+        // Set variables
+        animating_ = true;
+        moving_ = false;
     }
-    if (!window_){
-        glfwTerminate();
-        throw(GameException(std::string("Could not create window")));
-    }
-
-    // Make the window's context the current 
-    glfwMakeContextCurrent(window_);
-
-    // Initialize the GLEW library to access OpenGL extensions
-    // Need to do it after initializing an OpenGL context
-    glewExperimental = GL_TRUE;
-    GLenum err = glewInit();
-    if (err != GLEW_OK){
-        throw(GameException(std::string("Could not initialize the GLEW library: ")+std::string((const char *) glewGetErrorString(err))));
-    }
-}
 
 
-void Game::InitView(void){
-    // Set up z-buffer
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    void Game::InitWindow(void) {
 
-    // Set viewport
-    int width, height;
-    glfwGetFramebufferSize(window_, &width, &height);
-    glViewport(0, 0, width, height);
-
-    // Set up camera
-    // Set current view
-    camera_.SetView(camera_position_g, camera_look_at_g, camera_up_g);
-    // Set projection
-    camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
-    // Set acceleration
-    camera_.SetSpeed(0.0f);
-    // Hide mouse
-    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-}
-
-void Game::InitEventHandlers(void){
-
-    // Set event callbacks
-    glfwSetKeyCallback(window_, KeyCallback);
-    glfwSetFramebufferSizeCallback(window_, ResizeCallback);
-    glfwSetCursorPosCallback(window_, CursorPosCallback);
-
-    // Set pointer to game object, so that callbacks can access it
-    glfwSetWindowUserPointer(window_, (void *) this);
-}
-
-
-void Game::SetupResources(void){
-
-    
-    // POPULATE HEIGHT MAP ARRAY
-    std::ifstream height_file;
-    try {
-        height_file.open(material_directory_g + "\\height_map.pgm");
-        if (!height_file.is_open()) {
-            throw std::ios_base::failure("Error opening height_map.pgm");
+        // Initialize the window management library (GLFW)
+        if (!glfwInit()) {
+            throw(GameException(std::string("Could not initialize the GLFW library")));
         }
-    }
-    catch (const std::ios_base::failure& e) {
-        std::cout << e.what();
-        std::exit(1);
-    }
 
-    /*
-    // CHECK FORMATTING; ONLY ACCEPT PGM FILES
-    // PGM FILES START WITH P2 AND ARE FOLLOWED BY THEIR WIDTH x HEIGHT DIMENSIONS
-    // THE REST OF THE FILE CONTAINS THE VERTEX DATA
-    std::string magic_number;
-    std::string comment;
-    int width, height, max_value;
-    height_file >> magic_number >> width >> height >> max_value;
-    if (magic_number != "P2" || width != plane_size_.x || height != plane_size_.y || max_value != 255) {
-        throw std::invalid_argument("Invalid PGM file format or dimensions");
-    }
+        // Create a window and its OpenGL context
+        if (window_full_screen_g) {
+            window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), glfwGetPrimaryMonitor(), NULL);
+        }
+        else {
+            window_ = glfwCreateWindow(window_width_g, window_height_g, window_title_g.c_str(), NULL, NULL);
+        }
+        if (!window_) {
+            glfwTerminate();
+            throw(GameException(std::string("Could not create window")));
+        }
 
-    int offsetX = plane_size_.x / 2;
-    int offsetZ = plane_size_.y / 2;
-    
-    
-    height_map_ = new float* [plane_size_.x];
-    height_map_boundary_ = new float* [plane_size_.x];
-    
-    for (int i = 0; i < plane_size_.x; i++)
-    {
-        height_map_[i] = new float[plane_size_.y];
-        height_map_boundary_[i] = new float[plane_size_.y];
-    }
+        // Make the window's context the current 
+        glfwMakeContextCurrent(window_);
 
-    // Generate random starting values
-    for (int z = 0; z < plane_size_.y; z++) {
-        for (int x = 0; x < plane_size_.x; x++) {
-            height_map_[x][z] = rand() / (RAND_MAX / 0.5); // Random height between 0 to 2.0
-            height_map_boundary_[x][z] = -0.1 - (rand() / (RAND_MAX)); // -0.1 to -1.1
+        // Initialize the GLEW library to access OpenGL extensions
+        // Need to do it after initializing an OpenGL context
+        glewExperimental = GL_TRUE;
+        GLenum err = glewInit();
+        if (err != GLEW_OK) {
+            throw(GameException(std::string("Could not initialize the GLEW library: ") + std::string((const char*)glewGetErrorString(err))));
         }
     }
 
+
+    void Game::InitView(void) {
+        // Set up z-buffer
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+
+
+        // Set viewport
+        int width, height;
+        glfwGetFramebufferSize(window_, &width, &height);
+        glViewport(0, 0, width, height);
+
+        // Set up camera
+        // Set current view
+        camera_.SetView(camera_position_g, camera_look_at_g, camera_up_g);
+        // Set projection
+        camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
+        // Set acceleration
+        camera_.SetForwardSpeed(0.0f);
+        camera_.SetSideSpeed(0.0f);
+        // Hide mouse
+        glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
+    void Game::InitEventHandlers(void) {
+
+        // Set event callbacks
+        glfwSetKeyCallback(window_, KeyCallback);
+        glfwSetFramebufferSizeCallback(window_, ResizeCallback);
+        glfwSetCursorPosCallback(window_, CursorPosCallback);
+
+        // Set pointer to game object, so that callbacks can access it
+        glfwSetWindowUserPointer(window_, (void*)this);
+    }
+
+
+    void Game::SetupResources(void) {
+        // POPULATE HEIGHT MAP ARRAY
+        std::ifstream height_file;
+        try {
+            height_file.open(material_directory_g + "\\height_map.pgm");
+            if (!height_file.is_open()) {
+                throw std::ios_base::failure("Error opening height_map.pgm");
+            }
+        }
+        catch (const std::ios_base::failure& e) {
+            std::cout << e.what();
+            std::exit(1);
+        }
+
+
+        // CHECK FORMATTING; ONLY ACCEPT PGM FILES
+        // PGM FILES START WITH P2 AND ARE FOLLOWED BY THEIR WIDTH x HEIGHT DIMENSIONS
+        // THE REST OF THE FILE CONTAINS THE VERTEX DATA
+        std::string magic_number;
+        std::string comment;
+        int width, height, max_value;
+        height_file >> magic_number >> width >> height >> max_value;
+        if (magic_number != "P2" || width != plane_size_.x || height != plane_size_.y || max_value != 255) {
+            throw std::invalid_argument("Invalid PGM file format or dimensions");
+        }
+
+        height_map_.reserve(width * height);
+        height_map_boundary_.reserve(width * height);
+
+        int offsetX = plane_size_.x / 2;
+        int offsetZ = plane_size_.y / 2;
+        srand(3535);
+        // Generate random starting values
+        
+        for (int z = 0; z < height_map_.capacity() && z < height_map_boundary_.capacity(); z++) {
+            height_map_.insert(height_map_.end(), rand() / (float)(RAND_MAX / 0.5)); // Random height between 0 to 2.0
+            height_map_boundary_.insert(height_map_boundary_.end() , -0.1f - (float)(rand() / (RAND_MAX))); // -0.1 to -1.1
+        }
+    height_map_.resize(height_map_.capacity());
+    height_map_boundary_.resize(height_map_boundary_.capacity());
     // Set heights
+    
     float h = 0;
-    for (int z = 0; z < plane_size_.y; ++z) {
-        for (int x = 0; x < plane_size_.x; ++x) {
+    for (int z = 0; z < height_map_boundary_.size() / width; ++z) {
+        for (int x = 0; x < height_map_boundary_.size() / height; ++x) {
             height_file >> h;
-            height_map_boundary_[x][z] += h/16; // max height is 16 (255/16) ~= 15.9
+            height_map_boundary_[x + width*z] += h/8; // max height is 16 (255/16) ~= 15.9
         }
     }
     height_file.close();
@@ -195,16 +191,13 @@ void Game::SetupResources(void){
     resman_.CreateCylinder("Base", 0.5, 1);
     resman_.CreateSphere("Middle", 1.0, 30);
     resman_.CreateCylinder("Tentacle", 0.5, 0.1);
-    // Seaweed
-    resman_.CreateCylinder("LowResCylinder", 1.0, 0.6, 6, 6);
-    //rock
+    // Rock
     resman_.CreateSphere("Rock_Sphere", 2, 40, 20);
-
-    /*
+    // Seaweed
+    resman_.CreateCylinder("LowPolyCylinder", 1.0, 0.6, 10, 9);
     // Plane
-    resman_.CreatePlane("Plane", height_map_, plane_size_.x, plane_size_.y, offsetX, offsetZ);
-    resman_.CreatePlane("Boundary", height_map_boundary_, plane_size_.x, plane_size_.y, offsetX, offsetZ);
-    */
+    resman_.CreatePlane("Plane", height_map_, height_map_.size() / width, height_map_.size()/height, offsetX, offsetZ);
+
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/normal_map");
     resman_.LoadResource(Material, "NormalMapMaterial", filename.c_str());
     
@@ -242,25 +235,53 @@ void Game::SetupResources(void){
 }
 
 
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_grass2.png");
+    resman_.LoadResource(Texture, "NormalMapGrass", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_scales.png");
+    resman_.LoadResource(Texture, "NormalMapScales", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_glass.png");
+    resman_.LoadResource(Texture, "NormalMapGlass", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_metal.png");
+    resman_.LoadResource(Texture, "NormalMapMetal", filename.c_str());
+  
+    /*resman_.CreateCone("MachinePart", 2.0, 1.0, 10, 10);
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
+    resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());*/
+}
+
 void Game::SetupScene(void){    
+
+    camera_.SetTimer(480); // Starting player time limit / oxygen
+
+    
     scene_.SetBackgroundColor(viewport_background_color_g);
     
     // Floor of the game (sand)
-   // scene_.AddNode(manipulator->ConstructPlane(&resman_));
+
+    scene_.AddNode(manipulator->ConstructPlane(&resman_)); // name is "Plane"
+    //scene_.GetNode("Plane")
 
     // Boundary "walls" (stone)
    // scene_.AddNode(manipulator->ConstructBoundary(&resman_));
 
     // Light source ("sun")
-    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,50,0)));
+    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,100,0)));
   
     //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
     
-    //scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(0, 0, -20)));
+    scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(-17, 7.5, -33)));
+    //scene_.GetNode("Submarine")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(1, 1, 1)));
 
-    scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part", glm::vec3(0, 5, 0)));
-    scene_.GetNode("Mechanical_Part")->Scale(glm::vec3(0.2, 0.2, 0.2));
+
+     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(-15.62, 6, 65.15)));
+     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part2", glm::vec3(-52.9159, 5, 37.026)));
+     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part3", glm::vec3(31.991, 5, 67.4984)));
+
+    //scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
 
    // scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
     
@@ -275,6 +296,8 @@ void Game::SetupScene(void){
     //scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp1", 4, glm::vec3(0.0, 0.0, -5.0))); // Example on how to make object
     //scene_.GetNode("Kelp1")->Scale(glm::vec3(1,2,1)); // Example on how to transform object after creation
 
+    // Seaweed instancer call, can generate random seaweed using given dimensions / density
+    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 50, 50, glm::vec3(0, 0, -5));
 }
 
 void Game::MainLoop(void){
@@ -282,14 +305,17 @@ void Game::MainLoop(void){
     while (!glfwWindowShouldClose(window_)){
 
         SceneNode* world_light = scene_.GetNode("Sphere")->GetRoot();
-
+        float delta_time = 0.0f;
         // Animate the scene
         if (animating_){
             static double last_time = 0;
             double current_time = glfwGetTime();
             float mytheta = glm::pi<float>() / 64;
+
+            delta_time = current_time - last_time;
             if ((current_time - last_time) > 0.05){
-                scene_.GetNode("Mechanical_Part")->Rotate(glm::angleAxis(0.1f, glm::vec3(0, 1, 1)));
+
+                camera_.DecreaseTimer(current_time - last_time); // Decrease remaining player time limit / oxygen
 
                 scene_.Update(&camera_, &resman_);
                 manipulator->AnimateAll(&scene_, current_time, mytheta);
@@ -297,25 +323,41 @@ void Game::MainLoop(void){
                 
 
                 last_time = current_time;
+
+                for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++)
+                {
+                    collision_.CollisionEventCompositeNode(&camera_, *iterator);
+                }
+                std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
+
             }
             
         }
+        camera_.Update(delta_time);
+
 
         // Process camera/player forward movement
-        camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
-        if (camera_.GetSpeed() > 0) {
-            camera_.SetSpeed(camera_.GetSpeed() * 0.98);
+        //camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
+        //if (camera_.GetSpeed() > 0) {
+        //    camera_.SetSpeed(camera_.GetSpeed() * 0.98);
 
-        }
-
+        //}
         // Draw the scene
         scene_.Draw(&camera_, world_light);
+
+        // HUD
+        UpdateHUD();
 
         // Push buffer drawn in the background onto the display
         glfwSwapBuffers(window_);
 
         // Update other events like input handling
         glfwPollEvents();
+
+        // Win condition
+        if (camera_.CheckWinCondition() == true) {
+            glfwSetWindowShouldClose(window_, true);
+        }
     }
 }
 
@@ -336,14 +378,18 @@ void Game::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
     
     //game->camera_.Roll(0);
 
+    //std::cout << glm::to_string(dir) << std::endl;
+
     glfwSetCursorPos(window, width / 2, height / 2); // center the cursor
 }
 
 void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
 
+
     // Get user data with a pointer to the game class
     void* ptr = glfwGetWindowUserPointer(window);
     Game *game = (Game *) ptr;
+
   
     // Quit game if 'q' is pressed
     if (key == GLFW_KEY_Q && action == GLFW_PRESS){
@@ -351,7 +397,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
     }
 
     // Stop animation if space bar is pressed
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
+    if (key == GLFW_KEY_E && action == GLFW_PRESS){
         game->animating_ = (game->animating_ == true) ? false : true;
     }
 
@@ -366,13 +412,13 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
                   << "\nFOR: " << forw
                   << "\nSID: " << side
                   << "\n UP: " << up
-                  << "\nSPD: " << game->camera_.GetSpeed() << std::endl;
+                  << "\nSPD: " << game->camera_.GetForwardSpeed() << std::endl;
         
     }
 
     // View control
     float rot_factor(2 * glm::pi<float>() / 180); // amount the ship turns per keypress (DOUBLE)
-    float trans_factor = 0.5f; // amount the ship steps forward per keypress
+    float trans_factor = 0.7f; // amount the ship steps forward per keypress
     // Look up/down
     if (key == GLFW_KEY_UP){
         game->camera_.Pitch(rot_factor);
@@ -392,16 +438,24 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
     //forward backward side movement (strafe)
     if (key == GLFW_KEY_A){
       
-        game->camera_.Translate(-glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
+        //game->camera_.UpdateVelocity(1);
+        //game->camera_.Translate(-glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
     }
-    if (key == GLFW_KEY_D){
-        
-        game->camera_.Translate(glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
+    if (key == GLFW_KEY_D)
+    {
+        //game->camera_.UpdateVelocity(-1);
+        //game->camera_.Translate(glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
+    }
+
+    if (key == GLFW_KEY_SPACE)
+    {
+        //game->camera_.SetState(0);
+        game->camera_.Jump();
+        //game->camera_.Translate(glm::vec3(0.0, game->camera_.GetUp(), 0.0) * trans_factor);
     }
    
     // Accelerate and break
-    if (key == GLFW_KEY_W){
-      
+    if (key == GLFW_KEY_W && glfwGetKey(window, key) == GLFW_PRESS) {
         /* //old architecture from acceleration based model
         float new_speed = game->camera_.GetSpeed() + 0.005f;
         
@@ -411,10 +465,16 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         else {
             game->camera_.SetSpeed(game->camera_.GetMaxSpeed());
         }*/
-
-        game->camera_.Translate(glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
+        game->pressed_.insert(key);
+        game->camera_.UpdateForwardVelocity(1);
+        //game->camera_.Translate(glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
     }
-    if (key == GLFW_KEY_S){
+    else if (key == GLFW_KEY_W && action == GLFW_RELEASE)
+    {
+        game->pressed_.erase(key);
+    }
+
+    if (key == GLFW_KEY_S && glfwGetKey(window, key) == GLFW_PRESS){
      
         /* //old architecture from acceleration based model
         float new_speed = game->camera_.GetSpeed() - 0.05f;
@@ -425,7 +485,46 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
             game->camera_.SetSpeed(0.0f);
         }*/
 
-        game->camera_.Translate(-glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
+        game->pressed_.insert(key);
+        game->camera_.UpdateForwardVelocity(-1);
+        //game->camera_.Translate(-glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
+    }
+
+    else if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+    {
+        game->pressed_.erase(key);
+    }
+
+    if (key == GLFW_KEY_D &&  glfwGetKey(window, key) == GLFW_PRESS)
+    {
+
+        game->pressed_.insert(key);
+        game->camera_.UpdateSideVelocity(1);
+    }
+    else if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+    {
+        game->pressed_.erase(key);
+    }
+
+    if (key == GLFW_KEY_A && glfwGetKey(window, key) == GLFW_PRESS)
+    {
+        game->pressed_.insert(key);
+        game->camera_.UpdateSideVelocity(-1);
+    }
+    else if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+    {
+        game->pressed_.erase(key);
+    }
+
+
+    if (game->pressed_.find(GLFW_KEY_W) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_S) == game->pressed_.end())
+    {
+        game->camera_.SetForwardSpeed(0);
+    }
+
+    if (game->pressed_.find(GLFW_KEY_D) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_A) == game->pressed_.end())
+    {
+        game->camera_.SetSideSpeed(0);
     }
 }
 
@@ -443,6 +542,24 @@ void Game::ResizeCallback(GLFWwindow* window, int width, int height){
 Game::~Game(){
     
     glfwTerminate();
+}
+
+void Game::UpdateHUD() {
+    // Oxygen timer
+    DisplayText(glm::vec2(-0.95, 0.9), glm::vec3(0, 0, 0), GLUT_BITMAP_TIMES_ROMAN_24, ("OXYGEN REMAINING: " + (std::to_string((int)camera_.GetTimer()))).c_str());
+    // Mechanical part counter
+    DisplayText(glm::vec2(-0.95, 0.8), glm::vec3(1.0, 0.0, 0.0), GLUT_BITMAP_TIMES_ROMAN_24, ("PARTS COLLECTED: " + (std::to_string((int)camera_.GetTimer()))).c_str());
+}
+
+void Game::DisplayText(glm::vec2 position, glm::vec3 colour, void* font, const char* text) {
+    // *NOTE: For some reason, the text is being dynamically lit... enabling GL_FOG at least makes the text black, for now.
+    glEnable(GL_FOG);
+    glRasterPos2f(position.x, position.y); // Set text position
+    glColor3fv(glm::value_ptr(colour));
+    //glColor3f(1, 1, 1);
+    for (int i = 0; i < (int)strlen(text); i++) { // "Print" each character of text to window
+        glutBitmapCharacter(font, text[i]);
+    }
 }
 
 SceneNode* Game::CreateSphereInstance(std::string entity_name, std::string object_name, std::string material_name) {

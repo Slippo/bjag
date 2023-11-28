@@ -8,12 +8,15 @@
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 #include <fstream>
+#include <set>
 
 #include "scene_graph.h"
 #include "resource_manager.h"
 #include "camera.h"
 #include "composite_node.h"
 #include "manipulator.h"
+#include "GL/freeglut.h"
+#include "game_collision.h"
 
 namespace game {
 
@@ -58,13 +61,19 @@ namespace game {
             // Camera abstraction
             Camera camera_;
 
+            GameCollision collision_;
+
             // Flag to turn animation on/off
             bool animating_;
 
+            bool moving_;
+
+            std::set<int> pressed_;
+
             // Size of both planes
-            const glm::ivec2 plane_size_ = glm::ivec2(500,500);
-            float** height_map_; // height map for the floor
-            float** height_map_boundary_; // height map for the boundary (stone walls)
+            const glm::ivec2 plane_size_ = glm::ivec2(200,200);
+            std::vector<float> height_map_; // height map for the floor
+            std::vector<float> height_map_boundary_; // height map for the boundary (stone walls)
 
             // Methods to initialize the game
             void InitWindow(void);
@@ -76,6 +85,9 @@ namespace game {
             static void ResizeCallback(GLFWwindow* window, int width, int height);
             static void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 
+            // HUD
+            void UpdateHUD();
+            void DisplayText(glm::vec2 position, glm::vec3 colour, void* font, const char* text); // For outputting text using freeglut
 
             // Kelp tree/bush nodes
             // The sphere used to make leaves

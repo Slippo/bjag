@@ -9,7 +9,17 @@
 
 namespace game {
 
-Camera::Camera(void){}
+//define constant acceleration factor
+    float base_vel = 10.0f;
+    float jump_height = 10.0f;
+    float gravity = 5.8f;
+    float t_;
+
+Camera::Camera(void){
+    state_ = walking;
+    jump_ = 0.0;
+    radius_ = 1.0f;
+}
 
 Camera::~Camera(){}
 
@@ -29,12 +39,46 @@ void Camera::SetOrientation(glm::quat orientation){
     orientation_ = orientation;
 }
 
-void Camera::SetSpeed(float speed) {
-    speed_ = speed;
+void Camera::SetForwardSpeed(float speed) {
+    forward_speed_ = speed;
+}
+
+void Camera::SetSideSpeed(float speed)
+{
+    side_speed_ = speed;
 }
 
 void Camera::SetMaxSpeed(float speed) {
     max_speed_ = speed;
+}
+
+void Camera::SetRadius(float r)
+{
+    radius_ = r;
+}
+
+void Camera::SetTimer(float t) {
+    timer_ = t;
+}
+
+void Camera::IncreaseTimer(float t) {
+    timer_ += t;
+}
+
+void Camera::DecreaseTimer(float t) {
+    timer_ -= t;
+}
+
+void Camera::AddPart() {
+    num_parts_++;
+    if (num_parts_ >= 4) {
+        
+    }
+}
+
+void Camera::SetDead(bool d)
+{
+    dead_ = d;
 }
 
 void Camera::Translate(glm::vec3 trans){
@@ -52,6 +96,17 @@ glm::vec3 Camera::GetForward(void) const {
     return -current_forward; // Return -forward since the camera coordinate system points in the opposite direction
 }
 
+glm::vec3 Camera::GetForwardMovement(void) const {
+    glm::vec3 current_forward = movement_orientation_ * movement_forward_;
+    return -current_forward;
+}
+
+glm::vec3 Camera::GetSideMovement(void) const
+{
+    glm::vec3 current_side = movement_orientation_ * movement_side_;
+    return current_side;
+}
+
 glm::vec3 Camera::GetSide(void) const {
     glm::vec3 current_side = orientation_ * side_;
     return current_side;
@@ -62,8 +117,13 @@ glm::vec3 Camera::GetUp(void) const {
     return current_up;
 }
 
-float Camera::GetSpeed(void) const {
-    return speed_;
+float Camera::GetForwardSpeed(void) const {
+    return forward_speed_;
+}
+
+float Camera::GetSideSpeed(void) const
+{
+    return side_speed_;
 }
 
 float Camera::GetMaxSpeed(void) const {
@@ -74,6 +134,24 @@ float Camera::GetMinSpeed(void) const {
     return min_speed_;
 }
 
+float Camera::GetRadius(void) const
+{
+    return radius_;
+}
+
+float Camera::GetTimer(void) const {
+    return timer_;
+}
+
+bool Camera::IsDead(void) const
+{
+    return dead_;
+}
+
+bool Camera::CheckWinCondition(void) const {
+    return win_condition_;
+}
+
 void Camera::Pitch(float angle){
     glm::quat rotation = glm::angleAxis(angle, GetSide());
     orientation_ = rotation * orientation_;
@@ -82,9 +160,12 @@ void Camera::Pitch(float angle){
 
 void Camera::Yaw(float angle){
     //glm::quat rotation = glm::angleAxis(angle, GetUp());
-    glm::quat rotation = glm::angleAxis(angle, glm::vec3(0,1,0));
+    glm::quat rotation = glm::angleAxis(angle, glm::vec3(0, 1, 0));
     orientation_ = rotation * orientation_;
     orientation_ = glm::normalize(orientation_);
+
+    movement_orientation_ = rotation * movement_orientation_;
+    movement_orientation_ = glm::normalize(movement_orientation_);
 }
 
 void Camera::Roll(float angle){
@@ -92,6 +173,94 @@ void Camera::Roll(float angle){
     orientation_ = rotation * orientation_;
     orientation_ = glm::normalize(orientation_);
 }
+
+void Camera::Jump()
+{
+    if (state_ == walking)
+    {
+        base_y_position_ = position_.y;
+        state_ = jumping;
+        t_ = 0.0; //set timer to zero just to make sure
+     
+    }
+}
+void Camera::Update(float delta_time)
+{
+    position_ += (GetForwardMovement() * forward_speed_ * delta_time);
+    position_ += (GetSideMovement() * side_speed_ * delta_time);    
+    
+    if (state_ == jumping)
+    {
+        //y position is calculated using kinematic equation of vertical motion, factoring in gravity, base y position,
+        //basevelocity, and time (jump height is also specified here)
+        position_.y = base_y_position_ + (0.5 * (jump_height + (base_vel - (gravity * t_))) * t_);
+
+        //timer is increemented here, 0.1 for each recorded frame
+        t_ += 0.1;
+
+        //distance from base y position to current y is calculated here
+        float distance = position_.y - base_y_position_;
+       
+        //if the timer has been going for a while (to account for the initial push-off from the ground), and the distance
+        //from the ground is small enough, set state to walking and reset timer to 0
+        if (t_ > 2.0 && distance < 0.5)
+        {
+            
+            t_ = 0.0;
+            state_ = walking;
+            //position_.y = old_y_;
+        }
+        else
+        {
+            position_ = position_ - (glm::vec3(0.0, 0.4f, 0.0) * delta_time);
+        }
+
+    }
+    /*else if (state_ == jumping)
+    {
+        jump_ += 0.5f;
+
+        if (jump_ >= jump_limit_)
+        {
+            state_ = falling;
+            //jump_ = jump_limit_;
+            //position_.y = jump_limit_;
+        }
+        else
+        {
+            position_ = position_ + (glm::vec3(0.0, 0.50f, 0.0) * delta_time);
+
+        }
+    }*/
+
+
+}
+void Camera::UpdateForwardVelocity(float backwards)
+{
+    forward_speed_ += (0.15 * backwards);
+    if (forward_speed_ >= GetMaxSpeed())
+    {
+        forward_speed_ = max_speed_;
+    }
+    if (forward_speed_ <= GetMinSpeed())
+    {
+        forward_speed_ = min_speed_;
+    }
+}
+
+void Camera::UpdateSideVelocity(float left)
+{
+    side_speed_ += (0.15 * left);
+    if (side_speed_ >= GetMaxSpeed())
+    {
+        side_speed_ = max_speed_;
+    }
+    if (side_speed_ <= GetMinSpeed())
+    {
+        side_speed_ = min_speed_;
+    }
+}
+
 
 void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up){
     // Store initial forward and side vectors
@@ -103,9 +272,14 @@ void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up){
     side_ = glm::normalize(side_);
     up_ = glm::normalize(up);
 
+    movement_forward_ = glm::vec3(forward_.x, 0.0, forward_.z);
+    movement_side_ = glm::cross(glm::vec3(0, 1, 0), movement_forward_);
+    movement_side_ = glm::normalize(movement_side_);
+
     // Reset orientation and position of camera
     position_ = position;
     orientation_ = glm::quat();
+    movement_orientation_ = glm::quat();
 }
 
 void Camera::SetProjection(GLfloat fov, GLfloat near, GLfloat far, GLfloat w, GLfloat h){

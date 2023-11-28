@@ -50,8 +50,11 @@ void main()
     tangent_light_pos = TBN_mat * light_pos_v;
     tangent_view_pos = TBN_mat * view_pos_v;
     tangent_frag_pos = TBN_mat * vertex_position;
+
+    // vectors for lighting calculations
     normal_vector = TBN_mat * vertex_normal;
-    light_vector = tangent_light_pos - tangent_frag_pos;
+    light_vector = tangent_light_pos - tangent_frag_pos; // positional
+    //light_vector = TBN_mat * vec3(view_mat * normalize(vec4(0.3,1.0,0.2,0.0))); // directional
     view_vector = tangent_view_pos - tangent_frag_pos;
 
     // Send texture coordinates

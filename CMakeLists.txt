@@ -1,17 +1,16 @@
 cmake_minimum_required(VERSION 2.6)
 
 # Name of project
-set(PROJ_NAME "Tree")
+set(PROJ_NAME "Bjag")
 project(${PROJ_NAME})
 
 # Specify project files: header files and source files
 set(HDRS
-      camera.h composite_node.h  game.h  resource.h resource_manager.h scene_graph.h scene_node.h manipulator.h
+      camera.h composite_node.h  game.h  resource.h resource_manager.h scene_graph.h scene_node.h manipulator.h game_collision.h
 )
  
 set(SRCS
-     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl
-     normal_map_vp.glsl normal_map_fp.glsl
+     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl game_collision.cpp
 )
 
 # Add path name to configuration file
@@ -26,20 +25,23 @@ include_directories(${OPENGL_INCLUDE_DIR})
 target_link_libraries(${PROJ_NAME} ${OPENGL_gl_LIBRARY})
 
 # Other libraries needed
-set(LIBRARY_PATH C:/Software/Libraries)
+set(LIBRARY_PATH D:/Carleton/Third\ Year/COMP3501/Libraries)
 include_directories(${LIBRARY_PATH}/include)
 if(NOT WIN32)
     find_library(GLEW_LIBRARY GLEW)
     find_library(GLFW_LIBRARY glfw)
     find_library(SOIL_LIBRARY SOIL)
+    find_library(GLUT_LIBRARY GLUT)
 elseif(WIN32)
     find_library(GLEW_LIBRARY glew32s HINTS ${LIBRARY_PATH}/lib)
     find_library(GLFW_LIBRARY glfw3 HINTS ${LIBRARY_PATH}/lib)
     find_library(SOIL_LIBRARY SOIL HINTS ${LIBRARY_PATH}/lib)
+    find_library(GLUT_LIBRARY GLUT HINTS ${LIBRARY_PATH}/lib)
 endif(NOT WIN32)
 target_link_libraries(${PROJ_NAME} ${GLEW_LIBRARY})
 target_link_libraries(${PROJ_NAME} ${GLFW_LIBRARY})
 target_link_libraries(${PROJ_NAME} ${SOIL_LIBRARY})
+target_link_libraries(${PROJ_NAME} ${GLUT_LIBRARY})
 
 # The rules here are specific to Windows Systems
 if(WIN32)

@@ -80,9 +80,27 @@ void SceneGraph::Draw(Camera *camera, SceneNode* light){
 // Handles movement, collisions, and geometric changes
 int SceneGraph::Update(Camera* camera, ResourceManager* resman) {
     int val = 0;
+    int index = 0;
     for (int i = 0; i < node_.size(); i++) {
         node_[i]->Update(camera);
     }
+
+     while (index < node_.size())
+     {
+         if (node_[index]->GetRoot()->GetCollision() == 2)
+         {
+             for (SceneNode* node : node_[index]->GetAllNodes())
+             {
+                 delete node;
+             }
+             node_[index]->ClearNodes();
+             delete node_[index]->GetRoot();
+             node_.erase(node_.begin() + index);
+             continue;
+         }
+         index = index + 1;
+    }
+
     return 0;
 }
 } // namespace game
