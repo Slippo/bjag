@@ -167,7 +167,7 @@ namespace game {
         }
     }
     height_file.close();
-    */
+    
     
   
     // SHAPES
@@ -196,8 +196,8 @@ namespace game {
     // Seaweed
     resman_.CreateCylinder("LowPolyCylinder", 1.0, 0.6, 10, 9);
     // Plane
-    resman_.CreatePlane("Plane", height_map_, height_map_.size() / width, height_map_.size()/height, offsetX, offsetZ);
-
+    resman_.CreatePlane("Plane", height_map_, height_map_.size() / width, height_map_.size() / height, offsetX, offsetZ);
+    resman_.CreatePlane("Boundary", height_map_boundary_, height_map_boundary_.capacity() / width, height_map_boundary_.capacity() / height, offsetX, offsetZ);
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/normal_map");
     resman_.LoadResource(Material, "NormalMapMaterial", filename.c_str());
     
@@ -232,8 +232,6 @@ namespace game {
     //filename = std::string(MATERIAL_DIRECTORY) + std::string("/Metal_Corrugated_0111_.png");
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/rough-metallic-surface-texture.jpg");
     resman_.LoadResource(Texture, "MetalTexture", filename.c_str());
-}
-
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_grass2.png");
     resman_.LoadResource(Texture, "NormalMapGrass", filename.c_str());
@@ -265,7 +263,7 @@ void Game::SetupScene(void){
     //scene_.GetNode("Plane")
 
     // Boundary "walls" (stone)
-   // scene_.AddNode(manipulator->ConstructBoundary(&resman_));
+    scene_.AddNode(manipulator->ConstructBoundary(&resman_));
 
     // Light source ("sun")
     scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,100,0)));
