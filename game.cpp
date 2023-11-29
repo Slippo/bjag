@@ -12,8 +12,8 @@ namespace game {
 
     // Main window settings
     const std::string window_title_g = "Bjag";
-    const unsigned int window_width_g = 1920;
-    const unsigned int window_height_g = 1080;
+    const unsigned int window_width_g = 1280;
+    const unsigned int window_height_g = 720;
     const bool window_full_screen_g = false;
 
     // Viewport and camera settings
