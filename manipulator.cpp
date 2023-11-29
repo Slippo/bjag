@@ -520,7 +520,7 @@ namespace game {
         root_node->SetPosition(position_);
         root_node->SetColor(glm::vec3(0.501, 0.501, 0.501));
         part->SetRoot(root_node);
-        root_node->Scale(glm::vec3(0.05, 0.05, 0.05));
+        root_node->Scale(glm::vec3(0.1, 0.1, 0.1));
         // root_node->SetCollision(1);
         root_node->SetRadius(1.0f);
         //part->AddNode(root_node);
@@ -548,6 +548,24 @@ namespace game {
         part->AddNode(node3);
       
         return part;
+    }
+
+    CompositeNode* Manipulator::ConstructParticleSystem(ResourceManager* resman_, std::string entity_name, std::string object_name, std::string material_name, std::string texture_name, glm::vec3 position_) {
+        CompositeNode* system = new CompositeNode(object_name);
+        system->SetType(CompositeNode::Type::ParticleSystem);
+
+        game::SceneNode* particles = CreateSceneNodeInstance(object_name, entity_name, material_name, texture_name, resman_);
+        particles->SetPosition(position_);
+        particles->SetType(SceneNode::Type::ParticleSystem);
+        particles->SetScale(glm::vec3(2, 2, 2));
+        system->SetRoot(particles);
+
+
+        return system;
+
+
+
+
     }
   
     CompositeNode* Manipulator::ConstructAnemonie(ResourceManager* resman_, std::string name_, glm::vec3 position_) {

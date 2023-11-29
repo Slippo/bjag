@@ -12,6 +12,7 @@
 // Default extensions for different shader source files
 #define VERTEX_PROGRAM_EXTENSION "_vp.glsl"
 #define FRAGMENT_PROGRAM_EXTENSION "_fp.glsl"
+#define GEOMETRY_PROGRAM_EXTENSION "_gp.glsl"
 
 namespace game {
 
@@ -44,6 +45,9 @@ namespace game {
             // Create the geometry for a plane
             // Used to make the floor and the boundaries of the game
             void CreatePlane(std::string object_name, std::vector<float>, int length = 100, int width = 100, int offsetX = 50, int offsetZ = 50);
+
+            // Create particles distributed over a sphere
+            void CreateSphereParticles(std::string object_name, int num_particles = 500);
 			
         private:
            

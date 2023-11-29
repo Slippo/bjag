@@ -103,4 +103,7 @@ int SceneGraph::Update(Camera* camera, ResourceManager* resman) {
 
     return 0;
 }
+
+
+
 } // namespace game

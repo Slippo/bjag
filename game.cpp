@@ -195,8 +195,8 @@ namespace game {
     resman_.CreateCylinder("Branch", 3.0, 0.6, 30, 30);
     resman_.CreateSphere("Tip", 0.6, 90, 45);
     //mechanical part
-    resman_.CreateCylinder("MainBody", 10, 2);
-    resman_.CreateCylinder("Exhaust", 2.5, 0.5);
+    resman_.CreateCylinder("MainBody", 10, 2, 20, 20);
+    resman_.CreateCylinder("Exhaust", 2.5, 0.5, 10, 10);
     //sea anemonie
     resman_.CreateCylinder("Base", 0.5, 1);
     resman_.CreateSphere("Middle", 1.0, 30);
@@ -241,7 +241,7 @@ namespace game {
 
     //metal
     //filename = std::string(MATERIAL_DIRECTORY) + std::string("/Metal_Corrugated_0111_.png");
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/rough-metallic-surface-texture.jpg");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/Metal_Corrugated_0111_.png");
     resman_.LoadResource(Texture, "MetalTexture", filename.c_str());
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_grass2.png");
@@ -262,6 +262,37 @@ namespace game {
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/Gear.png");
     resman_.LoadResource(Texture, "GearTexture", filename.c_str());
   
+    // PARTICLE EFFECT SECTION
+
+    // Load material to be applied to environment particle effect
+    
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/environment");
+    resman_.LoadResource(Material, "ParticleGeyserMaterial", filename.c_str());
+
+    //bubble material
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/particle_vent");
+    resman_.LoadResource(Material, "ParticleBubbleMaterial", filename.c_str());
+
+    //bubble material
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/star");
+    resman_.LoadResource(Material, "ParticleStarMaterial", filename.c_str());
+    
+    // Load house smoke texture
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/smoke.png");
+    resman_.LoadResource(Texture, "SmokeTexture", filename.c_str());
+
+    // Load house Bubble texture
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/Bubble.png");
+    resman_.LoadResource(Texture, "BubbleTexture", filename.c_str());
+
+    // Load house Star texture
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/stars.png");
+    resman_.LoadResource(Texture, "StarTexture", filename.c_str());
+
+    // Create particles for explosion
+    resman_.CreateSphereParticles("SphereParticles");
+
+
     /*resman_.CreateCone("MachinePart", 2.0, 1.0, 10, 10);
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
     resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());*/
@@ -290,10 +321,13 @@ void Game::SetupScene(void){
     
     scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(-17, 7.5, -33)));
     //scene_.GetNode("Submarine")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(1, 1, 1)));
+    scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(0, 3, 0)));
 
-     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(-15.62, 6, 65.15)));
-     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part2", glm::vec3(-52.9159, 5, 37.026)));
-     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part3", glm::vec3(31.991, 5, 67.4984)));
+     //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(-15.6, 6, 65.15)));
+     //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part2", glm::vec3(-52.9159, 5, 37.026)));
+     //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part3", glm::vec3(31.991, 5, 67.4984)));
+     
+   
 
     //scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
 
@@ -311,7 +345,16 @@ void Game::SetupScene(void){
     //scene_.GetNode("Kelp1")->Scale(glm::vec3(1,2,1)); // Example on how to transform object after creation
 
     // Seaweed instancer call, can generate random seaweed using given dimensions / density
-    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 8, 55, 45, glm::vec3(-20, 0, -30));
+    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 50, 50, glm::vec3(0, 0, -5));
+
+    // Create particles
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance1", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 0, 0)));
+
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance2", "ParticleStarMaterial", "StarTexture", glm::vec3(3,5,0)));
+
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance3", "ParticleGeyserMaterial", "SmokeTexture", glm::vec3(-3, 2, 0)));
+
+    
 }
 
 void Game::MainLoop(void){
@@ -628,4 +671,6 @@ SceneNode* Game::CreateSceneNodeInstance(std::string entity_name, std::string ob
     SceneNode* node = new SceneNode(entity_name, geom, mat, NULL, 0);
     return node;
 }
+
+
 } // namespace game
