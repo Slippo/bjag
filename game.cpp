@@ -12,8 +12,8 @@ namespace game {
 
     // Main window settings
     const std::string window_title_g = "Bjag";
-    const unsigned int window_width_g = 1280;
-    const unsigned int window_height_g = 720;
+    const unsigned int window_width_g = 1920;
+    const unsigned int window_height_g = 1080;
     const bool window_full_screen_g = false;
 
     // Viewport and camera settings
@@ -82,6 +82,14 @@ namespace game {
         if (err != GLEW_OK) {
             throw(GameException(std::string("Could not initialize the GLEW library: ") + std::string((const char*)glewGetErrorString(err))));
         }
+
+        // Initialize ImGui to window
+        ImGui::CreateContext();
+        imgui_io_ = ImGui::GetIO();
+        imgui_io_.Fonts->AddFontFromFileTTF((MATERIAL_DIRECTORY + std::string("\\PixelBug.otf")).c_str(), 30); // Load custom font from file
+        ImGui::StyleColorsDark(); // Window style
+        ImGui_ImplGlfw_InitForOpenGL(window_, true);
+        ImGui_ImplOpenGL3_Init("#version 130");
     }
 
 
@@ -229,6 +237,12 @@ namespace game {
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_metal.png");
     resman_.LoadResource(Texture, "NormalMapMetal", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/Bubble.png");
+    resman_.LoadResource(Texture, "VentTexture", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/Gear.png");
+    resman_.LoadResource(Texture, "GearTexture", filename.c_str());
   
     /*resman_.CreateCone("MachinePart", 2.0, 1.0, 10, 10);
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
@@ -290,7 +304,9 @@ void Game::MainLoop(void){
             float mytheta = glm::pi<float>() / 64;
 
             delta_time = current_time - last_time;
+
             if ((current_time - last_time) > 0.05){
+
                 camera_.DecreaseTimer(current_time - last_time); // Decrease remaining player time limit / oxygen
                 scene_.Update(&camera_, &resman_);
                 manipulator->AnimateAll(&scene_, current_time, mytheta);
@@ -316,18 +332,20 @@ void Game::MainLoop(void){
         // Draw the scene
         scene_.Draw(&camera_, world_light);
 
-        TextRenderer* text_renderer = new TextRenderer();
-        text_renderer->RenderText(resman_.GetResource("TextShader")->GetResource(), glm::vec2(0, 0), 1.0, glm::vec3(1, 0, 0), "HELLO");
-
-        // Push buffer drawn in the background onto the display
-        glfwSwapBuffers(window_);
+        // Update ImGui UI
+        UpdateHUD();
 
         // Update other events like input handling
         glfwPollEvents();
 
+        // Push buffer drawn in the background onto the display
+        glfwSwapBuffers(window_);
+
         // Win condition
         if (camera_.CheckWinCondition() == true) {
+
             glfwSetWindowShouldClose(window_, true);
+
         }
     }
 }
@@ -509,9 +527,46 @@ void Game::ResizeCallback(GLFWwindow* window, int width, int height){
     game->camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
 }
 
+void Game::UpdateHUD() {
+
+    // Generate new frame for OpenGl, glfw, and ImGui respectively
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    //ImGui::SetNextWindowSize(ImVec2(350, 100)); // Next window size
+    ImGui::SetNextWindowBgAlpha(0.6f); // Next window background alpha
+    ImGui::Begin("UI", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoScrollbar); // A bunch of flags to style window
+    // Start GUI effect ----------------------
+
+    // First row
+    ImGui::Image((void*)resman_.GetResource("VentTexture")->GetResource(), ImVec2(50, 50)); // Bubble icon
+    ImGui::SameLine();
+    ImGui::SetCursorPosY(ImGui::GetWindowSize().y * 0.15); // Text offset
+    ImGui::Text("OXYGEN: %i", (int)camera_.GetTimer());
+
+    // Second row
+    ImGui::Image((void*)resman_.GetResource("GearTexture")->GetResource(), ImVec2(50, 50)); // Gear icon
+    ImGui::SameLine();
+    ImGui::SetCursorPosY(ImGui::GetWindowSize().y * 0.62); // Text offset
+    ImGui::Text("PARTS: %i / 5", camera_.GetNumParts(), camera_.GetNumParts());
+
+    // End GUI effect ------------------------
+    ImGui::End();
+    ImGui::Render();
+    ImGui::EndFrame(); // <-- End GUI effect
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); // Render
+}
+
 
 Game::~Game(){
     
+    // Free ImGui
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    // Close glfw
     glfwTerminate();
 }
 

@@ -1,6 +1,8 @@
 #ifndef GAME_H_
 #define GAME_H_
 
+#include "imgui/imgui.h"
+
 #include <exception>
 #include <string>
 #define GLEW_STATIC
@@ -16,7 +18,6 @@
 #include "composite_node.h"
 #include "manipulator.h"
 #include "game_collision.h"
-#include "text_renderer.h"
 
 namespace game {
 
@@ -76,6 +77,9 @@ namespace game {
             std::vector<float> height_map_; // height map for the floor
             std::vector<float> height_map_boundary_; // height map for the boundary (stone walls)
 
+            // ImGui io (to retain data)
+            ImGuiIO imgui_io_;
+
             // Methods to initialize the game
             void InitWindow(void);
             void InitView(void);
@@ -85,6 +89,9 @@ namespace game {
             static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
             static void ResizeCallback(GLFWwindow* window, int width, int height);
             static void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
+
+            // UI
+            void UpdateHUD();
 
             // Kelp tree/bush nodes
             // The sphere used to make leaves

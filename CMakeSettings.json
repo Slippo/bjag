@@ -20,14 +20,7 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "inheritEnvironments": [ "msvc_x86" ],
-      "variables": [
-        {
-          "name": "FREETYPE_LIBRARY",
-          "value": "C:/Program Files/Libraries/Libraries/lib/freetype.lib",
-          "type": "FILEPATH"
-        }
-      ]
+      "inheritEnvironments": [ "msvc_x86" ]
     }
   ]
 }
