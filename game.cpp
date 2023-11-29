@@ -141,6 +141,8 @@ namespace game {
             std::exit(1);
         }
 
+        // Setup drawing to texture
+        scene_.SetupDrawToTexture();
 
         // CHECK FORMATTING; ONLY ACCEPT PGM FILES
         // PGM FILES START WITH P2 AND ARE FOLLOWED BY THEIR WIDTH x HEIGHT DIMENSIONS
@@ -212,6 +214,10 @@ namespace game {
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/normal_map");
     resman_.LoadResource(Material, "NormalMapMaterial", filename.c_str());
 
+    // SCREENSPACE
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/screen_space");
+    resman_.LoadResource(Material, "ScreenSpaceMaterial", filename.c_str());
+
     // TEXTURES
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
     resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
@@ -229,7 +235,6 @@ namespace game {
     //normal map for rock
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/Pebbles_026_normal.png");
     resman_.LoadResource(Texture, "NormalMapRock", filename.c_str());
-
     
     // shader for 3-term lighting and texture combined effect
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/combined");
@@ -401,7 +406,11 @@ void Game::MainLoop(void){
 
         //}
         // Draw the scene
-        scene_.Draw(&camera_, world_light);
+        //scene_.Draw(&camera_, world_light);
+
+        scene_.DrawToTexture(&camera_, world_light);
+
+        scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
 
         // Update ImGui UI
         UpdateHUD();

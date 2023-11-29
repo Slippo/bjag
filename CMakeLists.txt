@@ -10,7 +10,7 @@ set(HDRS
 )
  
 set(SRCS
-     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl game_collision.cpp environment_fp.glsl environment_gp.glsl environment_vp.glsl combined_fp.glsl combined_vp.glsl particle_vent_vp.glsl particle_vent_gp.glsl particle_vent_fp.glsl star_fp.glsl star_gp.glsl star_vp.glsl imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_impl_glfw.cpp imgui/imgui_impl_opengl3.cpp imgui/imgui_tables.cpp imgui/imgui_widgets.cpp
+     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp screen_space_vp.glsl screen_space_fp.glsl kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl game_collision.cpp environment_fp.glsl environment_gp.glsl environment_vp.glsl combined_fp.glsl combined_vp.glsl particle_vent_vp.glsl particle_vent_gp.glsl particle_vent_fp.glsl star_fp.glsl star_gp.glsl star_vp.glsl imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_impl_glfw.cpp imgui/imgui_impl_opengl3.cpp imgui/imgui_tables.cpp imgui/imgui_widgets.cpp
 )
 
 # Add path name to configuration file
