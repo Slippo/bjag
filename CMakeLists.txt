@@ -10,7 +10,7 @@ set(HDRS
 )
  
 set(SRCS
-     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl text_shader_vp.glsl text_shader_fp.glsl game_collision.cpp imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_impl_glfw.cpp imgui/imgui_impl_opengl3.cpp imgui/imgui_tables.cpp imgui/imgui_widgets.cpp
+     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl game_collision.cpp imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_impl_glfw.cpp imgui/imgui_impl_opengl3.cpp imgui/imgui_tables.cpp imgui/imgui_widgets.cpp
 )
 
 # Add path name to configuration file
