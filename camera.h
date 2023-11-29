@@ -2,6 +2,9 @@
 #define CAMERA_H_
 
 #define GLEW_STATIC
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -58,6 +61,7 @@ namespace game {
             float GetMinSpeed(void) const;
             float GetRadius(void) const;
             float GetTimer(void) const;
+            int GetNumParts(void) const;
             bool IsDead(void) const;
             bool CheckWinCondition(void) const;
             inline CameraState GetState() { return state_; }

@@ -6,11 +6,11 @@ project(${PROJ_NAME})
 
 # Specify project files: header files and source files
 set(HDRS
-      camera.h composite_node.h  game.h  resource.h resource_manager.h scene_graph.h scene_node.h manipulator.h game_collision.h
+      camera.h composite_node.h  game.h  resource.h resource_manager.h scene_graph.h scene_node.h manipulator.h game_collision.h imgui/imgui.h imgui/imgui_impl_glfw.h imgui/imgui_impl_opengl3.h imgui/imgui_impl_opengl3_loader.h imgui/imgui_internal.h imgui/imstb_rectpack.h imgui/imstb_textedit.h imgui/imstb_truetype.h
 )
  
 set(SRCS
-     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl game_collision.cpp
+     camera.cpp composite_node.cpp  game.cpp main.cpp  resource.cpp resource_manager.cpp scene_graph.cpp scene_node.cpp manipulator.cpp kelp_material_vp.glsl kelp_material_fp.glsl material_vp.glsl material_fp.glsl text_shader_vp.glsl text_shader_fp.glsl game_collision.cpp imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_impl_glfw.cpp imgui/imgui_impl_opengl3.cpp imgui/imgui_tables.cpp imgui/imgui_widgets.cpp
 )
 
 # Add path name to configuration file
@@ -24,24 +24,25 @@ find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
 target_link_libraries(${PROJ_NAME} ${OPENGL_gl_LIBRARY})
 
+# ImGui library
+include_directories(${CMAKE_CURRENT_LIST_DIR}/imgui)
+
 # Other libraries needed
-set(LIBRARY_PATH C:\Users\bense\Libraries)
+set(LIBRARY_PATH C:/Program\ Files/Libraries/Libraries)
 include_directories(${LIBRARY_PATH}/include)
 if(NOT WIN32)
     find_library(GLEW_LIBRARY GLEW)
     find_library(GLFW_LIBRARY glfw)
     find_library(SOIL_LIBRARY SOIL)
-    find_library(GLUT_LIBRARY GLUT)
 elseif(WIN32)
     find_library(GLEW_LIBRARY glew32s HINTS ${LIBRARY_PATH}/lib)
     find_library(GLFW_LIBRARY glfw3 HINTS ${LIBRARY_PATH}/lib)
     find_library(SOIL_LIBRARY SOIL HINTS ${LIBRARY_PATH}/lib)
-    find_library(GLUT_LIBRARY GLUT HINTS ${LIBRARY_PATH}/lib)
 endif(NOT WIN32)
 target_link_libraries(${PROJ_NAME} ${GLEW_LIBRARY})
 target_link_libraries(${PROJ_NAME} ${GLFW_LIBRARY})
 target_link_libraries(${PROJ_NAME} ${SOIL_LIBRARY})
-target_link_libraries(${PROJ_NAME} ${GLUT_LIBRARY})
+
 
 # The rules here are specific to Windows Systems
 if(WIN32)

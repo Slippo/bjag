@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "scene_node.h"
 #include "composite_node.h"
+
 namespace game
 {
 	// Game collision handler for the game
