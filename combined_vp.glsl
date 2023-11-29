@@ -35,12 +35,6 @@ void main()
 
     // Define vertex tangent, bitangent and normal (TBN)
     vec3 vertex_normal = normalize(vec3(normal_mat * view_mat * vec4(normal, 0.0)));
-    vec3 tangent = (color*2) -1; // We stored the tangent in the vertex color
-    vec3 vertex_tangent_ts = normalize(vec3(normal_mat * view_mat * vec4(tangent, 0.0)));
-    vec3 vertex_bitangent_ts = cross(vertex_normal, vertex_tangent_ts);
-
-    // TBN matrix allows transition from view space to tangent space
-    mat3 TBN_mat = transpose(mat3(vertex_tangent_ts, vertex_bitangent_ts, vertex_normal));
 
     // view-space positions
     vec3 light_pos_v = vec3(view_mat * vec4(light_pos,1.0));

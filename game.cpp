@@ -185,8 +185,8 @@ namespace game {
     resman_.CreateCylinder("Branch", 3.0, 0.6, 30, 30);
     resman_.CreateSphere("Tip", 0.6, 90, 45);
     //mechanical part
-    resman_.CreateCylinder("MainBody", 10, 2);
-    resman_.CreateCylinder("Exhaust", 2.5, 0.5);
+    resman_.CreateCylinder("MainBody", 10, 2, 20, 20);
+    resman_.CreateCylinder("Exhaust", 2.5, 0.5, 10, 10);
     //sea anemonie
     resman_.CreateCylinder("Base", 0.5, 1);
     resman_.CreateSphere("Middle", 1.0, 30);
@@ -230,7 +230,7 @@ namespace game {
 
     //metal
     //filename = std::string(MATERIAL_DIRECTORY) + std::string("/Metal_Corrugated_0111_.png");
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/rough-metallic-surface-texture.jpg");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/Metal_Corrugated_0111_.png");
     resman_.LoadResource(Texture, "MetalTexture", filename.c_str());
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_grass2.png");
@@ -305,10 +305,11 @@ void Game::SetupScene(void){
     scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(-17, 7.5, -33)));
     //scene_.GetNode("Submarine")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(1, 1, 1)));
 
+    scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(0, 3, 0)));
 
-     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(-15.62, 6, 65.15)));
-     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part2", glm::vec3(-52.9159, 5, 37.026)));
-     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part3", glm::vec3(31.991, 5, 67.4984)));
+     //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(-15.6, 6, 65.15)));
+     //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part2", glm::vec3(-52.9159, 5, 37.026)));
+     //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part3", glm::vec3(31.991, 5, 67.4984)));
      
    
 
