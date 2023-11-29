@@ -31,6 +31,9 @@ namespace game {
     // Manipulator
     Manipulator* manipulator = new Manipulator();
 
+    // Text Renderer
+    //TextRenderer* text_renderer = new TextRenderer();
+
     Game::Game(void) {
 
         // Don't do work in the constructor, leave it for the Init() function
@@ -79,6 +82,14 @@ namespace game {
         if (err != GLEW_OK) {
             throw(GameException(std::string("Could not initialize the GLEW library: ") + std::string((const char*)glewGetErrorString(err))));
         }
+
+        // Initialize ImGui to window
+        ImGui::CreateContext();
+        imgui_io_ = ImGui::GetIO();
+        imgui_io_.Fonts->AddFontFromFileTTF((MATERIAL_DIRECTORY + std::string("\\PixelBug.otf")).c_str(), 30); // Load custom font from file
+        ImGui::StyleColorsDark(); // Window style
+        ImGui_ImplGlfw_InitForOpenGL(window_, true);
+        ImGui_ImplOpenGL3_Init("#version 130");
     }
 
 
@@ -115,7 +126,6 @@ namespace game {
         // Set pointer to game object, so that callbacks can access it
         glfwSetWindowUserPointer(window_, (void*)this);
     }
-
 
     void Game::SetupResources(void) {
         // POPULATE HEIGHT MAP ARRAY
@@ -198,9 +208,10 @@ namespace game {
     // Plane
     resman_.CreatePlane("Plane", height_map_, height_map_.size() / width, height_map_.size() / height, offsetX, offsetZ);
     resman_.CreatePlane("Boundary", height_map_boundary_, height_map_boundary_.capacity() / width, height_map_boundary_.capacity() / height, offsetX, offsetZ);
+
     std::string filename = std::string(MATERIAL_DIRECTORY) + std::string("/normal_map");
     resman_.LoadResource(Material, "NormalMapMaterial", filename.c_str());
-    
+
     // TEXTURES
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/kelp_material");
     resman_.LoadResource(Material, "KelpMaterial", filename.c_str());
@@ -244,6 +255,12 @@ namespace game {
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_metal.png");
     resman_.LoadResource(Texture, "NormalMapMetal", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/Bubble.png");
+    resman_.LoadResource(Texture, "VentTexture", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/Gear.png");
+    resman_.LoadResource(Texture, "GearTexture", filename.c_str());
   
     // PARTICLE EFFECT SECTION
 
@@ -299,12 +316,11 @@ void Game::SetupScene(void){
     // Light source ("sun")
     scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,100,0)));
   
-    //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
+    scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
     
     scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(-17, 7.5, -33)));
     //scene_.GetNode("Submarine")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(1, 1, 1)));
-
     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(0, 3, 0)));
 
      //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(-15.6, 6, 65.15)));
@@ -354,6 +370,7 @@ void Game::MainLoop(void){
             float mytheta = glm::pi<float>() / 64;
 
             delta_time = current_time - last_time;
+
             if ((current_time - last_time) > 0.05){
 
                 camera_.DecreaseTimer(current_time - last_time); // Decrease remaining player time limit / oxygen
@@ -386,18 +403,20 @@ void Game::MainLoop(void){
         // Draw the scene
         scene_.Draw(&camera_, world_light);
 
-        // HUD
+        // Update ImGui UI
         UpdateHUD();
-
-        // Push buffer drawn in the background onto the display
-        glfwSwapBuffers(window_);
 
         // Update other events like input handling
         glfwPollEvents();
 
+        // Push buffer drawn in the background onto the display
+        glfwSwapBuffers(window_);
+
         // Win condition
         if (camera_.CheckWinCondition() == true) {
+
             glfwSetWindowShouldClose(window_, true);
+
         }
     }
 }
@@ -579,28 +598,47 @@ void Game::ResizeCallback(GLFWwindow* window, int width, int height){
     game->camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
 }
 
+void Game::UpdateHUD() {
+
+    // Generate new frame for OpenGl, glfw, and ImGui respectively
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    //ImGui::SetNextWindowSize(ImVec2(350, 100)); // Next window size
+    ImGui::SetNextWindowBgAlpha(0.6f); // Next window background alpha
+    ImGui::Begin("UI", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoScrollbar); // A bunch of flags to style window
+    // Start GUI effect ----------------------
+
+    // First row
+    ImGui::Image((void*)resman_.GetResource("VentTexture")->GetResource(), ImVec2(50, 50)); // Bubble icon
+    ImGui::SameLine();
+    ImGui::SetCursorPosY(ImGui::GetWindowSize().y * 0.15); // Text offset
+    ImGui::Text("OXYGEN: %i", (int)camera_.GetTimer());
+
+    // Second row
+    ImGui::Image((void*)resman_.GetResource("GearTexture")->GetResource(), ImVec2(50, 50)); // Gear icon
+    ImGui::SameLine();
+    ImGui::SetCursorPosY(ImGui::GetWindowSize().y * 0.62); // Text offset
+    ImGui::Text("PARTS: %i / 5", camera_.GetNumParts(), camera_.GetNumParts());
+
+    // End GUI effect ------------------------
+    ImGui::End();
+    ImGui::Render();
+    ImGui::EndFrame(); // <-- End GUI effect
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); // Render
+}
+
 
 Game::~Game(){
     
+    // Free ImGui
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    // Close glfw
     glfwTerminate();
-}
-
-void Game::UpdateHUD() {
-    // Oxygen timer
-    DisplayText(glm::vec2(-0.95, 0.9), glm::vec3(0, 0, 0), GLUT_BITMAP_TIMES_ROMAN_24, ("OXYGEN REMAINING: " + (std::to_string((int)camera_.GetTimer()))).c_str());
-    // Mechanical part counter
-    DisplayText(glm::vec2(-0.95, 0.8), glm::vec3(1.0, 0.0, 0.0), GLUT_BITMAP_TIMES_ROMAN_24, ("PARTS COLLECTED: " + (std::to_string((int)camera_.GetTimer()))).c_str());
-}
-
-void Game::DisplayText(glm::vec2 position, glm::vec3 colour, void* font, const char* text) {
-    // *NOTE: For some reason, the text is being dynamically lit... enabling GL_FOG at least makes the text black, for now.
-    glEnable(GL_FOG);
-    glRasterPos2f(position.x, position.y); // Set text position
-    glColor3fv(glm::value_ptr(colour));
-    //glColor3f(1, 1, 1);
-    for (int i = 0; i < (int)strlen(text); i++) { // "Print" each character of text to window
-        glutBitmapCharacter(font, text[i]);
-    }
 }
 
 SceneNode* Game::CreateSphereInstance(std::string entity_name, std::string object_name, std::string material_name) {

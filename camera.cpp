@@ -71,8 +71,8 @@ void Camera::DecreaseTimer(float t) {
 
 void Camera::AddPart() {
     num_parts_++;
-    if (num_parts_ >= 4) {
-        
+    if (num_parts_ >= 5) {
+        win_condition_ = true;
     }
 }
 
@@ -141,6 +141,10 @@ float Camera::GetRadius(void) const
 
 float Camera::GetTimer(void) const {
     return timer_;
+}
+
+int Camera::GetNumParts(void) const {
+    return num_parts_;
 }
 
 bool Camera::IsDead(void) const
