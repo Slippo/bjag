@@ -13,6 +13,10 @@
 #include "resource_manager.h"
 #include "camera.h"
 
+// Size of the texture that we will draw
+#define FRAME_BUFFER_WIDTH 1280
+#define FRAME_BUFFER_HEIGHT 720
+
 namespace game {
 
     // Class that manages all the objects in a scene
@@ -24,6 +28,14 @@ namespace game {
 
             // Scene nodes to render (now only accepts composite nodes)
             std::vector<CompositeNode *> node_;
+
+            // Frame buffer for drawing to texture
+            GLuint frame_buffer_;
+            // Quad vertex array for drawing from texture
+            GLuint quad_array_buffer_;
+            // Render targets
+            GLuint texture_;
+            GLuint depth_buffer_;
 
         public:
             // Constructor and destructor
@@ -52,6 +64,16 @@ namespace game {
 
             // Update entire scene
             int Update(Camera *camera, ResourceManager *resman);
+
+            // Drawing from/to a texture
+            // Setup the texture
+            void SetupDrawToTexture(void);
+            // Draw the scene into a texture
+            void DrawToTexture(Camera* camera, SceneNode* light);
+            // Process and draw the texture on the screen
+            void DisplayTexture(GLuint program);
+            // Save texture to a file in ppm format
+            void SaveTexture(char* filename);
 
     }; // class SceneGraph
 
