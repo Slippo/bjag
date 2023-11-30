@@ -10,6 +10,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <iostream>
+#include <vector>
 
 
 namespace game {
@@ -40,7 +41,9 @@ namespace game {
             void AddPart(); // Increase num_parts_
             void SetDead(bool d);
             inline void SetState(CameraState t) { state_ = t; }
-
+            void SetHeightMap(std::vector<float> h, std::vector<float> height_boundary);
+            void SetDimensions(int x, int z, int width, int height);
+            float CalculateSlope(float h);
             void UpdateForwardVelocity(float backwards);
             void UpdateSideVelocity(float left);
             void Update(float delta_time);
@@ -104,7 +107,15 @@ namespace game {
             glm::vec3 movement_side_;
             glm::mat4 view_matrix_; // View matrix
             glm::mat4 projection_matrix_; // Projection matrix
+            glm::vec3 old_position_;
             CameraState state_;
+
+            std::vector<float> height_map_;
+            std::vector<float> slope_map_;
+            int offsetX;
+            int offsetZ;
+            int width;
+            int height;
 
             // For collision
             float radius_;

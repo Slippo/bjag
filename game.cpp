@@ -179,7 +179,9 @@ namespace game {
         }
     }
     height_file.close();
-    
+     
+    camera_.SetDimensions(offsetX, offsetZ, width, height);
+    camera_.SetHeightMap(height_map_, height_map_boundary_);
     
   
     // SHAPES
