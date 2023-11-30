@@ -40,7 +40,6 @@ namespace game {
 			// (2) Animate hierarchical objects
 			void AnimateAll(SceneGraph* scene_, double time_, float theta_);
 			void AnimateKelp(CompositeNode* node_, double time_, float theta_);
-			void AnimateSeaweed(CompositeNode* node_, double time_, float theta_);
 			void AnimateSubmarine(CompositeNode* node_, double time_, float theta_);
 	
 		private:

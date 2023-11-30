@@ -658,15 +658,6 @@ namespace game {
         }
     }
 
-    void Manipulator::AnimateSeaweed(CompositeNode* node_, double time_, float theta_) {
-        
-        node_->Orbit(glm::angleAxis(theta_, glm::vec3(1, 1, 1)));
-        node_->GetRoot()->GetChild(0)->Orbit(glm::angleAxis(theta_, glm::vec3(-1, -1, -1)));
-        node_->GetRoot()->GetChild(0)->GetChild(0)->Orbit(glm::angleAxis(theta_, glm::vec3(1, 1, 1)));
-        node_->GetRoot()->GetChild(0)->GetChild(0)->Orbit(glm::angleAxis(theta_, glm::vec3(-1, -1, -1)));
-    }
-
-
     void Manipulator::AnimateSubmarine(CompositeNode* node_, double time_, float theta_) {
         for (int i = 0; i < node_->GetRoot()->GetChildCount(); i++) {
             if (node_->GetRoot()->GetChild(i)->GetName() == "Light") { // Animate lights, they alternate between green and red

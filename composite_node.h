@@ -47,6 +47,7 @@ namespace game {
 		void SetType(Type type) { t_ = type; }
 
 		// Transformations
+		void SetPosition(glm::vec3 pos);
 		void Translate(glm::vec3 trans);
 		void Rotate(glm::quat rot);
 		void Orbit(glm::quat rot);
