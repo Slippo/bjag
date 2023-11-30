@@ -46,6 +46,10 @@ namespace game {
     }
 
     // Transformations
+    void CompositeNode::SetPosition(glm::vec3 pos) {
+        root_->SetPosition(pos);
+    }
+
     void CompositeNode::Translate(glm::vec3 trans) {
         root_->Translate(trans);
     }

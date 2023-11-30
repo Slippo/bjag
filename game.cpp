@@ -262,7 +262,7 @@ namespace game {
     resman_.LoadResource(Texture, "NormalMapMetal", filename.c_str());
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/Bubble.png");
-    resman_.LoadResource(Texture, "VentTexture", filename.c_str());
+    resman_.LoadResource(Texture, "BubbleTexture", filename.c_str());
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/Gear.png");
     resman_.LoadResource(Texture, "GearTexture", filename.c_str());
@@ -276,26 +276,27 @@ namespace game {
 
     //bubble material
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/particle_vent");
-    resman_.LoadResource(Material, "ParticleBubbleMaterial", filename.c_str());
+    resman_.LoadResource(Material, "ParticleVentMaterial", filename.c_str());
 
-    //bubble material
+    //star material
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/star");
     resman_.LoadResource(Material, "ParticleStarMaterial", filename.c_str());
+
+    //player bubbles material
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/particle_bubbles");
+    resman_.LoadResource(Material, "ParticleBubbleMaterial", filename.c_str());
     
     // Load house smoke texture
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/smoke.png");
     resman_.LoadResource(Texture, "SmokeTexture", filename.c_str());
 
-    // Load house Bubble texture
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/Bubble.png");
-    resman_.LoadResource(Texture, "BubbleTexture", filename.c_str());
-
     // Load house Star texture
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/stars.png");
     resman_.LoadResource(Texture, "StarTexture", filename.c_str());
 
-    // Create particles for explosion
+    // Create particles
     resman_.CreateSphereParticles("SphereParticles");
+    resman_.CreateSphereParticles("SphereParticlesBubbles", 10);
 
 
     /*resman_.CreateCone("MachinePart", 2.0, 1.0, 10, 10);
@@ -350,16 +351,16 @@ void Game::SetupScene(void){
     //scene_.GetNode("Kelp1")->Scale(glm::vec3(1,2,1)); // Example on how to transform object after creation
 
     // Seaweed instancer call, can generate random seaweed using given dimensions / density
-    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 50, 50, glm::vec3(0, 0, -5));
+    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 40, 40, glm::vec3(0, 0, -5));
 
     // Create particles
-    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance1", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 0, 0)));
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance1", "ParticleVentMaterial", "BubbleTexture", glm::vec3(0, 0, 0)));
 
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance2", "ParticleStarMaterial", "StarTexture", glm::vec3(3,5,0)));
 
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance3", "ParticleGeyserMaterial", "SmokeTexture", glm::vec3(-3, 2, 0)));
 
-    
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
 }
 
 void Game::MainLoop(void){
@@ -376,27 +377,28 @@ void Game::MainLoop(void){
 
             delta_time = current_time - last_time;
 
-            if ((current_time - last_time) > 0.05){
+            if ((current_time - last_time) > 0.05) {
 
                 camera_.DecreaseTimer(current_time - last_time); // Decrease remaining player time limit / oxygen
 
                 scene_.Update(&camera_, &resman_);
                 manipulator->AnimateAll(&scene_, current_time, mytheta);
-
                 
-
                 last_time = current_time;
 
                 for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++)
                 {
                     collision_.CollisionEventCompositeNode(&camera_, *iterator);
                 }
-                std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
+                //std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
 
             }
             
         }
+
         camera_.Update(delta_time);
+
+        scene_.GetNode("BubbleParticles")->SetPosition(camera_.GetPosition() + glm::vec3(0, -0.5, 0.08)); // Make passive bubble particles follow player
 
 
         // Process camera/player forward movement
@@ -620,7 +622,7 @@ void Game::UpdateHUD() {
     // Start GUI effect ----------------------
 
     // First row
-    ImGui::Image((void*)resman_.GetResource("VentTexture")->GetResource(), ImVec2(50, 50)); // Bubble icon
+    ImGui::Image((void*)resman_.GetResource("BubbleTexture")->GetResource(), ImVec2(50, 50)); // Bubble icon
     ImGui::SameLine();
     ImGui::SetCursorPosY(ImGui::GetWindowSize().y * 0.15); // Text offset
     ImGui::Text("OXYGEN: %i", (int)camera_.GetTimer());
