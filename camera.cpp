@@ -61,6 +61,82 @@ void Camera::SetTimer(float t) {
     timer_ = t;
 }
 
+float Camera::CalculateSlope(float h)
+{
+    float curr_height = position_.y;
+    float slope = -100;
+    
+    
+    slope = abs(curr_height - (h + 3.0));
+
+    std::cout << "Height map: " << h << std::endl;
+    std::cout << "Current height" << curr_height << std::endl;
+    std::cout << "Slope: " << slope << std::endl;
+    std::cout << "---" << std::endl;
+
+    return slope;
+
+
+}
+
+void Camera::SetHeightMap(std::vector<float> h, std::vector<float> height_boundary)
+{
+
+    for (int i = 0; i < h.size(); i++)
+    {
+        height_map_.push_back(std::max(h[i], height_boundary[i]));
+    }
+
+    float slopes[4];
+    int index = 0;
+    // z
+    for (int i = 0; i < height - 1; i++)
+    {
+        // x
+        for (int j = 0; j < width - 1; j++)
+        {
+            float heightA = height_map_[j + (width -1)* i];
+            float heightB = height_map_[j + 1 + (width - 1) * i];
+            float heightC = height_map_[j + (width - 1) * (i + 1)];
+            float heightD = height_map_[(j + 1) + (width - 1) * (i + 1)];
+
+            //AB
+            slopes[0] = heightB - heightA;
+
+            //BD
+            slopes[1] = heightD - heightB;
+
+            //CD
+            slopes[2] = heightD - heightC;
+
+            //AC
+            slopes[3] = heightC - heightA;
+            for (int i = 1; i < 4; i++)
+            {
+                if (abs(slopes[index]) < abs(slopes[i]))
+                {
+                    index = i;
+                }
+            }
+
+            slope_map_.push_back(slopes[index]);
+            index = 0;
+        }
+    }
+
+}
+
+void Camera::SetDimensions(int x, int z, int w, int h)
+{
+    offsetX = x;
+    offsetZ = z;
+    width = w;
+    height = h;
+
+    slope_map_.reserve((width-1) * (height-1));
+    height_map_.reserve(width * height);
+}
+
 void Camera::IncreaseTimer(float t) {
     timer_ += t;
 }
@@ -183,6 +259,7 @@ void Camera::Jump()
     if (state_ == walking)
     {
         base_y_position_ = position_.y;
+        old_position_ = position_;
         state_ = jumping;
         t_ = 0.0; //set timer to zero just to make sure
      
@@ -190,52 +267,91 @@ void Camera::Jump()
 }
 void Camera::Update(float delta_time)
 {
-    position_ += (GetForwardMovement() * forward_speed_ * delta_time);
-    position_ += (GetSideMovement() * side_speed_ * delta_time);    
+    glm::vec3 oldPos = position_;
+    glm::vec3 tempPos = position_ + ((GetForwardMovement() * forward_speed_ * delta_time)) + (GetSideMovement() * side_speed_ * delta_time);
+    //position_ += (GetForwardMovement() * forward_speed_ * delta_time);
+    //position_ += (GetSideMovement() * side_speed_ * delta_time);    
+
+    //std::cout << position_.x << ", " << position_.y << ", " << position_.z << std::endl;
+    float oldY = 0.0;
+
+    
+
+    int coordXMin = floor(tempPos.x + offsetX);
+    int coordXMax = ceil(tempPos.x + offsetX);
+
+    int coordZMin = floor(tempPos.z + offsetZ);
+    int coordZMax = ceil(tempPos.z + offsetZ);
+
+    float s = tempPos.x + offsetX - coordXMin;
+    float t = tempPos.z + offsetZ - coordZMin;
+
+    int x = coordXMin - (1 - round(s));
+    int z = coordZMin - (1 - round(t));
+
+
+    float a = (height_map_)[coordXMin + (width) * coordZMin];
+    float b = (height_map_)[coordXMax + (width) * coordZMin];
+    float c = (height_map_)[coordXMin + (width) * coordZMax];
+    float d = (height_map_)[coordXMax + (width) * coordZMax];
+
+    float interpolation = (1 - t) * ((1 - s) * a + s * b) + t * ((1 - s) * c + s * d);
+
     
     if (state_ == jumping)
     {
         //y position is calculated using kinematic equation of vertical motion, factoring in gravity, base y position,
         //basevelocity, and time (jump height is also specified here)
+        position_ = tempPos;
         position_.y = base_y_position_ + (0.5 * (jump_height + (base_vel - (gravity * t_))) * t_);
 
         //timer is increemented here, 0.1 for each recorded frame
         t_ += 0.1;
 
         //distance from base y position to current y is calculated here
-        float distance = position_.y - base_y_position_;
+        float distance = position_.y - (interpolation + 3.0);
        
         //if the timer has been going for a while (to account for the initial push-off from the ground), and the distance
         //from the ground is small enough, set state to walking and reset timer to 0
-        if (t_ > 2.0 && distance < 0.5)
+        if (t_ >= 2.0 && distance <= 0.3)
         {
-            
+            tempPos.y = interpolation + 3.0;
+            float slope = CalculateSlope(interpolation);
             t_ = 0.0;
             state_ = walking;
+
+            if (slope >= 1.1 || x == 0 || x == height - 2 || z == 0 || z == width - 2)
+            {
+                std::cout << "Hello" << std::endl;
+                position_ = oldPos;
+                position_.y = oldY + 3.0;
+                return;
+            }
+
+            position_ = tempPos;
             //position_.y = old_y_;
         }
         else
         {
             position_ = position_ - (glm::vec3(0.0, 0.4f, 0.0) * delta_time);
-        }
+        }        
 
     }
-    /*else if (state_ == jumping)
+    else
     {
-        jump_ += 0.5f;
-
-        if (jump_ >= jump_limit_)
+        if (abs(slope_map_[x + width * z]) >= 1.1 || x == 0 || x == height - 2 || z == 0 || z == width - 2)
         {
-            state_ = falling;
-            //jump_ = jump_limit_;
-            //position_.y = jump_limit_;
+            return;
         }
-        else
-        {
-            position_ = position_ + (glm::vec3(0.0, 0.50f, 0.0) * delta_time);
 
-        }
-    }*/
+        tempPos.y = interpolation + 3.0;
+        position_ = tempPos;
+        oldY = interpolation;
+
+    }
+
+
+
 
 
 }
