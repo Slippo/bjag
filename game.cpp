@@ -209,6 +209,8 @@ namespace game {
     resman_.CreateSphere("Rock_Sphere", 2, 40, 20);
     // Seaweed
     resman_.CreateCylinder("LowPolyCylinder", 1.0, 0.6, 10, 9);
+    // Skybox
+    resman_.CreateInvertedSphere("SkyBox", 700, 300, 150);
     // Plane
     resman_.CreatePlane("Plane", height_map_, height_map_.size() / width, height_map_.size() / height, offsetX, offsetZ);
     resman_.CreatePlane("Boundary", height_map_boundary_, height_map_boundary_.capacity() / width, height_map_boundary_.capacity() / height, offsetX, offsetZ);
@@ -242,9 +244,13 @@ namespace game {
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/combined");
     resman_.LoadResource(Material, "CombinedMaterial", filename.c_str());
 
-    // Load texture to be used on the object
+    // Load texture to be used on rocks
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/rocky.png");
     resman_.LoadResource(Texture, "RockyTexture", filename.c_str());
+
+    // Load texture to be used on skybox
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/sky-box-2.png");
+    resman_.LoadResource(Texture, "SkyBoxTexture", filename.c_str());
 
     //metal
     //filename = std::string(MATERIAL_DIRECTORY) + std::string("/Metal_Corrugated_0111_.png");
@@ -287,6 +293,10 @@ namespace game {
     //player bubbles material
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/particle_bubbles");
     resman_.LoadResource(Material, "ParticleBubbleMaterial", filename.c_str());
+
+    //skybox material
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/skybox");
+    resman_.LoadResource(Material, "SkyBoxMaterial", filename.c_str());
     
     // Load house smoke texture
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/smoke.png");
@@ -329,7 +339,10 @@ void Game::SetupScene(void){
     
     scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(-17, 7.5, -33)));
     //scene_.GetNode("Submarine")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(1, 1, 1)));
-    scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(0, 3, 0)));
+    //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(0, 3, 0)));
+
+    scene_.AddNode(manipulator->ConstructSkyBox(&resman_, "Sky_Box", glm::vec3(0, 3, 0)));
+
 
      //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(-15.6, 6, 65.15)));
      //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part2", glm::vec3(-52.9159, 5, 37.026)));
