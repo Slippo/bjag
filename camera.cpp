@@ -190,8 +190,11 @@ void Camera::Jump()
 }
 void Camera::Update(float delta_time)
 {
-    position_ += (GetForwardMovement() * forward_speed_ * delta_time);
-    position_ += (GetSideMovement() * side_speed_ * delta_time);    
+   // position_ += (GetForwardMovement() * forward_speed_ * delta_time);
+    //position_ += (GetSideMovement() * side_speed_ * delta_time);    
+
+    position_ += (GetForwardMovement() * forward_speed_);
+    position_ += (GetSideMovement() * side_speed_); 
     
     if (state_ == jumping)
     {

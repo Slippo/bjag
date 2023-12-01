@@ -381,7 +381,7 @@ namespace game {
         //std::cout << "this is the main stems color: " << glm::to_string(stem_prime->GetColor()) << std::endl;
         //stem_prime->SetLength(10.0);
         stem_prime->SetPivot(glm::vec3(0, 5, 0));
-        stem_prime->SetScale(glm::vec3(0.2, 0.2, 0.2));
+        stem_prime->SetScale(glm::vec3(0.3, 0.3, 0.3));
         coral->SetRoot(stem_prime);
 
         SceneNode* stem1 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", "", resman_);
@@ -650,9 +650,16 @@ namespace game {
                     AnimateKelp(current_, time_, theta_);
                 }
 
+                else if (current_->GetType() == CompositeNode::Type::Anemonie) {
+                    std::cout << "In Anemonie if statement" << std::endl;
+                    AnimateKelp(current_, time_, theta_);
+                }
+
                 else if (current_->GetType() == CompositeNode::Type::Submarine) {
                     AnimateSubmarine(current_, time_, theta_);
                 }
+
+               
 
             }
         }
