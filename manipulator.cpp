@@ -28,7 +28,10 @@ namespace game {
         for (int i = 0; i < branch_complexity + 1; i++) {
             float frac = float(i) / (branch_complexity + 1);
             SceneNode* branch = CreateSceneNodeInstance("Branch", "Cylinder", "KelpMaterial", "", resman_);
-            branch->SetType(SceneNode::Type::KelpStem); // type specified for shader
+            branch->SetType(SceneNode::Type::KelpStem); // type specified for 
+
+
+
             branch->SetPosition(glm::vec3(0, 2, 0)); // 2 units above the root
             branch->SetPivot(glm::vec3(0, -stem_len / 2, 0));
             // Orbit about the pivot to set the starting orientation
@@ -373,7 +376,7 @@ namespace game {
 
         //creating main stems
 
-        SceneNode* stem_prime = CreateSceneNodeInstance("Stem_Prime", "SuperLongStem", "ObjectMaterial", "", resman_);
+        SceneNode* stem_prime = CreateSceneNodeInstance("Stem_Prime", "SuperLongStem", "CombinedMaterial", "CoralTexture", resman_);
 
         stem_prime->SetPosition(position_);
         stem_prime->SetOrientation(glm::normalize(glm::angleAxis(0.5f, glm::vec3(0.0, 0.0, 1.0))));
@@ -384,77 +387,77 @@ namespace game {
         stem_prime->SetScale(glm::vec3(0.3, 0.3, 0.3));
         coral->SetRoot(stem_prime);
 
-        SceneNode* stem1 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", "", resman_);
+        SceneNode* stem1 = CreateSceneNodeInstance("Stem1", "LongStem", "CombinedMaterial", "CoralTexture", resman_);
         stem1->SetPosition(glm::vec3(2.5, -4.5, 0));
         stem1->Rotate(glm::normalize(glm::angleAxis(1.5f, glm::vec3(0, 0, 1))));
         stem1->SetColor(glm::vec3(0.97, 0.51, 0.47));
         stem_prime->AddChild(stem1);
         coral->AddNode(stem1);
 
-        SceneNode* stem2 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", "", resman_);
+        SceneNode* stem2 = CreateSceneNodeInstance("Stem1", "LongStem", "CombinedMaterial", "CoralTexture", resman_);
         stem2->SetPosition(glm::vec3(6.8, -6.0, 0));
         stem2->Rotate(glm::normalize(glm::angleAxis(1.0f, glm::vec3(0, 0, 1))));
         stem2->SetColor(glm::vec3(0.97, 0.51, 0.47));
         stem_prime->AddChild(stem2);
         coral->AddNode(stem2);
 
-        SceneNode* stem3 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", "", resman_);
+        SceneNode* stem3 = CreateSceneNodeInstance("Stem1", "LongStem", "CombinedMaterial", "CoralTexture", resman_);
         stem3->SetPosition(glm::vec3(1.7, -3.5, 0));
         stem3->Rotate(glm::normalize(glm::angleAxis(1.0f, glm::vec3(0, 0, 1))));
         stem3->SetColor(glm::vec3(0.97, 0.51, 0.47));
         stem2->AddChild(stem3);
         coral->AddNode(stem3);
 
-        SceneNode* stem4 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", "", resman_);
+        SceneNode* stem4 = CreateSceneNodeInstance("Stem1", "LongStem", "CombinedMaterial", "CoralTexture", resman_);
         stem4->SetPosition(glm::vec3(1.9, 2.5, 0));
         stem4->Rotate(glm::normalize(glm::angleAxis(1.8f, glm::vec3(0, 0, 1))));
         stem4->SetColor(glm::vec3(0.97, 0.51, 0.47));
         stem2->AddChild(stem4);
         coral->AddNode(stem4);
 
-        SceneNode* stem5 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", "", resman_);
+        SceneNode* stem5 = CreateSceneNodeInstance("Stem1", "LongStem", "CombinedMaterial", "CoralTexture", resman_);
         stem5->SetPosition(glm::vec3(1.8, 2.5, 1.5));
         stem5->Rotate(glm::normalize(glm::angleAxis(-1.8f, glm::vec3(0, 1, 1))));
         stem5->SetColor(glm::vec3(0.97, 0.51, 0.47));
         stem2->AddChild(stem5);
         coral->AddNode(stem5);
 
-        SceneNode* stem6 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", "", resman_);
+        SceneNode* stem6 = CreateSceneNodeInstance("Stem1", "LongStem", "CombinedMaterial", "CoralTexture", resman_);
         stem6->SetPosition(glm::vec3(1.8, 2.5, -1.5));
         stem6->Rotate(glm::normalize(glm::angleAxis(1.8f, glm::vec3(0, 1, 1))));
         stem6->SetColor(glm::vec3(0.97, 0.51, 0.47));
         stem2->AddChild(stem6);
         coral->AddNode(stem6);
 
-        SceneNode* stem7 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", "", resman_);
+        SceneNode* stem7 = CreateSceneNodeInstance("Stem1", "LongStem", "CombinedMaterial", "CoralTexture", resman_);
         stem7->SetPosition(glm::vec3(1.8, 2.5, -1.5));
         stem7->Rotate(glm::normalize(glm::angleAxis(1.8f, glm::vec3(0, 1, 1))));
         stem7->SetColor(glm::vec3(0.97, 0.51, 0.47));
         stem_prime->AddChild(stem7);
         coral->AddNode(stem7);
 
-        SceneNode* stem8 = CreateSceneNodeInstance("Stem1", "LongStem", "ObjectMaterial", "", resman_);
+        SceneNode* stem8 = CreateSceneNodeInstance("Stem1", "LongStem", "CombinedMaterial", "CoralTexture", resman_);
         stem8->SetPosition(glm::vec3(-1.8, 2.5, -1.5));
         stem8->Rotate(glm::normalize(glm::angleAxis(1.8f, glm::vec3(1, 1, 0))));
         stem8->SetColor(glm::vec3(0.97, 0.51, 0.47));
         stem_prime->AddChild(stem8);
         coral->AddNode(stem8);
 
-        SceneNode* stem9 = CreateSceneNodeInstance("Stem1", "Branch", "ObjectMaterial", "", resman_);
+        SceneNode* stem9 = CreateSceneNodeInstance("Stem1", "Branch", "CombinedMaterial", "CoralTexture", resman_);
         stem9->SetPosition(glm::vec3(1.0, 5, 0));
         stem9->Rotate(glm::normalize(glm::angleAxis(1.8f, glm::vec3(0, 0, 1))));
         stem9->SetColor(glm::vec3(0.97, 0.51, 0.47));
         stem_prime->AddChild(stem9);
         coral->AddNode(stem9);
 
-        SceneNode* stem10 = CreateSceneNodeInstance("Stem1", "Branch", "ObjectMaterial", "", resman_);
+        SceneNode* stem10 = CreateSceneNodeInstance("Stem1", "Branch", "CombinedMaterial", "CoralTexture", resman_);
         stem10->SetPosition(glm::vec3(1.0, 6, 0));
         stem10->Rotate(glm::normalize(glm::angleAxis(2.5f, glm::vec3(0, 0, 1))));
         stem10->SetColor(glm::vec3(0.97, 0.51, 0.47));
         stem_prime->AddChild(stem10);
         coral->AddNode(stem10);
 
-        SceneNode* stem11 = CreateSceneNodeInstance("Stem1", "Branch", "ObjectMaterial", "", resman_);
+        SceneNode* stem11 = CreateSceneNodeInstance("Stem1", "Branch", "CombinedMaterial", "CoralTexture", resman_);
         stem11->SetPosition(glm::vec3(-0.6, 6, 0));
         stem11->Rotate(glm::normalize(glm::angleAxis(3.5f, glm::vec3(0, 0, 1))));
         stem11->SetColor(glm::vec3(0.97, 0.51, 0.47));
@@ -572,13 +575,13 @@ namespace game {
           CompositeNode* an = new CompositeNode(name_);
           an->SetType(CompositeNode::Type::Anemonie);
 
-          SceneNode* root_node = CreateSceneNodeInstance("root_node", "Base", "ObjectMaterial", "", resman_);
+          SceneNode* root_node = CreateSceneNodeInstance("root_node", "Base", "CombinedMaterial", "YellowAnemoneTexture", resman_);
 
           root_node->SetPosition(position_);
           root_node->SetColor(glm::vec3(1, 0.83, 0.501));
           an->SetRoot(root_node);
 
-          SceneNode* node1 = CreateSceneNodeInstance("root_node", "Middle", "ObjectMaterial", "", resman_);
+          SceneNode* node1 = CreateSceneNodeInstance("root_node", "Middle", "CombinedMaterial", "YellowAnemoneTexture", resman_);
 
           node1->SetPosition(glm::vec3(0, 0.6, 0));
           node1->SetColor(glm::vec3(1, 0.83, 0.501));
@@ -591,7 +594,7 @@ namespace game {
 
           for (int i = 0; i < 10; i++) {
               float frac = float(i) / (10);
-              SceneNode* branch = CreateSceneNodeInstance("Branch", "Cylinder", "ObjectMaterial", "", resman_);
+              SceneNode* branch = CreateSceneNodeInstance("Branch", "Cylinder", "CombinedMaterial", "YellowAnemoneTexture", resman_);
               branch->SetType(SceneNode::Type::KelpStem); // type specified for shader
               branch->SetPosition(glm::vec3(0, 1, 0)); // 2 units above the root
               branch->SetPivot(glm::vec3(0, -stem_len / 2, 0));
@@ -603,7 +606,7 @@ namespace game {
 
               for (int k = 0; k < 4; k++) {
                   float frac = float(k) / 4;
-                  SceneNode* sub_branch = CreateSceneNodeInstance("SubBranch", "Tentacle", "ObjectMaterial", "", resman_);
+                  SceneNode* sub_branch = CreateSceneNodeInstance("SubBranch", "Tentacle", "CombinedMaterial", "YellowAnemoneTexture", resman_);
                   sub_branch->SetType(SceneNode::Type::KelpStem);
                   sub_branch->SetPosition(glm::vec3(0, 1, 0));
                   sub_branch->SetPivot(glm::vec3(0, -(0.5), 0));
@@ -651,8 +654,8 @@ namespace game {
                 }
 
                 else if (current_->GetType() == CompositeNode::Type::Anemonie) {
-                    std::cout << "In Anemonie if statement" << std::endl;
-                    AnimateKelp(current_, time_, theta_);
+                    //std::cout << "In Anemonie if statement" << std::endl;
+                    AnimateAnemone(current_, time_, theta_);
                 }
 
                 else if (current_->GetType() == CompositeNode::Type::Submarine) {
@@ -685,6 +688,13 @@ namespace game {
         node_->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_), 0, 0.05 * sin(1 - time_))));
         for (int i = 0; i < node_->GetRoot()->GetChildCount(); i++) {
             node_->GetRoot()->GetChild(i)->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_), 0, 0.05 * sin(1 - time_))));
+        }
+    }
+
+    void Manipulator::AnimateAnemone(CompositeNode* node_, double time_, float theta_) {
+        node_->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_), 0, 0.05 * sin(1 - time_))));
+        for (int i = 0; i < node_->GetRoot()->GetChildCount(); i++) {
+            node_->GetRoot()->GetChild(i)->Orbit(glm::angleAxis(theta_, glm::vec3(0.1 * sin(time_ + (2 * i)), 0, 0.05 * sin(1 - (time_ + (2 * i))))));
         }
     }
 

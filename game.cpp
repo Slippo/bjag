@@ -261,6 +261,15 @@ namespace game {
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_metal.png");
     resman_.LoadResource(Texture, "NormalMapMetal", filename.c_str());
 
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_coral.png");
+    resman_.LoadResource(Texture, "NormalMapCoral", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/coral_tex.png");
+    resman_.LoadResource(Texture, "CoralTexture", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/anemone_tex_yellow.png");
+    resman_.LoadResource(Texture, "YellowAnemoneTexture", filename.c_str());
+
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/Bubble.png");
     resman_.LoadResource(Texture, "BubbleTexture", filename.c_str());
 
@@ -361,13 +370,17 @@ void Game::PopulateWorld(void) {
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie7", glm::vec3(19.41, 0, -86.87)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie8", glm::vec3(88.29, 0, 74.85)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie9", glm::vec3(86.76, 0, 70.89)));
-    //scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie10", glm::vec3(53.37, 0, 85.80)));
+    scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie10", glm::vec3(53.37, 0, 85.80)));
+    scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie11", glm::vec3(20.32, 0, -32.43)));
+    scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie12", glm::vec3(9.75, 0, -34.95)));
+    scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie13", glm::vec3(-36.17, 1, -24.05)));
 
-
-
+    //PLACE SEAWEED PATCHES
     // Seaweed instancer call, can generate random seaweed using given dimensions / density
-    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 40, 40, glm::vec3(0, 0, -5));
-
+    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(70.58, 0, -5.64));
+    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(-47.98, 0, 17.74));
+    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(40.87, 0, -55.81));
+    
     // Create particles
     //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance1", "ParticleVentMaterial", "BubbleTexture", glm::vec3(0, 0, 0)));
 
@@ -442,7 +455,7 @@ void Game::MainLoop(void){
 
         camera_.Update(delta_time);
 
-        //scene_.GetNode("BubbleParticles")->SetPosition(camera_.GetPosition() + glm::vec3(0, -0.5, 0.08)); // Make passive bubble particles follow player
+       
 
 
         // Process camera/player forward movement

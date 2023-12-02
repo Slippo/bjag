@@ -1,6 +1,7 @@
 #version 140
 
-// Attributes passed from the vertex shader
+// Attributes passed from the vertex 
+
 in vec3 vertex_position;
 in vec2 vertex_uv;
 
@@ -51,10 +52,11 @@ void main()
      // Retrieve texture value
 	vec2 uv_use = vertex_uv;
     vec4 pixel = texture(texture_map, uv_use);
-
+    pixel = pixel * vec4(object_color.x, object_color.y, object_color.z, 1);
      //gl_FragColor = lightcol*pixel*diffuse + lightcol*vec4(1,1,1,1)*spec + // specular might not be colored lightcol*pixel*amb; // ambcol not used, could be included here
 
     if (gl_FrontFacing){
+        //gl_FragColor = pixel*lambertian + pixel*specular + pixel*ambient;
         gl_FragColor = pixel*lambertian + pixel*specular + pixel*ambient;
     } else {
         gl_FragColor = pixel*0.25*ambient;
