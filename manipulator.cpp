@@ -633,6 +633,20 @@ namespace game {
 
     }
 
+    CompositeNode* Manipulator::ConstructVentBase(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
+
+        CompositeNode* vent = new CompositeNode(name_);
+        vent->SetType(CompositeNode::Type::VentBase);
+
+        SceneNode* root = CreateSceneNodeInstance("Root", "Sphere", "ObjectMaterial", "", resman_);
+        root->SetPosition(position_);
+        root->Scale(glm::vec3(2.0, 0.8, 2.0));
+        root->SetColor(glm::vec3(1.0, 0.6, 0.4));
+        vent->SetRoot(root);
+
+        return vent;
+    }
+
     CompositeNode* Manipulator::ConstructSkyBox(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
 
         CompositeNode* box = new CompositeNode(name_);

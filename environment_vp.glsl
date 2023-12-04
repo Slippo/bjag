@@ -16,11 +16,12 @@ out vec3 vertex_color;
 out float timestep;
 
 // Simulation parameters (constants)
-uniform vec3 up_vec = vec3(0.0, 1.0, 0.0);
+uniform vec3 up_vec = vec3(0.0, 5.0, 0.0);
 uniform vec3 object_color = vec3(0.8, 0.8, 0.8);
 float grav = 0.0; // Gravity
-float speed = 2.0; // Controls the speed of the explosion
-float upward = 0.0; // additional y velocity for all particles
+float speed = 3.0; // Controls the speed of the explosion
+float upward = 0.1; // additional y velocity for all particles
+float spread = 5;
 
 
 // Define some useful constants
@@ -31,7 +32,7 @@ const float two_pi = 2.0*pi;
 void main()
 {
     // Let time cycle every four seconds
-    float circtime = timer - 4.0 * floor(timer / 4);
+    float circtime = timer - 6.0 * floor(timer / 6);
     float t = circtime; // Our time parameter
     
     // Let's first work in model space (apply only world matrix)
@@ -40,18 +41,18 @@ void main()
 
     float particle_id = color.r; // Derived from the particle color. We use the id to keep track of particles
 
-    float phase = two_pi*particle_id; //phase is created so that particals can be drawn out of sync
+    float phase = (two_pi*particle_id); //phase is created so that particals can be drawn out of sync
 
     // position in the x direction is exponential, to give us a rapid explosion of force that peters overtime, with respect to the
     //normal of each particle
-    position.x += ((norm.x*t) * (norm.x*t)); 
+    position.x += ((norm.x*t) * (norm.x*t)) * spread; 
     
 	
 	// movement in the y direction is also exponential, gravity is added to slow the extreme vertical movement overtime
     //factor in phase so particals move up at different speeds
-    position.y += ((phase*t - grav*up_vec.y*t*t)*(phase*t - grav*up_vec.y*t*t));
+    position.y += speed * ((phase*t - grav*up_vec.y*t)) + upward * t * t * t * t;
     
-
+    position.z += ((norm.z*t) * (norm.z*t)) * spread; 
     
     
     // Now apply view transformation

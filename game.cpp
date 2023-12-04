@@ -376,6 +376,32 @@ void Game::SetupScene(void){
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance3", "ParticleGeyserMaterial", "SmokeTexture", glm::vec3(-3, 2, 0)));
 
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
+
+
+    // Hydrothermal vents
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "Vent1", "ParticleGeyserMaterial", "BubbleTexture", glm::vec3(-71, 0, -23)));
+    scene_.GetNode("Vent1")->Scale(glm::vec3(15.0, 1.0, 15.0));
+    scene_.AddNode(manipulator->ConstructVentBase(&resman_, "VentBase1", glm::vec3(-71, 0, -23)));
+
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "Vent2", "ParticleGeyserMaterial", "BubbleTexture", glm::vec3(-79.7, 0, -23)));
+    scene_.GetNode("Vent2")->Scale(glm::vec3(15.0, 1.0, 15.0));
+    scene_.AddNode(manipulator->ConstructVentBase(&resman_, "VentBase2", glm::vec3(-79.7, 0, -23)));
+
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "Vent3", "ParticleGeyserMaterial", "BubbleTexture", glm::vec3(-79.6, 0, -44.2)));
+    scene_.GetNode("Vent3")->Scale(glm::vec3(15.0, 1.0, 15.0));
+    scene_.AddNode(manipulator->ConstructVentBase(&resman_, "VentBase3", glm::vec3(-79.6, 0, -44.2)));
+
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "Vent4", "ParticleGeyserMaterial", "BubbleTexture", glm::vec3(-70, 0, -44.2)));
+    scene_.GetNode("Vent4")->Scale(glm::vec3(15.0, 1.0, 15.0));
+    scene_.AddNode(manipulator->ConstructVentBase(&resman_, "VentBase4", glm::vec3(-70, 0, -44.2)));
+
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "Vent5", "ParticleGeyserMaterial", "BubbleTexture", glm::vec3(-69.3, 0, -61.7)));
+    scene_.GetNode("Vent5")->Scale(glm::vec3(15.0, 1.0, 15.0));
+    scene_.AddNode(manipulator->ConstructVentBase(&resman_, "VentBase5", glm::vec3(-69.3, 0, -61.7)));
+
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "Vent6", "ParticleGeyserMaterial", "BubbleTexture", glm::vec3(-80.8, 0, -61.5)));
+    scene_.GetNode("Vent6")->Scale(glm::vec3(15.0, 1.0, 15.0));
+    scene_.AddNode(manipulator->ConstructVentBase(&resman_, "VentBase6", glm::vec3(-80.8, 0, -61.5)));
 }
 
 void Game::MainLoop(void){
@@ -405,7 +431,7 @@ void Game::MainLoop(void){
                 {
                     collision_.CollisionEventCompositeNode(&camera_, *iterator);
                 }
-                //std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
+                std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
 
             }
             
