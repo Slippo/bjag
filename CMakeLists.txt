@@ -28,7 +28,7 @@ target_link_libraries(${PROJ_NAME} ${OPENGL_gl_LIBRARY})
 include_directories(${CMAKE_CURRENT_LIST_DIR}/imgui)
 
 # Other libraries needed
-set(LIBRARY_PATH C:\Users\bense\Libraries)
+set(LIBRARY_PATH C:/Program\ Files/Libraries/Libraries)
 include_directories(${LIBRARY_PATH}/include)
 if(NOT WIN32)
     find_library(GLEW_LIBRARY GLEW)

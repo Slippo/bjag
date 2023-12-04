@@ -26,6 +26,7 @@ namespace game {
 			CompositeNode* ConstructAnemonie(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
 			CompositeNode* ConstructParticleSystem(ResourceManager* resman_, std::string entity_name, std::string object_name, std::string material_name, std::string texture_name = std::string(""), glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
 			CompositeNode* ConstructRock(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
+			CompositeNode* ConstructVentBase(ResourceManager* resman_, std::string name_, glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0));
 			CompositeNode* Manipulator::ConstructSkyBox(ResourceManager* resman_, std::string name_, glm::vec3 position_);
 
 

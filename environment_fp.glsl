@@ -12,6 +12,6 @@ void main (void)
     gl_FragColor = texture(texture_map, tex_coord);
 
     //if alpha value less thant 0.6, do not overrite fragment, this is to help with transparency occlusion issues "blending"
-    if(gl_FragColor.a < 0.61) discard;
+    if(gl_FragColor.a < 0.1) discard;
 
 }
