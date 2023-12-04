@@ -31,7 +31,7 @@ const float two_pi = 2.0*pi;
 
 void main()
 {
-    // Let time cycle every four seconds
+    // Let time cycle every six seconds
     float circtime = timer - 6.0 * floor(timer / 6);
     float t = circtime; // Our time parameter
     

@@ -126,18 +126,28 @@ namespace game {
         stalagmite->SetType(CompositeNode::Type::Stalagmite);
 
         // Create root node
-        SceneNode* root = CreateSceneNodeInstance("Root", "StalagmiteBase", "NormalMapMaterial", "NormalMapStone", resman_);
-        //root->SetScale(glm::vec3(1.0, 1.0, 1.0));
+        SceneNode* root = CreateSceneNodeInstance("Root", "StalagmiteBase", "NormalMapMaterial", "NormalMapRock", resman_);
+        root->SetScale(glm::vec3(0.7, 0.7, 0.7));
         root->SetColor(glm::vec3(0.8, 0.8, 0.8));
         root->SetSpecularCoefficient(0);
         root->SetPosition(position_);
         stalagmite->SetRoot(root);
 
+        // Create hitboxes
+        SceneNode* hitbox;
+        for (int i = -1; i < 17; i+=4) {
+            hitbox = CreateSceneNodeInstance("Hitbox", "Sphere", "CombinedMaterial", "InvisibleTexture", resman_);
+            hitbox->Translate(glm::vec3(0.0, i, 0.0));
+            hitbox->SetRadius(2.0f);
+            stalagmite->AddNode(hitbox);
+            stalagmite->hitboxes_.push_back(hitbox);
+        }
+
         float s = 0.9;
         float h = 0.0;
         for (int i = 0; i < 8; i++) {
             // Base (graudally gets taller & thinner)
-            SceneNode* part = CreateSceneNodeInstance("Base", "StalagmiteBase", "NormalMapMaterial", "NormalMapStone", resman_);
+            SceneNode* part = CreateSceneNodeInstance("Base", "StalagmiteBase", "NormalMapMaterial", "NormalMapRock", resman_);
             part->SetColor(glm::vec3(0.8, 0.8, 0.8));
             part->SetSpecularCoefficient(0);
             part->Scale(glm::vec3(s, i * s, s));
@@ -147,7 +157,7 @@ namespace game {
             h += 2.0;
 
             // Spikes (one on each side)
-            SceneNode* spike = CreateSceneNodeInstance("Base", "StalagmiteSpike", "NormalMapMaterial", "NormalMapStone", resman_);
+            SceneNode* spike = CreateSceneNodeInstance("Base", "StalagmiteSpike", "NormalMapMaterial", "NormalMapRock", resman_);
             spike->SetColor(glm::vec3(0.8, 0.8, 0.8));
             spike->SetSpecularCoefficient(0);
             spike->Scale(glm::vec3(1.0, 2.0, 1.0));
@@ -155,7 +165,7 @@ namespace game {
             spike->Rotate(glm::angleAxis(glm::half_pi<float>(), glm::vec3(0, 0, -1)));
             stalagmite->AddNode(spike);
 
-            spike = CreateSceneNodeInstance("Base", "StalagmiteSpike", "NormalMapMaterial", "NormalMapStone", resman_);
+            spike = CreateSceneNodeInstance("Base", "StalagmiteSpike", "NormalMapMaterial", "NormalMapRock", resman_);
             spike->SetColor(glm::vec3(0.8, 0.8, 0.8));
             spike->SetSpecularCoefficient(0);
             spike->Scale(glm::vec3(1.0, 2.0, 1.0));
@@ -163,7 +173,7 @@ namespace game {
             spike->Rotate(glm::angleAxis(glm::half_pi<float>(), glm::vec3(0, 0, 1)));
             stalagmite->AddNode(spike);
 
-            spike = CreateSceneNodeInstance("Base", "StalagmiteSpike", "NormalMapMaterial", "NormalMapStone", resman_);
+            spike = CreateSceneNodeInstance("Base", "StalagmiteSpike", "NormalMapMaterial", "NormalMapRock", resman_);
             spike->SetColor(glm::vec3(0.8, 0.8, 0.8));\
             spike->SetSpecularCoefficient(0);
             spike->Scale(glm::vec3(1.0, 2.0, 1.0));
@@ -171,7 +181,7 @@ namespace game {
             spike->Rotate(glm::angleAxis(glm::half_pi<float>(), glm::vec3(1, 0, 0)));
             stalagmite->AddNode(spike);
 
-            spike = CreateSceneNodeInstance("Base", "StalagmiteSpike", "NormalMapMaterial", "NormalMapStone", resman_);
+            spike = CreateSceneNodeInstance("Base", "StalagmiteSpike", "NormalMapMaterial", "NormalMapRock", resman_);
             spike->SetColor(glm::vec3(0.8, 0.8, 0.8));
             spike->SetSpecularCoefficient(0);
             spike->Scale(glm::vec3(1.0, 2.0, 1.0));
@@ -180,11 +190,11 @@ namespace game {
             stalagmite->AddNode(spike);
         }
 
-        SceneNode* tip = CreateSceneNodeInstance("Base", "StalagmiteSpike", "NormalMapMaterial", "NormalMapStone", resman_);
+        SceneNode* tip = CreateSceneNodeInstance("Base", "StalagmiteSpike", "NormalMapMaterial", "NormalMapRock", resman_);
         tip->SetColor(glm::vec3(0.8, 0.8, 0.8));
         tip->SetSpecularCoefficient(0);
         tip->SetScale(glm::vec3(1.0, 2.0, 1.0));
-        tip->Translate(glm::vec3(0, 17.0, 0));
+        tip->Translate(glm::vec3(0, 16.5, 0));
         stalagmite->AddNode(tip);
 
         return stalagmite;

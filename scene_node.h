@@ -93,6 +93,7 @@ namespace game {
             GLuint GetElementArrayBuffer(void) const;
             GLsizei GetSize(void) const;
             GLuint GetMaterial(void) const;
+            glm::mat4 GetParentTransf(void) const;
             int GetCollision(void) const;
             float GetRadius(void) const;
             Type GetType(void);

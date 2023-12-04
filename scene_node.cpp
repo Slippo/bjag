@@ -7,201 +7,208 @@
 
 namespace game {
 
-SceneNode::SceneNode(const std::string name, const Resource *geometry, const Resource *material, const Resource* texture, int collision = 0){
+    SceneNode::SceneNode(const std::string name, const Resource* geometry, const Resource* material, const Resource* texture, int collision = 0) {
 
-    // Set name of scene node
-    name_ = name;
+        // Set name of scene node
+        name_ = name;
 
-    // Set geometry
-    if (geometry->GetType() == PointSet){
-        mode_ = GL_POINTS;
-    } else if (geometry->GetType() == Mesh){
-        mode_ = GL_TRIANGLES;
-    } else {
-        throw(std::invalid_argument(std::string("Invalid type of geometry")));
+        // Set geometry
+        if (geometry->GetType() == PointSet) {
+            mode_ = GL_POINTS;
+        }
+        else if (geometry->GetType() == Mesh) {
+            mode_ = GL_TRIANGLES;
+        }
+        else {
+            throw(std::invalid_argument(std::string("Invalid type of geometry")));
+        }
+
+        array_buffer_ = geometry->GetArrayBuffer();
+        element_array_buffer_ = geometry->GetElementArrayBuffer();
+        size_ = geometry->GetSize();
+
+        // Set material (shader program)
+        if (material->GetType() != Material) {
+            throw(std::invalid_argument(std::string("Invalid type of material")));
+        }
+
+        material_ = material->GetResource();
+
+        // Set texture
+        if (texture) {
+            texture_ = texture->GetResource();
+        }
+        else {
+            texture_ = 0;
+        }
+
+        // Other attributes
+        scale_ = glm::vec3(1.0, 1.0, 1.0);
+        orbit_ = glm::mat4(1.0f);
+        pivot_ = position_;
+        collision_ = collision;
+        radius_ = 0.2f;
     }
 
-    array_buffer_ = geometry->GetArrayBuffer();
-    element_array_buffer_ = geometry->GetElementArrayBuffer();
-    size_ = geometry->GetSize();
 
-    // Set material (shader program)
-    if (material->GetType() != Material){
-        throw(std::invalid_argument(std::string("Invalid type of material")));
+    SceneNode::~SceneNode() {
     }
 
-    material_ = material->GetResource();
 
-    // Set texture
-    if (texture) {
-        texture_ = texture->GetResource();
-    }
-    else {
-        texture_ = 0;
+    const std::string SceneNode::GetName(void) const {
+        return name_;
     }
 
-    // Other attributes
-    scale_ = glm::vec3(1.0, 1.0, 1.0);
-    orbit_ = glm::mat4(1.0f);
-    pivot_ = position_;
-    collision_ = collision;
-    radius_ = 0.2f;
-}
+    SceneNode* SceneNode::GetChild(int n) const {
+        return children_.at(n);
+    };
+
+    void SceneNode::AddChild(SceneNode* child) {
+        children_.push_back(child);
+    };
+
+    int SceneNode::GetChildCount(void) const {
+        return children_.size();
+    }
+
+    glm::vec3 SceneNode::GetPosition(void) const {
+        return position_;
+    }
 
 
-SceneNode::~SceneNode(){
-}
+    glm::quat SceneNode::GetOrientation(void) const {
+        return orientation_;
+    }
 
 
-const std::string SceneNode::GetName(void) const {
-    return name_;
-}
+    glm::vec3 SceneNode::GetScale(void) const {
+        return scale_;
+    }
 
-SceneNode* SceneNode::GetChild(int n) const {
-    return children_.at(n);
-};
+    glm::vec3 SceneNode::GetPivot(void) const {
+        return pivot_;
+    }
 
-void SceneNode::AddChild(SceneNode* child) {
-    children_.push_back(child);
-};
+    glm::vec3 SceneNode::GetColor(void) const
+    {
+        return color_;
+    }
 
-int SceneNode::GetChildCount(void) const {
-    return children_.size();
-}
+    void SceneNode::SetPosition(glm::vec3 position) {
+        pivot_ = pivot_ + (position - position_);
+        position_ = position;
+    }
 
-glm::vec3 SceneNode::GetPosition(void) const {
-    return position_;
-}
-
-
-glm::quat SceneNode::GetOrientation(void) const {
-    return orientation_;
-}
+    void SceneNode::SetOrientation(glm::quat orientation) { // Does not work yet, use Rotate instead
+        orientation_ = orientation;
+    }
 
 
-glm::vec3 SceneNode::GetScale(void) const {
-    return scale_;
-}
+    void SceneNode::SetScale(glm::vec3 scale) {
 
-glm::vec3 SceneNode::GetPivot(void) const {
-    return pivot_;
-}
+        scale_ = scale;
+        pivot_ *= scale;
+    }
 
-glm::vec3 SceneNode::GetColor(void) const
-{
-    return color_;
-}
+    void SceneNode::SetPivot(glm::vec3 pivot) {
+        pivot_ = position_ + (pivot * orientation_); // Important note: SetPivot() already considers position / orientation, do not include them again when using this function.
+    }
 
-void SceneNode::SetPosition(glm::vec3 position){   
-    pivot_ = pivot_ + (position - position_);
-    position_ = position;
-}
+    void SceneNode::SetParentTransf(glm::mat4 transf) {
+        parent_transf_ = transf;
+    }
 
-void SceneNode::SetOrientation(glm::quat orientation){ // Does not work yet, use Rotate instead
-    orientation_ = orientation;
-}
+    void SceneNode::SetType(Type type) {
+        t_ = type;
+    }
 
+    void SceneNode::SetColor(glm::vec3 color) {
+        color_ = color;
+    }
 
-void SceneNode::SetScale(glm::vec3 scale){
+    SceneNode::Type SceneNode::GetType()
+    {
+        return t_;
+    }
 
-    scale_ = scale;
-    pivot_ *= scale;
-}
+    void SceneNode::SetTileCount(int count) {
+        tile_count_ = count;
+    }
 
-void SceneNode::SetPivot(glm::vec3 pivot) {
-    pivot_ = position_ + (pivot * orientation_); // Important note: SetPivot() already considers position / orientation, do not include them again when using this function.
-}
+    void SceneNode::SetLambertianCoefficient(float coefficient) {
+        lambertian_coefficient_ = coefficient;
+    }
 
-void SceneNode::SetParentTransf(glm::mat4 transf) {
-    parent_transf_ = transf;
-}
+    void SceneNode::SetSpecularCoefficient(float coefficient) {
+        specular_coefficient_ = coefficient;
+    }
 
-void SceneNode::SetType(Type type) {
-    t_ = type;
-}
+    void SceneNode::SetSpecularPower(float power) {
+        specular_power_ = power;
+    }
 
-void SceneNode::SetColor(glm::vec3 color) {
-    color_ = color;
-}
+    void SceneNode::SetAmbientLighting(float ambient) {
+        ambient_lighting_ = ambient;
+    }
 
-SceneNode::Type SceneNode::GetType()
-{
-    return t_;
-}
-  
-void SceneNode::SetTileCount(int count) {
-    tile_count_ = count;
-}
+    void SceneNode::Translate(glm::vec3 trans) {
+        position_ += trans;
+        pivot_ += trans;
+    }
 
-void SceneNode::SetLambertianCoefficient(float coefficient) {
-    lambertian_coefficient_ = coefficient;
-}
+    void SceneNode::Rotate(glm::quat rot) {
+        orientation_ *= rot;
+        orientation_ = glm::normalize(orientation_);
+        pivot_ = rot * pivot_ * -rot;
+    }
 
-void SceneNode::SetSpecularCoefficient(float coefficient) {
-    specular_coefficient_ = coefficient;
-}
-
-void SceneNode::SetSpecularPower(float power) {
-    specular_power_ = power;
-}
-
-void SceneNode::SetAmbientLighting(float ambient) {
-    ambient_lighting_ = ambient;
-}
-
-void SceneNode::Translate(glm::vec3 trans){
-    position_ += trans;
-    pivot_ += trans;
-}
-
-void SceneNode::Rotate(glm::quat rot){
-    orientation_ *= rot;
-    orientation_ = glm::normalize(orientation_);
-    pivot_ = rot * pivot_ * -rot;
-}
-
-void SceneNode::Orbit(glm::quat rot) {
-    glm::vec3 trans = glm::vec3(pivot_ - position_);
-    glm::mat4 rot_mat = glm::mat4_cast(glm::normalize(rot));
-    orbit_ *= glm::translate(glm::mat4(1.0f), trans) * rot_mat * glm::translate(glm::mat4(1.0f), -trans);
-}
+    void SceneNode::Orbit(glm::quat rot) {
+        glm::vec3 trans = glm::vec3(pivot_ - position_);
+        glm::mat4 rot_mat = glm::mat4_cast(glm::normalize(rot));
+        orbit_ *= glm::translate(glm::mat4(1.0f), trans) * rot_mat * glm::translate(glm::mat4(1.0f), -trans);
+    }
 
 
-void SceneNode::Scale(glm::vec3 scale){
+    void SceneNode::Scale(glm::vec3 scale) {
 
-    scale_ *= scale;
-    pivot_ *= scale;
-}
-
-
-GLenum SceneNode::GetMode(void) const {
-
-    return mode_;
-}
+        scale_ *= scale;
+        pivot_ *= scale;
+    }
 
 
-GLuint SceneNode::GetArrayBuffer(void) const {
+    GLenum SceneNode::GetMode(void) const {
 
-    return array_buffer_;
-}
-
-
-GLuint SceneNode::GetElementArrayBuffer(void) const {
-
-    return element_array_buffer_;
-}
+        return mode_;
+    }
 
 
-GLsizei SceneNode::GetSize(void) const {
+    GLuint SceneNode::GetArrayBuffer(void) const {
 
-    return size_;
-}
+        return array_buffer_;
+    }
 
 
-GLuint SceneNode::GetMaterial(void) const {
+    GLuint SceneNode::GetElementArrayBuffer(void) const {
 
-    return material_;
-}
+        return element_array_buffer_;
+    }
+
+
+    GLsizei SceneNode::GetSize(void) const {
+
+        return size_;
+    }
+
+
+    GLuint SceneNode::GetMaterial(void) const {
+
+        return material_;
+    }
+
+    glm::mat4 SceneNode::GetParentTransf(void) const {
+
+        return parent_transf_;
+    }
 
 void SceneNode::SetGeometry(const Resource *geometry) {
     // Set geometry
@@ -279,6 +286,7 @@ void SceneNode::SetupShader(GLuint program, Camera* camera, SceneNode* light){
     glm::mat4 transf = parent_transf_ * translation * orbit * rotation * scaling; // why this sequence?
 
     position_collision_ = glm::vec3(transf * glm::vec4(position_, 1.0));
+
     for (int i = 0; i < children_.size(); i++) {
         children_[i]->SetParentTransf(transf);
     }

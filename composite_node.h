@@ -21,7 +21,7 @@ namespace game {
 	public:
 
 
-		typedef enum Type { None, Kelp, Coral, Stalagmite, Submarine, Part , Anemonie, Seaweed, Rock, ParticleSystem, VentBase} NodeType; // Object types list
+		typedef enum Type { None, Kelp, Coral, Stalagmite, Submarine, Part , Anemonie, Seaweed, Rock, ParticleSystem, VentBase, Vent} NodeType; // Object types list
 
 		// Create a named composite node
 		CompositeNode(const std::string name);
@@ -33,6 +33,7 @@ namespace game {
 		
 		// Getters
 		SceneNode* GetNode(std::string node_name) const;
+		SceneNode* GetNode(int index) const;
 		inline std::vector<SceneNode*> GetAllNodes() const { return node_; }
 		inline std::string GetName(void) const { return name_; }
 		SceneNode* GetRoot() const;
@@ -45,6 +46,10 @@ namespace game {
 		// Setters
 		void SetRoot(SceneNode* root);
 		void SetType(Type type) { t_ = type; }
+
+		// Collision
+		void SetCollision(int val);
+		int GetCollision();
 
 		// Transformations
 		void SetPosition(glm::vec3 pos);
@@ -59,11 +64,14 @@ namespace game {
 		// Update all nodes
 		int Update(Camera* camera);
 
+		std::vector<SceneNode*> hitboxes_;
+
 	private:
 		std::string name_;
 		std::vector<SceneNode*> node_;
 		SceneNode* root_ = nullptr;
 		Type t_ = None; // Object type
+		int collision_ = 0;
 	};
 
 }
