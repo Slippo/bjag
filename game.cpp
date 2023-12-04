@@ -21,8 +21,7 @@ namespace game {
     float camera_far_clip_distance_g = 1000.0;
     float camera_fov_g = 60.0; // Field-of-view of camera (degrees)
     const glm::vec3 viewport_background_color_g(0.5, 0.5, 1.0);
-    //glm::vec3 camera_position_g(0.0, 5.0, 8.0);
-    glm::vec3 camera_position_g(80.4, 3.2, 33.9);
+    glm::vec3 camera_position_g(0.0, 5.0, 8.0);
     glm::vec3 camera_look_at_g(0.0, 2.5, 0.0);
     glm::vec3 camera_up_g(0.0, 1.0, 0.0);
 
