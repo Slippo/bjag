@@ -52,5 +52,6 @@ namespace game
     void GameCollision::PlayerMachinePartCollision(Camera* camera, CompositeNode* obj)
     {
         obj->GetRoot()->SetCollision(2);
+        camera->IncreaseNumParts();
     }
 }

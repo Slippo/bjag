@@ -57,6 +57,22 @@ CompositeNode* SceneGraph::GetNode(int index) const {
     return NULL;
 }
 
+void SceneGraph::ClearObj()
+{
+    int val = 0;
+    int index = 0;
+
+    for (int i = 0; i < node_.size(); i++)
+    {
+        for (SceneNode* node : node_[i]->GetAllNodes())
+        {
+            delete node;
+        }
+        delete node_[i];
+    }
+    node_.clear();
+}
+
 std::vector<CompositeNode *>::const_iterator SceneGraph::begin() const { return node_.begin(); }
 
 
@@ -75,6 +91,19 @@ void SceneGraph::Draw(Camera *camera, SceneNode* light){
     for (int i = 0; i < node_.size(); i++){
         node_[i]->Draw(camera, light);
     }
+}
+
+void SceneGraph::Draw()
+{
+    glClearColor(background_color_[0],
+        background_color_[1],
+        background_color_[2], 0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Draw all scene nodes
+    //for (int i = 0; i < node_.size(); i++) {
+      //  node_[i]->Draw(camera);
+    //}
 }
 
 // Handles movement, collisions, and geometric changes

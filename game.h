@@ -36,6 +36,8 @@ namespace game {
     class Game {
 
         public:
+            enum GameState { start = 0, ingame = 1, win = 2, lose = 3 };
+
             // Constructor and destructor
             Game(void);
             ~Game();
@@ -68,6 +70,9 @@ namespace game {
             // Flag to turn animation on/off
             bool animating_;
 
+            double last_time_ = 0;
+
+
             bool moving_;
 
             std::set<int> pressed_;
@@ -76,9 +81,12 @@ namespace game {
             const glm::ivec2 plane_size_ = glm::ivec2(200,200);
             std::vector<float> height_map_; // height map for the floor
             std::vector<float> height_map_boundary_; // height map for the boundary (stone walls)
+            std::vector<float> height_map_collision_;
 
             // ImGui io (to retain data)
             ImGuiIO imgui_io_;
+
+            GameState state_;
 
             // Methods to initialize the game
             void InitWindow(void);
@@ -90,8 +98,13 @@ namespace game {
             static void ResizeCallback(GLFWwindow* window, int width, int height);
             static void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 
+            void SetupStartScreen();
+            void SetupGameScreen();
             // UI
             void UpdateHUD();
+            void UpdateStartHUD();
+            void UpdateWinHUD();
+            void UpdateLoseHUD();
 
             // Kelp tree/bush nodes
             // The sphere used to make leaves
