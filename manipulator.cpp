@@ -633,6 +633,20 @@ namespace game {
 
     }
 
+    CompositeNode* Manipulator::ConstructSkyBox(ResourceManager* resman_, std::string name_, glm::vec3 position_) {
+
+        CompositeNode* box = new CompositeNode(name_);
+        box->SetType(CompositeNode::Type::Rock);
+
+        // Create root node
+        SceneNode* root = CreateSceneNodeInstance("Root", "SkyBox", "SkyBoxMaterial", "SkyBoxTexture", resman_);
+        root->SetPosition(position_);
+        box->SetRoot(root);
+
+        return box;
+
+    }
+
 
     // (2) Animate hierarchical objects
     void Manipulator::AnimateAll(SceneGraph* scene_, double time_, float theta_) {
