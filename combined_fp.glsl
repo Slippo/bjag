@@ -61,4 +61,6 @@ void main()
     } else {
         gl_FragColor = pixel*0.25*ambient;
     }
+
+    if(gl_FragColor.a < 0.1) discard;
 }

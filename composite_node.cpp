@@ -24,6 +24,13 @@ namespace game {
         return NULL;
     }
 
+    SceneNode* CompositeNode::GetNode(int index) const {
+        if (index > 0 && index < node_.size()) {
+            return node_[index];
+        }
+        return NULL;
+    }
+
     SceneNode* CompositeNode::GetRoot() const {
         if (root_ != nullptr) {
             return root_;
@@ -43,6 +50,14 @@ namespace game {
     void CompositeNode::ClearNodes()
     {
         node_.clear();
+    }
+
+    void CompositeNode::SetCollision(int val) {
+        collision_ = val;
+    }
+
+    int CompositeNode::GetCollision() {
+        return collision_;
     }
 
     // Transformations
