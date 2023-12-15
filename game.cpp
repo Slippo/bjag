@@ -342,7 +342,7 @@ void Game::PopulateWorld(void) {
     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part3", glm::vec3(-74.07, 5.0, -75.85)));
     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part4", glm::vec3(19.44, 17.85, 83.95)));
     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part5", glm::vec3(81.98, 5.0, -26.343)));
-  */
+  /*
     // Light source ("sun")
     scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,100,0)));
   
@@ -443,7 +443,7 @@ void Game::SetupScene(void) {
 
     PopulateWorld();
 
-  /*
+  //
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
 
 
@@ -499,7 +499,7 @@ void Game::SetupScene(void) {
 
     scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite7", glm::vec3(87.5, 0, -4.0)));
     scene_.GetNode("Stalagmite7")->Scale(glm::vec3(0.7, 0.7, 0.7));
-  */
+  //
 }
 
 void Game::MainLoop(void){
@@ -529,7 +529,7 @@ void Game::MainLoop(void){
                 {
                     collision_.CollisionEventCompositeNode(&camera_, *iterator);
                 }
-                std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
+                //std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
 
 
                 // Hydrothermal vent collision switch
@@ -548,9 +548,6 @@ void Game::MainLoop(void){
         }
 
         camera_.Update(delta_time);
-
-       
-
 
         // Process camera/player forward movement
         //camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
@@ -598,10 +595,6 @@ void Game::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
     game->camera_.Yaw(sens * -dir.x);
     game->camera_.Pitch(sens * -dir.y);
     
-    //game->camera_.Roll(0);
-
-    //std::cout << glm::to_string(dir) << std::endl;
-
     glfwSetCursorPos(window, width / 2, height / 2); // center the cursor
 }
 
@@ -612,8 +605,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
     void* ptr = glfwGetWindowUserPointer(window);
     Game *game = (Game *) ptr;
 
-  
-    // Quit game if 'q' is pressed
+    // Quit game
     if (key == GLFW_KEY_Q && action == GLFW_PRESS){
         glfwSetWindowShouldClose(window, true);
     }
@@ -658,13 +650,11 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
     }
     
     //forward backward side movement (strafe)
-    if (key == GLFW_KEY_A){
-      
+    if (key == GLFW_KEY_A) {
         //game->camera_.UpdateVelocity(1);
         //game->camera_.Translate(-glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
     }
-    if (key == GLFW_KEY_D)
-    {
+    if (key == GLFW_KEY_D) {
         //game->camera_.UpdateVelocity(-1);
         //game->camera_.Translate(glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
     }
@@ -678,35 +668,14 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
    
     // Accelerate and break
     if (key == GLFW_KEY_W && glfwGetKey(window, key) == GLFW_PRESS) {
-        /* //old architecture from acceleration based model
-        float new_speed = game->camera_.GetSpeed() + 0.005f;
-        
-        if (new_speed < game->camera_.GetMaxSpeed()) {
-            game->camera_.SetSpeed(new_speed);
-        }
-        else {
-            game->camera_.SetSpeed(game->camera_.GetMaxSpeed());
-        }*/
         game->pressed_.insert(key);
         game->camera_.UpdateForwardVelocity(5);
-        //game->camera_.Translate(glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
     }
-    else if (key == GLFW_KEY_W && action == GLFW_RELEASE)
-    {
+    else if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
         game->pressed_.erase(key);
     }
 
-    if (key == GLFW_KEY_S && glfwGetKey(window, key) == GLFW_PRESS){
-     
-        /* //old architecture from acceleration based model
-        float new_speed = game->camera_.GetSpeed() - 0.05f;
-        if (new_speed > game->camera_.GetMinSpeed()) {
-            game->camera_.SetSpeed(new_speed);
-        }
-        else {
-            game->camera_.SetSpeed(0.0f);
-        }*/
-
+    if (key == GLFW_KEY_S && glfwGetKey(window, key) == GLFW_PRESS) {
         game->pressed_.insert(key);
         game->camera_.UpdateForwardVelocity(-5);
         //game->camera_.Translate(-glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
