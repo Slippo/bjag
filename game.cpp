@@ -1,25 +1,20 @@
 #include <iostream>
 #include <time.h>
 #include <sstream>
-
 #include "game.h"
 #include "path_config.h"
 
 namespace game {
-
-    // Some configuration constants
-    // They are written here as global variables, but ideally they should be loaded from a configuration file
-
+    // Configuration constants
     // Main window settings
     const std::string window_title_g = "Bjag";
     const unsigned int window_width_g = 1280;
     const unsigned int window_height_g = 720;
     const bool window_full_screen_g = false;
-
     // Viewport and camera settings
-    float camera_near_clip_distance_g = 0.01;
+    float camera_near_clip_distance_g = 0.05;
     float camera_far_clip_distance_g = 1000.0;
-    float camera_fov_g = 60.0; // Field-of-view of camera (degrees)
+    float camera_fov_g = 60.0; // degrees
     const glm::vec3 viewport_background_color_g(0.5, 0.5, 1.0);
     glm::vec3 camera_position_g(0.0, 5.0, 8.0);
     glm::vec3 camera_look_at_g(0.0, 2.5, 0.0);
@@ -28,16 +23,9 @@ namespace game {
     // Materials 
     const std::string material_directory_g = MATERIAL_DIRECTORY;
 
-    // Manipulator
     Manipulator* manipulator = new Manipulator();
 
-    // Text Renderer
-    //TextRenderer* text_renderer = new TextRenderer();
-
-    Game::Game(void) {
-
-        // Don't do work in the constructor, leave it for the Init() function
-    }
+    Game::Game(void) {}
 
 
     void Game::Init(void) {
@@ -51,7 +39,6 @@ namespace game {
         animating_ = true;
         moving_ = false;
     }
-
 
     void Game::InitWindow(void) {
 
@@ -287,10 +274,7 @@ namespace game {
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/Gear.png");
     resman_.LoadResource(Texture, "GearTexture", filename.c_str());
   
-    // PARTICLE EFFECT SECTION
-
-    // Load material to be applied to environment particle effect
-    
+    // PARTICLE FX
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/environment");
     resman_.LoadResource(Material, "ParticleGeyserMaterial", filename.c_str());
 
@@ -427,7 +411,6 @@ void Game::SetupScene(void) {
 
     camera_.SetTimer(480); // Starting player time limit / oxygen
 
-
     scene_.SetBackgroundColor(viewport_background_color_g);
 
     // Floor of the game (sand)
@@ -441,13 +424,12 @@ void Game::SetupScene(void) {
     // Light source ("sun")
     scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0, 100, 0)));
 
-    PopulateWorld();
+    //PopulateWorld();
 
-  //
-    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
+    //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
 
 
-    // Hydrothermal vents
+    /*/ Hydrothermal vents
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "Vent1", "ParticleGeyserMaterial", "BubbleTexture", glm::vec3(-71, 0, -23)));
     scene_.GetNode("Vent1")->Scale(glm::vec3(15.0, 1.0, 15.0));
     scene_.GetNode("Vent1")->SetType(CompositeNode::Type::Vent);
@@ -499,7 +481,7 @@ void Game::SetupScene(void) {
 
     scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite7", glm::vec3(87.5, 0, -4.0)));
     scene_.GetNode("Stalagmite7")->Scale(glm::vec3(0.7, 0.7, 0.7));
-  //
+  */
 }
 
 void Game::MainLoop(void){
@@ -533,6 +515,7 @@ void Game::MainLoop(void){
 
 
                 // Hydrothermal vent collision switch
+                /*
                 if (int(current_time) % 6 == 0) { // On
                     for (int i = 1; i < 7; i++) {
                         scene_.GetNode("Vent" + std::to_string(i))->SetCollision(1);
@@ -543,8 +526,8 @@ void Game::MainLoop(void){
                         scene_.GetNode("Vent" + std::to_string(i))->SetCollision(0);
                     }
                 }
-            }
-            
+                */
+            }     
         }
 
         camera_.Update(delta_time);
