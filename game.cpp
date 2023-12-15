@@ -358,8 +358,6 @@ void Game::SetupScene(void)
 }
 
 void Game::PopulateWorld(void) {
-    scene_.AddNode(manipulator->ConstructSkyBox(&resman_, "Sky_Box", glm::vec3(0, 3, 0)));
-
     //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
 
@@ -464,21 +462,17 @@ void Game::SetupGameScreen(void)
     camera_.SetTimer(500); // Starting player time limit / oxygen
 
     scene_.SetBackgroundColor(viewport_background_color_g);
+    scene_.AddNode(manipulator->ConstructSkyBox(&resman_, "Sky_Box", glm::vec3(0, 3, 0)));
 
-    // Floor of the game (sand)
+    scene_.AddNode(manipulator->ConstructPlane(&resman_)); // "Plane" | sandy floor
 
-    scene_.AddNode(manipulator->ConstructPlane(&resman_)); // name is "Plane"
-    //scene_.GetNode("Plane")
+    scene_.AddNode(manipulator->ConstructBoundary(&resman_)); // "Boundary" | stone walls
 
-    // Boundary "walls" (stone)
-    scene_.AddNode(manipulator->ConstructBoundary(&resman_));
-
-    // Light source ("sun")
-    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0, 100, 0)));
+    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0, 100, 0))); // "Sun"
 
     PopulateWorld();
 
-    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
+    //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
 
 
     /*/ Hydrothermal vents
@@ -546,6 +540,7 @@ void Game::MainLoop(void){
     double current_time = 0.0f;
     float last_time = 0.0f;
     float delta_time = 0.0f;
+    float mytheta = glm::pi<float>() / 64;
     while (!glfwWindowShouldClose(window_)){
 
         double current_time = glfwGetTime();
@@ -590,8 +585,7 @@ void Game::MainLoop(void){
 
                 scene_.GetNode("BubbleParticles")->SetPosition(camera_.GetPosition() + glm::vec3(0, -0.5, 0.08)); // Make passive bubble particles follow player
 
-                for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++)
-                {
+                for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++) {
                     collision_.CollisionEventCompositeNode(&camera_, *iterator);
 
                     if (camera_.GetNumParts() != last_num_machine_parts_)
@@ -699,9 +693,6 @@ void Game::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
-
-
-    // Get user data with a pointer to the game class
     void* ptr = glfwGetWindowUserPointer(window);
     Game *game = (Game *) ptr;
 
@@ -855,9 +846,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
             game->camera_.SetSideSpeed(0);
         }
     }
-
-    if (game->pressed_.find(GLFW_KEY_D) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_A) == game->pressed_.end())
-    {
+    if (game->pressed_.find(GLFW_KEY_D) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_A) == game->pressed_.end()) {
         game->camera_.SetSideSpeed(0);
     }
 
@@ -866,7 +855,6 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
     }
 
 }
-
 
 void Game::ResizeCallback(GLFWwindow* window, int width, int height){
 
