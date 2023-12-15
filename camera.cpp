@@ -68,12 +68,12 @@ float Camera::CalculateSlope(float h)
     
     
     slope = abs(curr_height - (h + 3.0));
-
+    /*
     std::cout << "Height map: " << h << std::endl;
     std::cout << "Current height" << curr_height << std::endl;
     std::cout << "Slope: " << slope << std::endl;
     std::cout << "---" << std::endl;
-
+    */
     return slope;
 
 
@@ -312,32 +312,25 @@ void Camera::Update(float delta_time)
        
         //if the timer has been going for a while (to account for the initial push-off from the ground), and the distance
         //from the ground is small enough, set state to walking and reset timer to 0
-        if (t_ >= 2.0 && distance <= 0.3)
-        {
+        if (t_ >= 2.0 && distance <= 0.3) {
             tempPos.y = interpolation + 3.0;
             float slope = CalculateSlope(interpolation);
             t_ = 0.0;
             state_ = walking;
 
-            if (slope >= 1.1 || x == 0 || x == height - 2 || z == 0 || z == width - 2)
-            {
-                std::cout << "Hello" << std::endl;
+            if (slope >= 1.1 || x == 0 || x == height - 2 || z == 0 || z == width - 2) {
                 position_ = oldPos;
                 position_.y = oldY + 3.0;
                 return;
             }
-
             position_ = tempPos;
-            //position_.y = old_y_;
         }
-        else
-        {
+        else {
             position_ = position_ - (glm::vec3(0.0, 0.4f, 0.0) * delta_time);
         }        
 
     }
-    else
-    {
+    else {
         if (abs(slope_map_[x + width * z]) >= 1.1 || x == 0 || x == height - 2 || z == 0 || z == width - 2)
         {
             return;
@@ -348,40 +341,29 @@ void Camera::Update(float delta_time)
         oldY = interpolation;
 
     }
-
-
-
-
-
 }
-void Camera::UpdateForwardVelocity(float backwards)
-{
+
+void Camera::UpdateForwardVelocity(float backwards) {
     forward_speed_ += (0.15 * backwards);
-    if (forward_speed_ >= GetMaxSpeed())
-    {
+    if (forward_speed_ >= GetMaxSpeed()) {
         forward_speed_ = max_speed_;
     }
-    if (forward_speed_ <= GetMinSpeed())
-    {
+    if (forward_speed_ <= GetMinSpeed()) {
         forward_speed_ = min_speed_;
     }
 }
 
-void Camera::UpdateSideVelocity(float left)
-{
+void Camera::UpdateSideVelocity(float left) {
     side_speed_ += (0.15 * left);
-    if (side_speed_ >= GetMaxSpeed())
-    {
+    if (side_speed_ >= GetMaxSpeed()) {
         side_speed_ = max_speed_;
     }
-    if (side_speed_ <= GetMinSpeed())
-    {
+    if (side_speed_ <= GetMinSpeed()) {
         side_speed_ = min_speed_;
     }
 }
 
-
-void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up){
+void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up) {
     // Store initial forward and side vectors
     // See slide in "Camera control" for details
     // probably will not be much used (directly setting view a rare occurrence in games)
