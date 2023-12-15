@@ -16,7 +16,6 @@ namespace game {
         SceneNode* root = CreateSceneNodeInstance("Root", "Cylinder", "KelpMaterial", "", resman_);
         root->SetPosition(position_);
         root->SetPivot(glm::vec3(0, -1, 0));
-        std::cout << glm::to_string(root->GetPivot());
         root->SetType(SceneNode::Type::KelpStem);
         kelp->SetRoot(root);
 

@@ -9,6 +9,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <vector>
 
@@ -22,7 +23,7 @@ namespace game {
             Camera(void);
             ~Camera();
 
-            enum CameraState { walking = 0, jumping = 1, at_rest = 2 };
+            enum CameraState { walking = 0, jumping = 1, at_rest = 2 }; // at_rest is never used
  
             // Get global camera attributes
             glm::vec3 GetPosition(void) const;
@@ -92,8 +93,6 @@ namespace game {
             float max_speed_ = 6.0f; // Maximum speed factor
             float min_speed_ = -6.0f; // Minimum speed factor
             float jump_limit_ = 60.0f;
-            float jump_ = 0.0;
-            float base_y_position_ = 0.0;
             float timer_ = 240.0; // Oxygen / health / game time
             int num_parts_ = 0; // Game win condition, goes up when submarine part is collected
             glm::vec3 position_; // Position of camera
@@ -107,7 +106,7 @@ namespace game {
             glm::vec3 movement_side_;
             glm::mat4 view_matrix_; // View matrix
             glm::mat4 projection_matrix_; // Projection matrix
-            glm::vec3 old_position_;
+            glm::vec3 base_position_;
             CameraState state_;
 
             std::vector<float> height_map_;
@@ -117,11 +116,17 @@ namespace game {
             int width;
             int height;
 
-            // For collision
-            float radius_;
-            bool dead_;
+            // Physics values
+            float base_vel = 10.0f;
+            float jump_height = 10.0f;
+            float gravity = 5.8f;
+            float t_;
 
-            // Win condition
+            // For collision
+            float radius_; // IDK when this will be used
+            
+            // Win/loss conditions
+            bool dead_ = false;
             bool win_condition_ = false;
 
             // Create view matrix from current camera parameters

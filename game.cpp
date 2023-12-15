@@ -490,25 +490,26 @@ void Game::MainLoop(void){
     float last_time = 0.0f;
     float delta_time = 0.0f;
     float mytheta = glm::pi<float>() / 64;
-    while (!glfwWindowShouldClose(window_)){
+    int ticks = 0;
+    float sum_time = 0.0f;
+    while (!glfwWindowShouldClose(window_)) {
+        // Update other events like input handling
+        glfwPollEvents();
         SceneNode* world_light = scene_.GetNode("Sphere")->GetRoot();
         current_time = glfwGetTime();
         delta_time = current_time - last_time;
+        //std::cout << delta_time << std::endl;
         if (animating_){
             if ((current_time - last_time) > 0.05) {
-
                 camera_.DecreaseTimer(current_time - last_time); // Decrease remaining player time limit / oxygen
-
+                last_time = current_time;
                 scene_.Update(&camera_, &resman_);
                 manipulator->AnimateAll(&scene_, current_time, mytheta);
-                
-                last_time = current_time;
 
                 for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++) {
                     collision_.CollisionEventCompositeNode(&camera_, *iterator);
                 }
                 //std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
-
 
                 // Hydrothermal vent collision switch
                 /*
@@ -535,13 +536,17 @@ void Game::MainLoop(void){
         // Update ImGui
         UpdateHUD();
 
-        // Update other events like input handling
-        glfwPollEvents();
-
         // Push buffer drawn in the background onto the display
         glfwSwapBuffers(window_);
 
         if (camera_.CheckWinCondition()) { glfwSetWindowShouldClose(window_, true); }
+        ticks++;
+        sum_time += delta_time;
+        if (ticks == 100) {
+            //std::cout<<sum_time/float(ticks)<<"\n";
+            ticks = 0;
+            sum_time = 0.0f;
+        }
     }
 }
 
@@ -572,31 +577,13 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         glfwSetWindowShouldClose(window, true);
     }
 
-    //DEBUGGING KEYS
-    if (key == GLFW_KEY_E && action == GLFW_PRESS){
-        game->animating_ = (game->animating_ == true) ? false : true;
-    }
-    if (key == GLFW_KEY_F) {
-        std::cout << "Current Position: " << glm::to_string(game->camera_.GetPosition()) << std::endl;
-    }
-    if (key == GLFW_KEY_P && action == GLFW_PRESS) {
-        std::string pos = glm::to_string(game->camera_.GetPosition());
-        std::string forw = glm::to_string(game->camera_.GetForward());
-        std::string side = glm::to_string(game->camera_.GetSide());
-        std::string up = glm::to_string(game->camera_.GetUp());
-        //glm::quat ori = game->camera_.GetOrientation();
-        std::cout << "\nPOS: " << pos
-                  << "\nFOR: " << forw << "\nSID: " << side << "\n UP: " << up
-                  << "\nSPD: " << game->camera_.GetForwardSpeed() << std::endl;  
-    }
-
     // Movement controls
-
     if (key == GLFW_KEY_SPACE) {
         game->camera_.Jump();
     }
    
     // Accelerate and break
+    //
     if (key == GLFW_KEY_W && glfwGetKey(window, key) == GLFW_PRESS) {
         game->pressed_.insert(key);
         game->camera_.UpdateForwardVelocity(5);
@@ -633,6 +620,25 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
     }
     if (game->pressed_.find(GLFW_KEY_D) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_A) == game->pressed_.end()) {
         game->camera_.SetSideSpeed(0);
+    }
+    //
+    //DEBUGGING KEYS
+    if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+        game->animating_ = (game->animating_ == true) ? false : true;
+    }
+    if (key == GLFW_KEY_F) {
+        std::cout << "Current Position: " << glm::to_string(game->camera_.GetPosition()) << "\n"
+            << game->camera_.GetState() << "\n";
+    }
+    if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+        std::string pos = glm::to_string(game->camera_.GetPosition());
+        std::string forw = glm::to_string(game->camera_.GetForward());
+        std::string side = glm::to_string(game->camera_.GetSide());
+        std::string up = glm::to_string(game->camera_.GetUp());
+        //glm::quat ori = game->camera_.GetOrientation();
+        std::cout << "\nPOS: " << pos
+            << "\nFOR: " << forw << "\nSID: " << side << "\n UP: " << up
+            << "\nSPD: " << game->camera_.GetForwardSpeed() << std::endl;
     }
 }
 
