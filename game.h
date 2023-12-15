@@ -80,7 +80,7 @@ namespace game {
 
             bool moving_;
 
-            std::set<int> pressed_;
+            std::set<int> pressed_; // TBR
 
             // Size of both planes
             const glm::ivec2 plane_size_ = glm::ivec2(200,200);

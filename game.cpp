@@ -656,9 +656,6 @@ void Game::MainLoop(void){
         // Draw the scene
         //scene_.Draw(&camera_, world_light);
 
-        // Update other events like input handling
-        glfwPollEvents();
-
         // Push buffer drawn in the background onto the display
         glfwSwapBuffers(window_);
 

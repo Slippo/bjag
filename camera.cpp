@@ -4,20 +4,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
-
 #include "camera.h"
 
 namespace game {
-
-//define constant acceleration factor
-    float base_vel = 5.0f;
-    float jump_height = 4.0f;
-    float gravity = 1.8f;
-    float t_;
-
 Camera::Camera(void){
     state_ = walking;
-    jump_ = 0.0;
     radius_ = 1.0f;
 
     max_y_ = 15.5;
@@ -55,8 +46,7 @@ void Camera::SetMaxSpeed(float speed) {
     max_speed_ = speed;
 }
 
-void Camera::SetRadius(float r)
-{
+void Camera::SetRadius(float r) {
     radius_ = r;
 }
 
@@ -64,8 +54,8 @@ void Camera::SetTimer(float t) {
     timer_ = t;
 }
 
-float Camera::CalculateSlope(float h)
-{
+/// TODO: document this function
+float Camera::CalculateSlope(float h) {
     float curr_height = position_.y;
     float slope = -100;
     
@@ -77,26 +67,21 @@ float Camera::CalculateSlope(float h)
     }
 
     return slope;
-
-
 }
 
-void Camera::SetHeightMap(std::vector<float> h, std::vector<float> height_boundary)
-{
+/// TODO: document this function
+void Camera::SetHeightMap(std::vector<float> h, std::vector<float> height_boundary) {
 
-    for (int i = 0; i < h.size(); i++)
-    {
+    for (int i = 0; i < h.size(); i++) {
         height_map_.push_back(std::max(h[i], height_boundary[i]));
     }
 
     float slopes[4];
     int index = 0;
     // z
-    for (int i = 0; i < height - 1; i++)
-    {
+    for (int i = 0; i < height - 1; i++) {
         // x
-        for (int j = 0; j < width - 1; j++)
-        {
+        for (int j = 0; j < width - 1; j++) {
             float heightA = height_map_[j + (width -1)* i];
             float heightB = height_map_[j + 1 + (width - 1) * i];
             float heightC = height_map_[j + (width - 1) * (i + 1)];
@@ -113,10 +98,8 @@ void Camera::SetHeightMap(std::vector<float> h, std::vector<float> height_bounda
 
             //AC
             slopes[3] = heightC - heightA;
-            for (int i = 1; i < 4; i++)
-            {
-                if (abs(slopes[index]) < abs(slopes[i]))
-                {
+            for (int i = 1; i < 4; i++) {
+                if (abs(slopes[index]) < abs(slopes[i])) {
                     index = i;
                 }
             }
@@ -125,11 +108,9 @@ void Camera::SetHeightMap(std::vector<float> h, std::vector<float> height_bounda
             index = 0;
         }
     }
-
 }
-
-void Camera::SetDimensions(int x, int z, int w, int h)
-{
+ // IDK what this does
+void Camera::SetDimensions(int x, int z, int w, int h) {
     offsetX = x;
     offsetZ = z;
     width = w;
@@ -154,8 +135,7 @@ void Camera::AddPart() {
     }
 }
 
-void Camera::SetDead(bool d)
-{
+void Camera::SetDead(bool d) {
     dead_ = d;
 }
 
@@ -217,8 +197,7 @@ float Camera::GetMinSpeed(void) const {
     return min_speed_;
 }
 
-float Camera::GetRadius(void) const
-{
+float Camera::GetRadius(void) const {
     return radius_;
 }
 
@@ -247,15 +226,14 @@ bool Camera::CheckWinCondition(void) const {
     return win_condition_;
 }
 
-void Camera::Pitch(float angle){
+void Camera::Pitch(float angle) {
     glm::quat rotation = glm::angleAxis(angle, GetSide());
     orientation_ = rotation * orientation_;
     orientation_ = glm::normalize(orientation_);
 }
 
 void Camera::Yaw(float angle){
-    //glm::quat rotation = glm::angleAxis(angle, GetUp());
-    glm::quat rotation = glm::angleAxis(angle, glm::vec3(0, 1, 0));
+    glm::quat rotation = glm::angleAxis(angle, glm::vec3(0, 1, 0)); // +Y rather than GetUp()
     orientation_ = rotation * orientation_;
     orientation_ = glm::normalize(orientation_);
 
@@ -269,20 +247,16 @@ void Camera::Roll(float angle){
     orientation_ = glm::normalize(orientation_);
 }
 
-void Camera::Jump()
-{
-    if (state_ == walking)
-    {
-        base_y_position_ = position_.y;
-        old_position_ = position_;
-        state_ = jumping;
-        t_ = 0.0; //set timer to zero just to make sure
-     
-    }
+void Camera::Jump() {
+    if (state_ == jumping) {return;}
+    state_ = jumping;
+    base_position_ = position_;
+    t_ = 0.0; //set timer to zero just to make sure
 }
+
 void Camera::Update(float delta_time)
 {
-    glm::vec3 oldPos = position_;
+    glm::vec3 old_position = position_;
     glm::vec3 tempPos = position_ + ((GetForwardMovement() * forward_speed_ * delta_time)) + (GetSideMovement() * side_speed_ * delta_time);
     //position_ += (GetForwardMovement() * forward_speed_ * delta_time);
     //position_ += (GetSideMovement() * side_speed_ * delta_time);    
@@ -332,7 +306,7 @@ void Camera::Update(float delta_time)
         }*/
         
         position_ = tempPos;
-        position_.y = base_y_position_ + (0.5 * (jump_height + (base_vel - (gravity * t_))) * t_);
+        position_.y = base_position_.y + (0.5 * (jump_height + (base_vel - (gravity * t_))) * t_);
 
         //timer is increemented here, 0.1 for each recorded frame
         t_ += delta_time;
@@ -385,6 +359,7 @@ void Camera::Update(float delta_time)
     }
 
 }
+
 void Camera::UpdateForwardVelocity(float backwards)
 {
     forward_speed_ = max_speed_ * backwards;
