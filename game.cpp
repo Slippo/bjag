@@ -313,8 +313,6 @@ namespace game {
 }
 
 void Game::PopulateWorld(void) {
-    scene_.AddNode(manipulator->ConstructSkyBox(&resman_, "Sky_Box", glm::vec3(0, 3, 0)));
-
     //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
 
@@ -419,21 +417,17 @@ void Game::SetupScene(void) {
     camera_.SetTimer(480); // Starting player time limit / oxygen
 
     scene_.SetBackgroundColor(viewport_background_color_g);
+    scene_.AddNode(manipulator->ConstructSkyBox(&resman_, "Sky_Box", glm::vec3(0, 3, 0)));
 
-    // Floor of the game (sand)
+    scene_.AddNode(manipulator->ConstructPlane(&resman_)); // "Plane" | sandy floor
 
-    scene_.AddNode(manipulator->ConstructPlane(&resman_)); // name is "Plane"
-    //scene_.GetNode("Plane")
+    scene_.AddNode(manipulator->ConstructBoundary(&resman_)); // "Boundary" | stone walls
 
-    // Boundary "walls" (stone)
-    scene_.AddNode(manipulator->ConstructBoundary(&resman_));
-
-    // Light source ("sun")
-    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0, 100, 0)));
+    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0, 100, 0))); // "Sun"
 
     PopulateWorld();
 
-    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
+    //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
 
 
     /*/ Hydrothermal vents
@@ -495,16 +489,12 @@ void Game::MainLoop(void){
     double current_time = 0.0f;
     float last_time = 0.0f;
     float delta_time = 0.0f;
+    float mytheta = glm::pi<float>() / 64;
     while (!glfwWindowShouldClose(window_)){
         SceneNode* world_light = scene_.GetNode("Sphere")->GetRoot();
-        // Animate the scene
+        current_time = glfwGetTime();
+        delta_time = current_time - last_time;
         if (animating_){
-            //std::cout << last_time << std::endl;
-            current_time = glfwGetTime();
-            float mytheta = glm::pi<float>() / 64;
-
-            delta_time = current_time - last_time;
-
             if ((current_time - last_time) > 0.05) {
 
                 camera_.DecreaseTimer(current_time - last_time); // Decrease remaining player time limit / oxygen
@@ -514,8 +504,7 @@ void Game::MainLoop(void){
                 
                 last_time = current_time;
 
-                for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++)
-                {
+                for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++) {
                     collision_.CollisionEventCompositeNode(&camera_, *iterator);
                 }
                 //std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
@@ -575,9 +564,6 @@ void Game::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
-
-
-    // Get user data with a pointer to the game class
     void* ptr = glfwGetWindowUserPointer(window);
     Game *game = (Game *) ptr;
 
@@ -586,12 +572,13 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         glfwSetWindowShouldClose(window, true);
     }
 
-    // Stop animation if space bar is pressed
+    //DEBUGGING KEYS
     if (key == GLFW_KEY_E && action == GLFW_PRESS){
         game->animating_ = (game->animating_ == true) ? false : true;
     }
-
-    // Print debugging information when 'p' is pressed
+    if (key == GLFW_KEY_F) {
+        std::cout << "Current Position: " << glm::to_string(game->camera_.GetPosition()) << std::endl;
+    }
     if (key == GLFW_KEY_P && action == GLFW_PRESS) {
         std::string pos = glm::to_string(game->camera_.GetPosition());
         std::string forw = glm::to_string(game->camera_.GetForward());
@@ -599,47 +586,14 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
         std::string up = glm::to_string(game->camera_.GetUp());
         //glm::quat ori = game->camera_.GetOrientation();
         std::cout << "\nPOS: " << pos
-                  << "\nFOR: " << forw
-                  << "\nSID: " << side
-                  << "\n UP: " << up
-                  << "\nSPD: " << game->camera_.GetForwardSpeed() << std::endl;
-        
+                  << "\nFOR: " << forw << "\nSID: " << side << "\n UP: " << up
+                  << "\nSPD: " << game->camera_.GetForwardSpeed() << std::endl;  
     }
 
-    // View control
-    float rot_factor(2 * glm::pi<float>() / 180); // amount the ship turns per keypress (DOUBLE)
-    float trans_factor = 0.7f; // amount the ship steps forward per keypress
-    // Look up/down
-    if (key == GLFW_KEY_UP){
-        game->camera_.Pitch(rot_factor);
-    }
-    if (key == GLFW_KEY_DOWN){
-        game->camera_.Pitch(-rot_factor);
-    }
-    // Turn left/right
-  
-    if (key == GLFW_KEY_LEFT) {
-        game->camera_.Yaw(rot_factor);
-    }
-    if (key == GLFW_KEY_RIGHT) {
-        game->camera_.Yaw(-rot_factor);
-    }
-    
-    //forward backward side movement (strafe)
-    if (key == GLFW_KEY_A) {
-        //game->camera_.UpdateVelocity(1);
-        //game->camera_.Translate(-glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
-    }
-    if (key == GLFW_KEY_D) {
-        //game->camera_.UpdateVelocity(-1);
-        //game->camera_.Translate(glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
-    }
+    // Movement controls
 
-    if (key == GLFW_KEY_SPACE)
-    {
-        //game->camera_.SetState(0);
+    if (key == GLFW_KEY_SPACE) {
         game->camera_.Jump();
-        //game->camera_.Translate(glm::vec3(0.0, game->camera_.GetUp(), 0.0) * trans_factor);
     }
    
     // Accelerate and break
@@ -654,51 +608,33 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
     if (key == GLFW_KEY_S && glfwGetKey(window, key) == GLFW_PRESS) {
         game->pressed_.insert(key);
         game->camera_.UpdateForwardVelocity(-5);
-        //game->camera_.Translate(-glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
     }
-
-    else if (key == GLFW_KEY_S && action == GLFW_RELEASE)
-    {
+    else if (key == GLFW_KEY_S && action == GLFW_RELEASE) {
         game->pressed_.erase(key);
     }
 
-    if (key == GLFW_KEY_D &&  glfwGetKey(window, key) == GLFW_PRESS)
-    {
-
+    if (key == GLFW_KEY_D &&  glfwGetKey(window, key) == GLFW_PRESS) {
         game->pressed_.insert(key);
         game->camera_.UpdateSideVelocity(1);
     }
-    else if (key == GLFW_KEY_D && action == GLFW_RELEASE)
-    {
+    else if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
         game->pressed_.erase(key);
     }
 
-    if (key == GLFW_KEY_A && glfwGetKey(window, key) == GLFW_PRESS)
-    {
+    if (key == GLFW_KEY_A && glfwGetKey(window, key) == GLFW_PRESS) {
         game->pressed_.insert(key);
         game->camera_.UpdateSideVelocity(-1);
     }
-    else if (key == GLFW_KEY_A && action == GLFW_RELEASE)
-    {
+    else if (key == GLFW_KEY_A && action == GLFW_RELEASE) {
         game->pressed_.erase(key);
     }
-
-
-    if (game->pressed_.find(GLFW_KEY_W) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_S) == game->pressed_.end())
-    {
+    if (game->pressed_.find(GLFW_KEY_W) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_S) == game->pressed_.end()) {
         game->camera_.SetForwardSpeed(0);
     }
-
-    if (game->pressed_.find(GLFW_KEY_D) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_A) == game->pressed_.end())
-    {
+    if (game->pressed_.find(GLFW_KEY_D) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_A) == game->pressed_.end()) {
         game->camera_.SetSideSpeed(0);
     }
-
-    if (key == GLFW_KEY_F) {
-        std::cout << "Current Position: " << glm::to_string(game->camera_.GetPosition()) << std::endl;
-    }
 }
-
 
 void Game::ResizeCallback(GLFWwindow* window, int width, int height){
 
