@@ -296,7 +296,6 @@ void Camera::Update(float delta_time)
     float d = (height_map_)[coordXMax + (width) * coordZMax];
 
     float interpolation = (1 - t) * ((1 - s) * a + s * b) + t * ((1 - s) * c + s * d);
-
     
     if (state_ == jumping)
     {
