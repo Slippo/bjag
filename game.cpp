@@ -325,16 +325,6 @@ void Game::PopulateWorld(void) {
     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part3", glm::vec3(-74.07, 5.0, -75.85)));
     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part4", glm::vec3(19.44, 17.85, 83.95)));
     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part5", glm::vec3(81.98, 5.0, -26.343)));
-  /*
-    // Light source ("sun")
-    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,100,0)));
-  
-    //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
-    
-    scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(-17, 7.5, -33)));
-    //scene_.GetNode("Submarine")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(1, 1, 1)));
-    //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(0, 3, 0)));
-    */
     
 
    //scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
@@ -348,11 +338,11 @@ void Game::PopulateWorld(void) {
     //scene_.AddNode(manipulator->ConstructSeaweed(&resman_, "Seaweed1", 4, glm::vec3(0, 0, -5)));
 
     //PLACE GEORGE'S PLANT
-    scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp3", 4, glm::vec3(4.9, 0.0, 14.03)));
-    /*
+    
+    //
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp1", 4, glm::vec3(3.84, 0.0, -38.37))); 
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp2", 4, glm::vec3(-42.6, 0.0, -13.96)));
-    
+    scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp3", 4, glm::vec3(4.9, 0.0, 14.03)));
     
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp4", 4, glm::vec3(74.54, 0.0, -86.53)));
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp5", 4, glm::vec3(73.77, 0.0, 87.39)));
@@ -360,22 +350,23 @@ void Game::PopulateWorld(void) {
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp7", 4, glm::vec3(-17.5, 0.0, 47.9)));
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp8", 4, glm::vec3(10.09, 0.0, -62.77)));
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp9", 4, glm::vec3(-69.82, 0.0, -35.23)));
-    */
+    //
     //PLACE CORAL
-    scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(3.67, 1.6, 0.343))); //-31.67, 1.6, 0.343
-    /*
+    scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(-31.67, 1.6, 0.343))); //
+    //
     scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral2", glm::vec3(-11.26, 1.6, 9.43)));
     scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral3", glm::vec3(62.44, 1.6, 62.33)));
     scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral4", glm::vec3(49.37, 1.6, 18.47)));
     scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral5", glm::vec3(73.73, 1.6, -57.04)));
     scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral6", glm::vec3(-20.59, 1.6, 87.86)));
     scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral7", glm::vec3(-81.3, 1.6, -6.87)));
-    */
+    //
     //PLACE ANEMONIES
     
-    scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie1", glm::vec3(1.49, 0, 3.57))); // 14.49, 0, -33.57
-    scene_.AddNode(manipulator->ConstructSeaweed(&resman_, "Seaweed1", 4, glm::vec3(-3,0,6)));
-    /*
+     // 
+    //scene_.AddNode(manipulator->ConstructSeaweed(&resman_, "Seaweed1", 4, glm::vec3(-3,0,6)));
+    //
+    scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie1", glm::vec3(14.49, 0, -33.57)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie2", glm::vec3(-39.42, 0, 24.37)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie3", glm::vec3(6.47, 0, 36.26)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie4", glm::vec3(-40.20, 0, 74.84)));
@@ -388,17 +379,17 @@ void Game::PopulateWorld(void) {
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie11", glm::vec3(20.32, 0, -32.43)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie12", glm::vec3(9.75, 0, -34.95)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie13", glm::vec3(-36.17, 1, -24.05)));
-    */
+    //
     //PLACE SEAWEED PATCHES
     // Seaweed instancer call, can generate random seaweed using given dimensions / density
     //manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(70.58, 0, -5.64));
     //manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(-47.98, 0, 17.74));
-    //manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(40.87, 0, -55.81));
+    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(40.87, 0, -55.81));
     
     // Create particles
     //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance1", "ParticleVentMaterial", "BubbleTexture", glm::vec3(0, 0, 0)));
 
-    /*
+    //
     //PARTICLE SYSTEM FOR MECHANICAL PARTS
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance1", "ParticleStarMaterial", "StarTexture", glm::vec3(-23.5, 15.9, -73.3)));
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance2", "ParticleStarMaterial", "StarTexture", glm::vec3(-74.2, 5.0, 89.2)));
@@ -408,8 +399,8 @@ void Game::PopulateWorld(void) {
 
     //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance3", "ParticleGeyserMaterial", "SmokeTexture", glm::vec3(-3, 2, 0)));
 
-    //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
-    */
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
+    //
 }
 
 void Game::SetupScene(void) {
@@ -427,10 +418,10 @@ void Game::SetupScene(void) {
 
     PopulateWorld();
 
-    //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
 
 
-    /*/ Hydrothermal vents
+    // Hydrothermal vents
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "Vent1", "ParticleGeyserMaterial", "BubbleTexture", glm::vec3(-71, 0, -23)));
     scene_.GetNode("Vent1")->Scale(glm::vec3(15.0, 1.0, 15.0));
     scene_.GetNode("Vent1")->SetType(CompositeNode::Type::Vent);
@@ -460,7 +451,7 @@ void Game::SetupScene(void) {
     scene_.GetNode("Vent6")->Scale(glm::vec3(15.0, 1.0, 15.0));
     scene_.GetNode("Vent6")->SetType(CompositeNode::Type::Vent);
     scene_.AddNode(manipulator->ConstructVentBase(&resman_, "VentBase6", glm::vec3(-80.8, 0, -61.5)));
-
+    /*
     // Stalagmites
     scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(85.2, 0, 19.2)));
     scene_.GetNode("Stalagmite1")->Scale(glm::vec3(0.7, 0.9, 0.7));
@@ -479,10 +470,10 @@ void Game::SetupScene(void) {
 
     scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite6", glm::vec3(78.5, 0, 22.5)));
     scene_.GetNode("Stalagmite6")->Scale(glm::vec3(0.7, 0.7, 0.7));
-
+      */
     scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite7", glm::vec3(87.5, 0, -4.0)));
     scene_.GetNode("Stalagmite7")->Scale(glm::vec3(0.7, 0.7, 0.7));
-  */
+
 }
 
 void Game::MainLoop(void){
