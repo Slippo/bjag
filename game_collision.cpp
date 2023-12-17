@@ -31,7 +31,7 @@ namespace game
     {
 
         bool h = false;
-        glm::vec3 position_ = obj->GetRoot()->GetPosition();
+        glm::vec3 position_ = glm::vec3(obj->GetRoot()->GetPosition().x, camera->GetPosition().y, obj->GetRoot()->GetPosition().z);
 
         if (glm::length(camera->GetPosition() - position_) <= (camera->GetRadius() + obj->GetRoot()->GetRadius()))
         {
