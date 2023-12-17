@@ -10,15 +10,18 @@
 namespace game {
 
 //define constant acceleration factor
-    float base_vel = 10.0f;
-    float jump_height = 10.0f;
-    float gravity = 5.8f;
+    float base_vel = 5.0f;
+    float jump_height = 4.0f;
+    float gravity = 1.8f;
     float t_;
 
 Camera::Camera(void){
     state_ = walking;
     jump_ = 0.0;
     radius_ = 1.0f;
+
+    max_y_ = 15.5;
+    ground_height_ = 3.4f;
 }
 
 Camera::~Camera(){}
@@ -66,14 +69,13 @@ float Camera::CalculateSlope(float h)
     float curr_height = position_.y;
     float slope = -100;
     
-    
-    slope = abs(curr_height - (h + 3.0));
-    /*
-    std::cout << "Height map: " << h << std::endl;
-    std::cout << "Current height" << curr_height << std::endl;
-    std::cout << "Slope: " << slope << std::endl;
-    std::cout << "---" << std::endl;
-    */
+    slope = abs(curr_height - (h));
+
+    if (h <= ground_height_ + 0.4)
+    {
+        slope = 0;
+    }
+
     return slope;
 
 
@@ -157,6 +159,11 @@ void Camera::SetDead(bool d)
     dead_ = d;
 }
 
+void Camera::SetHurt(bool h)
+{
+    hurt_ = h;
+}
+
 void Camera::Translate(glm::vec3 trans){
     position_ += trans;
 }
@@ -223,6 +230,14 @@ int Camera::GetNumParts(void) const {
     return num_parts_;
 }
 
+bool Camera::IsBeingHurt(void) const {
+    return hurt_;
+}
+
+void Camera::IncreaseNumParts(void) {
+    num_parts_ += 1;
+}
+
 bool Camera::IsDead(void) const
 {
     return dead_;
@@ -272,9 +287,7 @@ void Camera::Update(float delta_time)
     //position_ += (GetForwardMovement() * forward_speed_ * delta_time);
     //position_ += (GetSideMovement() * side_speed_ * delta_time);    
 
-    //std::cout << position_.x << ", " << position_.y << ", " << position_.z << std::endl;
     float oldY = 0.0;
-
     
 
     int coordXMin = floor(tempPos.x + offsetX);
@@ -295,72 +308,105 @@ void Camera::Update(float delta_time)
     float c = (height_map_)[coordXMin + (width) * coordZMax];
     float d = (height_map_)[coordXMax + (width) * coordZMax];
 
-    float interpolation = (1 - t) * ((1 - s) * a + s * b) + t * ((1 - s) * c + s * d);
-    
+    float interpolation = ((1 - t) * ((1 - s) * a + s * b) + t * ((1 - s) * c + s * d)) + 3.0;
     if (state_ == jumping)
     {
         //y position is calculated using kinematic equation of vertical motion, factoring in gravity, base y position,
         //basevelocity, and time (jump height is also specified here)
+        if (position_.y <= ground_height_ + 0.2)
+        {
+            if (abs(slope_map_[x + width * z]) >= 1.1 || x == 0 || x == height - 2 || z == 0 || z == width - 2)
+            {
+                state_ = walking;
+                return;
+            }
+        }
+        /*else
+        {
+            float slope = CalculateSlope(interpolation);
+            if (slope >= 1.1 || x == 0 || x == height - 2 || z == 0 || z == width - 2)
+            {
+                state_ = falling;
+            }
+
+        }*/
+        
         position_ = tempPos;
         position_.y = base_y_position_ + (0.5 * (jump_height + (base_vel - (gravity * t_))) * t_);
 
         //timer is increemented here, 0.1 for each recorded frame
-        t_ += 0.1;
+        t_ += delta_time;
 
         //distance from base y position to current y is calculated here
-        float distance = position_.y - (interpolation + 3.0);
-       
+        float distance = position_.y - interpolation;
+        
         //if the timer has been going for a while (to account for the initial push-off from the ground), and the distance
         //from the ground is small enough, set state to walking and reset timer to 0
-        if (t_ >= 2.0 && distance <= 0.3) {
-            tempPos.y = interpolation + 3.0;
-            float slope = CalculateSlope(interpolation);
+        if (t_ >= 2.0 && abs(distance) <= 0.3)
+        {
+            tempPos.y = interpolation;
+            //float slope = CalculateSlope(interpolation);
             t_ = 0.0;
             state_ = walking;
 
-            if (slope >= 1.1 || x == 0 || x == height - 2 || z == 0 || z == width - 2) {
-                position_ = oldPos;
-                position_.y = oldY + 3.0;
+            /*if (slope >= 1.1 || x == 0 || x == height - 2 || z == 0 || z == width - 2)
+            {
+                std::cout << "Hello" << std::endl;
+                position_.x = oldPos.x;
+                position_.z = oldPos.z;
+                position_.y = oldY;
                 return;
-            }
+            }*/
             position_ = tempPos;
         }
         else {
             position_ = position_ - (glm::vec3(0.0, 0.4f, 0.0) * delta_time);
         }        
 
+        if (position_.y <= 3.0)
+        {
+            position_ = old_position_;
+            state_ = walking;
+            t_ = 0.0;
+        }
+
     }
-    else {
-        if (abs(slope_map_[x + width * z]) >= 1.1 || x == 0 || x == height - 2 || z == 0 || z == width - 2)
+    else
+    {
+        if (abs(slope_map_[x + width * z]) >= 1.0 || x == 0 || x == height - 2 || z == 0 || z == width - 2)
         {
             return;
         }
 
-        tempPos.y = interpolation + 3.0;
+        tempPos.y = interpolation;
         position_ = tempPos;
         oldY = interpolation;
 
     }
-}
 
-void Camera::UpdateForwardVelocity(float backwards) {
-    forward_speed_ += (0.15 * backwards);
-    if (forward_speed_ >= GetMaxSpeed()) {
+}
+void Camera::UpdateForwardVelocity(float backwards)
+{
+    forward_speed_ = max_speed_ * backwards;
+    /*if (forward_speed_ >= GetMaxSpeed())
+    {
         forward_speed_ = max_speed_;
     }
     if (forward_speed_ <= GetMinSpeed()) {
         forward_speed_ = min_speed_;
-    }
+    }*/
 }
 
-void Camera::UpdateSideVelocity(float left) {
-    side_speed_ += (0.15 * left);
-    if (side_speed_ >= GetMaxSpeed()) {
+void Camera::UpdateSideVelocity(float left)
+{
+    side_speed_ = max_speed_ * left;
+    /*if (side_speed_ >= GetMaxSpeed())
+    {
         side_speed_ = max_speed_;
     }
     if (side_speed_ <= GetMinSpeed()) {
         side_speed_ = min_speed_;
-    }
+    }*/
 }
 
 void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up) {

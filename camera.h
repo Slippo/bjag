@@ -22,7 +22,7 @@ namespace game {
             Camera(void);
             ~Camera();
 
-            enum CameraState { walking = 0, jumping = 1, at_rest = 2 };
+            enum CameraState { walking = 0, jumping = 1, falling = 2 };
  
             // Get global camera attributes
             glm::vec3 GetPosition(void) const;
@@ -40,6 +40,7 @@ namespace game {
             void DecreaseTimer(float t);
             void AddPart(); // Increase num_parts_
             void SetDead(bool d);
+            void SetHurt(bool h);
             inline void SetState(CameraState t) { state_ = t; }
             void SetHeightMap(std::vector<float> h, std::vector<float> height_boundary);
             void SetDimensions(int x, int z, int width, int height);
@@ -65,7 +66,9 @@ namespace game {
             float GetRadius(void) const;
             float GetTimer(void) const;
             int GetNumParts(void) const;
+            void IncreaseNumParts(void);
             bool IsDead(void) const;
+            bool IsBeingHurt(void) const;
             bool CheckWinCondition(void) const;
             inline CameraState GetState() { return state_; }
 
@@ -89,8 +92,8 @@ namespace game {
         private:
             float forward_speed_; // Current speed factor
             float side_speed_;
-            float max_speed_ = 6.0f; // Maximum speed factor
-            float min_speed_ = -6.0f; // Minimum speed factor
+            float max_speed_ = 9.0f; // Maximum speed factor
+            float min_speed_ = -9.0f; // Minimum speed factor
             float jump_limit_ = 60.0f;
             float jump_ = 0.0;
             float base_y_position_ = 0.0;
@@ -117,12 +120,17 @@ namespace game {
             int width;
             int height;
 
+            float max_y_;
+            float ground_height_;
+
             // For collision
             float radius_;
             bool dead_;
 
             // Win condition
             bool win_condition_ = false;
+
+            bool hurt_ = false;
 
             // Create view matrix from current camera parameters
             void SetupViewMatrix(void);

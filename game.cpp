@@ -50,6 +50,11 @@ namespace game {
         // Set variables
         animating_ = true;
         moving_ = false;
+        state_ = start;
+        std::cout << "initialized!" << std::endl;
+        SoundEngine = irrklang::createIrrKlangDevice();
+        SoundEngine->play2D((MATERIAL_DIRECTORY + std::string("\\audio\\breakout.mp3")).c_str(), true);
+
     }
 
 
@@ -141,6 +146,20 @@ namespace game {
             std::exit(1);
         }
 
+        std::ifstream collision_file;
+        try {
+            collision_file.open(material_directory_g + "\\collision_map.pgm");
+            if (!collision_file.is_open())
+            {
+                throw std::ios_base::failure("Error opening collision_map.pgm");
+            }
+        }
+        catch (const std::ios_base::failure& e) {
+            std::cout << e.what();
+            std::exit(1);
+        }
+        
+
         // Setup drawing to texture
         scene_.SetupDrawToTexture();
 
@@ -150,13 +169,21 @@ namespace game {
         std::string magic_number;
         std::string comment;
         int width, height, max_value;
+
         height_file >> magic_number >> width >> height >> max_value;
+        if (magic_number != "P2" || width != plane_size_.x || height != plane_size_.y || max_value != 255) {
+            throw std::invalid_argument("Invalid PGM file format or dimensions");
+        }
+
+        collision_file >> magic_number >> width >> height >> max_value;
+
         if (magic_number != "P2" || width != plane_size_.x || height != plane_size_.y || max_value != 255) {
             throw std::invalid_argument("Invalid PGM file format or dimensions");
         }
 
         height_map_.reserve(width * height);
         height_map_boundary_.reserve(width * height);
+        height_map_collision_.reserve(width * height);
 
         int offsetX = plane_size_.x / 2;
         int offsetZ = plane_size_.y / 2;
@@ -166,9 +193,11 @@ namespace game {
         for (int z = 0; z < height_map_.capacity() && z < height_map_boundary_.capacity(); z++) {
             height_map_.insert(height_map_.end(), rand() / (float)(RAND_MAX / 0.5)); // Random height between 0 to 2.0
             height_map_boundary_.insert(height_map_boundary_.end() , -0.1f - (float)(rand() / (RAND_MAX))); // -0.1 to -1.1
+            height_map_collision_.insert(height_map_collision_.end(), -0.1f - (float)(rand() / (RAND_MAX)));
         }
     height_map_.resize(height_map_.capacity());
     height_map_boundary_.resize(height_map_boundary_.capacity());
+    height_map_collision_.resize(height_map_collision_.capacity());
     // Set heights
     
     float h = 0;
@@ -179,9 +208,17 @@ namespace game {
         }
     }
     height_file.close();
+
+    for (int z = 0; z < height_map_collision_.size() / width; ++z)
+    {
+        for (int x = 0; x < height_map_boundary_.size() / height; ++x) {
+            collision_file >> h;
+            height_map_collision_[x + width * z] += h / 8;
+        }
+    }
      
     camera_.SetDimensions(offsetX, offsetZ, width, height);
-    camera_.SetHeightMap(height_map_, height_map_boundary_);
+    camera_.SetHeightMap(height_map_, height_map_collision_);
     
   
     // SHAPES
@@ -328,6 +365,14 @@ namespace game {
     resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());*/
 }
 
+void Game::SetupScene(void)
+{    
+    if (state_ == start)
+    {
+        SetupStartScreen();
+    }
+}
+
 void Game::PopulateWorld(void) {
 
     //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
@@ -416,17 +461,16 @@ void Game::PopulateWorld(void) {
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance3", "ParticleStarMaterial", "StarTexture", glm::vec3(-74.07, 5.0, -75.85)));
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance4", "ParticleStarMaterial", "StarTexture", glm::vec3(19.44, 17.85, 83.95)));
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance5", "ParticleStarMaterial", "StarTexture", glm::vec3(81.98, 5.0, -26.343)));
-
     //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance3", "ParticleGeyserMaterial", "SmokeTexture", glm::vec3(-3, 2, 0)));
 
     //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
 
 }
 
-void Game::SetupScene(void) {
+void Game::SetupGameScreen(void)
+{
 
-    camera_.SetTimer(480); // Starting player time limit / oxygen
-
+    camera_.SetTimer(500); // Starting player time limit / oxygen
 
     scene_.SetBackgroundColor(viewport_background_color_g);
 
@@ -502,35 +546,94 @@ void Game::SetupScene(void) {
   //
 }
 
+void Game::SetupStartScreen(void)
+{
+    animating_ = false;
+    UpdateStartHUD();
+}
+
 void Game::MainLoop(void){
     // Loop while the user did not close the window
     while (!glfwWindowShouldClose(window_)){
 
-        SceneNode* world_light = scene_.GetNode("Sphere")->GetRoot();
-        float delta_time = 0.0f;
-        // Animate the scene
-        if (animating_){
-            static double last_time = 0;
-            double current_time = glfwGetTime();
-            float mytheta = glm::pi<float>() / 64;
 
-            delta_time = current_time - last_time;
+        double current_time = glfwGetTime();
+        if (state_ == start)
+        {
+            // scene_.SetBackgroundColor(glm::vec3(1.0, 0.0, 0.1));
+            UpdateStartHUD();
+        } 
+        else if (state_ == win)
+        {
+            scene_.Draw();
+            UpdateWinHUD();
+        }
+        else if (state_ == lose)
+        {
+            scene_.Draw();
 
-            if ((current_time - last_time) > 0.05) {
+            UpdateLoseHUD();
+        }
 
-                camera_.DecreaseTimer(current_time - last_time); // Decrease remaining player time limit / oxygen
+        else if (state_ == ingame)
+        {
+            SceneNode* world_light = scene_.GetNode("Sphere")->GetRoot();
+            float delta_time = 0.0f;
+            // Animate the scene
+
+            if (animating_) {
+
+                float mytheta = glm::pi<float>() / 64;
+                
+                delta_time = current_time - last_time_;
+
+                //if ((current_time - last_time_) > 0.05) {
+
+                camera_.DecreaseTimer(current_time - last_time_); // Decrease remaining player time limit / oxygen
 
                 scene_.Update(&camera_, &resman_);
                 manipulator->AnimateAll(&scene_, current_time, mytheta);
-                
-                last_time = current_time;
+
+
+                camera_.Update(delta_time);
+
+                scene_.GetNode("BubbleParticles")->SetPosition(camera_.GetPosition() + glm::vec3(0, -0.5, 0.08)); // Make passive bubble particles follow player
 
                 for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++)
                 {
                     collision_.CollisionEventCompositeNode(&camera_, *iterator);
+
+                    if (camera_.GetNumParts() != last_num_machine_parts_)
+                    {
+                        SoundEngine->play2D((MATERIAL_DIRECTORY + std::string("\\audio\\ring.mp3")).c_str(), false);
+                        last_num_machine_parts_ = camera_.GetNumParts();
+                    }
+                }
+
+                std::cout << "Is being hurt" << camera_.IsBeingHurt() << std::endl;
+
+
+                scene_.DrawToTexture(&camera_, world_light);
+
+                scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
+
+                // Update ImGui UI
+                UpdateHUD();
+
+                if (camera_.GetNumParts() == 5)
+                {
+                    animating_ = false;
+                    scene_.ClearObj();
+                    state_ = win;
+                }
+
+                else if (camera_.GetTimer() <= 0)
+                {
+                    animating_ = false;
+                    scene_.ClearObj();
+                    state_ = lose;
                 }
                 //std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
-
 
                 // Hydrothermal vent collision switch
                 if (int(current_time) % 6 == 0) { // On
@@ -544,10 +647,18 @@ void Game::MainLoop(void){
                     }
                 }
             }
-            
-        }
 
-        camera_.Update(delta_time);
+
+            // Process camera/player forward movement
+            //camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
+            //if (camera_.GetSpeed() > 0) {
+            //    camera_.SetSpeed(camera_.GetSpeed() * 0.98);
+
+            //}
+            // Draw the scene
+            //scene_.Draw(&camera_, world_light);
+
+        }
 
         // Process camera/player forward movement
         //camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
@@ -558,13 +669,6 @@ void Game::MainLoop(void){
         // Draw the scene
         //scene_.Draw(&camera_, world_light);
 
-        scene_.DrawToTexture(&camera_, world_light);
-
-        scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
-
-        // Update ImGui UI
-        UpdateHUD();
-
         // Update other events like input handling
         glfwPollEvents();
 
@@ -572,11 +676,14 @@ void Game::MainLoop(void){
         glfwSwapBuffers(window_);
 
         // Win condition
-        if (camera_.CheckWinCondition() == true) {
+        //if (camera_.CheckWinCondition() == true) {
 
-            glfwSetWindowShouldClose(window_, true);
+            //glfwSetWindowShouldClose(window_, true);
 
-        }
+        //}
+
+        last_time_ = current_time;
+
     }
 }
 
@@ -605,112 +712,155 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
     void* ptr = glfwGetWindowUserPointer(window);
     Game *game = (Game *) ptr;
 
-    // Quit game
-    if (key == GLFW_KEY_Q && action == GLFW_PRESS){
-        glfwSetWindowShouldClose(window, true);
-    }
-
-    // Stop animation if space bar is pressed
-    if (key == GLFW_KEY_E && action == GLFW_PRESS){
-        game->animating_ = (game->animating_ == true) ? false : true;
-    }
-
-    // Print debugging information when 'p' is pressed
-    if (key == GLFW_KEY_P && action == GLFW_PRESS) {
-        std::string pos = glm::to_string(game->camera_.GetPosition());
-        std::string forw = glm::to_string(game->camera_.GetForward());
-        std::string side = glm::to_string(game->camera_.GetSide());
-        std::string up = glm::to_string(game->camera_.GetUp());
-        //glm::quat ori = game->camera_.GetOrientation();
-        std::cout << "\nPOS: " << pos
-                  << "\nFOR: " << forw
-                  << "\nSID: " << side
-                  << "\n UP: " << up
-                  << "\nSPD: " << game->camera_.GetForwardSpeed() << std::endl;
-        
-    }
-
-    // View control
-    float rot_factor(2 * glm::pi<float>() / 180); // amount the ship turns per keypress (DOUBLE)
-    float trans_factor = 0.7f; // amount the ship steps forward per keypress
-    // Look up/down
-    if (key == GLFW_KEY_UP){
-        game->camera_.Pitch(rot_factor);
-    }
-    if (key == GLFW_KEY_DOWN){
-        game->camera_.Pitch(-rot_factor);
-    }
-    // Turn left/right
-  
-    if (key == GLFW_KEY_LEFT) {
-        game->camera_.Yaw(rot_factor);
-    }
-    if (key == GLFW_KEY_RIGHT) {
-        game->camera_.Yaw(-rot_factor);
-    }
-    
-    //forward backward side movement (strafe)
-    if (key == GLFW_KEY_A) {
-        //game->camera_.UpdateVelocity(1);
-        //game->camera_.Translate(-glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
-    }
-    if (key == GLFW_KEY_D) {
-        //game->camera_.UpdateVelocity(-1);
-        //game->camera_.Translate(glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
-    }
-
-    if (key == GLFW_KEY_SPACE)
+    if (game->state_ == start)
     {
-        //game->camera_.SetState(0);
-        game->camera_.Jump();
-        //game->camera_.Translate(glm::vec3(0.0, game->camera_.GetUp(), 0.0) * trans_factor);
-    }
-   
-    // Accelerate and break
-    if (key == GLFW_KEY_W && glfwGetKey(window, key) == GLFW_PRESS) {
-        game->pressed_.insert(key);
-        game->camera_.UpdateForwardVelocity(5);
-    }
-    else if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
-        game->pressed_.erase(key);
-    }
+        if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+        {
+            game->animating_ = true;
+            game->state_ = ingame;
+            game->SetupGameScreen();
 
-    if (key == GLFW_KEY_S && glfwGetKey(window, key) == GLFW_PRESS) {
-        game->pressed_.insert(key);
-        game->camera_.UpdateForwardVelocity(-5);
-        //game->camera_.Translate(-glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
+        }
     }
-
-    else if (key == GLFW_KEY_S && action == GLFW_RELEASE)
-    {
-        game->pressed_.erase(key);
-    }
-
-    if (key == GLFW_KEY_D &&  glfwGetKey(window, key) == GLFW_PRESS)
+    else
     {
 
-        game->pressed_.insert(key);
-        game->camera_.UpdateSideVelocity(1);
-    }
-    else if (key == GLFW_KEY_D && action == GLFW_RELEASE)
-    {
-        game->pressed_.erase(key);
-    }
-
-    if (key == GLFW_KEY_A && glfwGetKey(window, key) == GLFW_PRESS)
-    {
-        game->pressed_.insert(key);
-        game->camera_.UpdateSideVelocity(-1);
-    }
-    else if (key == GLFW_KEY_A && action == GLFW_RELEASE)
-    {
-        game->pressed_.erase(key);
-    }
+        // Quit game if 'q' is pressed
+        if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, true);
+        }
 
 
-    if (game->pressed_.find(GLFW_KEY_W) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_S) == game->pressed_.end())
-    {
-        game->camera_.SetForwardSpeed(0);
+        // Stop animation if space bar is pressed
+        if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+            game->animating_ = (game->animating_ == true) ? false : true;
+        }
+
+        // Print debugging information when 'p' is pressed
+        if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+            std::string pos = glm::to_string(game->camera_.GetPosition());
+            std::string forw = glm::to_string(game->camera_.GetForward());
+            std::string side = glm::to_string(game->camera_.GetSide());
+            std::string up = glm::to_string(game->camera_.GetUp());
+            //glm::quat ori = game->camera_.GetOrientation();
+            std::cout << "\nPOS: " << pos
+                << "\nFOR: " << forw
+                << "\nSID: " << side
+                << "\n UP: " << up
+                << "\nSPD: " << game->camera_.GetForwardSpeed() << std::endl;
+
+        }
+
+        // View control
+        float rot_factor(2 * glm::pi<float>() / 180); // amount the ship turns per keypress (DOUBLE)
+        float trans_factor = 0.7f; // amount the ship steps forward per keypress
+        // Look up/down
+        if (key == GLFW_KEY_UP) {
+            game->camera_.Pitch(rot_factor);
+        }
+        if (key == GLFW_KEY_DOWN) {
+            game->camera_.Pitch(-rot_factor);
+        }
+        // Turn left/right
+
+        if (key == GLFW_KEY_LEFT) {
+            game->camera_.Yaw(rot_factor);
+        }
+        if (key == GLFW_KEY_RIGHT) {
+            game->camera_.Yaw(-rot_factor);
+        }
+
+        //forward backward side movement (strafe)
+        if (key == GLFW_KEY_A) {
+
+            //game->camera_.UpdateVelocity(1);
+            //game->camera_.Translate(-glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
+        }
+        if (key == GLFW_KEY_D)
+        {
+            //game->camera_.UpdateVelocity(-1);
+            //game->camera_.Translate(glm::vec3(game->camera_.GetSide().x, 0.0, game->camera_.GetSide().z) * trans_factor);
+        }
+
+        if (key == GLFW_KEY_SPACE)
+        {
+            //game->camera_.SetState(0);
+            game->camera_.Jump();
+            //game->camera_.Translate(glm::vec3(0.0, game->camera_.GetUp(), 0.0) * trans_factor);
+        }
+
+        // Accelerate and break
+        if (key == GLFW_KEY_W && glfwGetKey(window, key) == GLFW_PRESS) {
+            /* //old architecture from acceleration based model
+            float new_speed = game->camera_.GetSpeed() + 0.005f;
+
+            if (new_speed < game->camera_.GetMaxSpeed()) {
+                game->camera_.SetSpeed(new_speed);
+            }
+            else {
+                game->camera_.SetSpeed(game->camera_.GetMaxSpeed());
+            }*/
+            game->pressed_.insert(key);
+            game->camera_.UpdateForwardVelocity(1);
+            //game->camera_.Translate(glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
+        }
+        else if (key == GLFW_KEY_W && action == GLFW_RELEASE)
+        {
+            game->pressed_.erase(key);
+        }
+
+        if (key == GLFW_KEY_S && glfwGetKey(window, key) == GLFW_PRESS) {
+
+            /* //old architecture from acceleration based model
+            float new_speed = game->camera_.GetSpeed() - 0.05f;
+            if (new_speed > game->camera_.GetMinSpeed()) {
+                game->camera_.SetSpeed(new_speed);
+            }
+            else {
+                game->camera_.SetSpeed(0.0f);
+            }*/
+
+            game->pressed_.insert(key);
+            game->camera_.UpdateForwardVelocity(-1);
+            //game->camera_.Translate(-glm::vec3(game->camera_.GetForward().x, 0.0, game->camera_.GetForward().z) * trans_factor);
+        }
+
+        else if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+        {
+            game->pressed_.erase(key);
+        }
+
+        if (key == GLFW_KEY_D && glfwGetKey(window, key) == GLFW_PRESS)
+        {
+
+            game->pressed_.insert(key);
+            game->camera_.UpdateSideVelocity(1);
+        }
+        else if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+        {
+            game->pressed_.erase(key);
+        }
+
+        if (key == GLFW_KEY_A && glfwGetKey(window, key) == GLFW_PRESS)
+        {
+            game->pressed_.insert(key);
+            game->camera_.UpdateSideVelocity(-1);
+        }
+        else if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+        {
+            game->pressed_.erase(key);
+        }
+
+
+        if (game->pressed_.find(GLFW_KEY_W) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_S) == game->pressed_.end())
+        {
+            game->camera_.SetForwardSpeed(0);
+        }
+
+        if (game->pressed_.find(GLFW_KEY_D) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_A) == game->pressed_.end())
+        {
+            game->camera_.SetSideSpeed(0);
+        }
     }
 
     if (game->pressed_.find(GLFW_KEY_D) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_A) == game->pressed_.end())
@@ -721,6 +871,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
     if (key == GLFW_KEY_F) {
         std::cout << "Current Position: " << glm::to_string(game->camera_.GetPosition()) << std::endl;
     }
+
 }
 
 
@@ -731,6 +882,93 @@ void Game::ResizeCallback(GLFWwindow* window, int width, int height){
     void* ptr = glfwGetWindowUserPointer(window);
     Game *game = (Game *) ptr;
     game->camera_.SetProjection(camera_fov_g, camera_near_clip_distance_g, camera_far_clip_distance_g, width, height);
+}
+
+void Game::UpdateStartHUD()
+{
+    // Generate new frame for OpenGl, glfw, and ImGui respectively
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    //ImGui::SetNextWindowSize(ImVec2(350, 100)); // Next window size
+    ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+    ImVec2 titleSize = ImGui::CalcTextSize("The Submarine Game");
+    ImVec2 pressEnterSize = ImGui::CalcTextSize("Press Enter to start");
+
+    ImVec2 titlePos = ImVec2((screenSize.x - titleSize.x) * 0.4f, screenSize.y * 0.35f);
+    ImVec2 pressEnterPos = ImVec2((screenSize.x - pressEnterSize.x) * 0.4f, screenSize.y * 0.5f);
+
+    ImGui::SetNextWindowBgAlpha(0.6f); // Next window background alpha
+    ImGui::Begin("UI", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground); // A bunch of flags to style window
+
+    // Draw "The Submarine Game" text
+    ImGui::SetCursorPos(titlePos);
+    ImGui::Text("The Submarine Game");
+
+    // Draw "Press Enter to start" text
+    ImGui::SetCursorPos(pressEnterPos);
+    ImGui::Text("Press Enter to start");
+
+    // End GUI effect ------------------------
+    ImGui::End();
+    ImGui::Render();
+    ImGui::EndFrame(); // <-- End GUI effect
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); // Render
+}
+
+void Game::UpdateWinHUD()
+{
+    // Generate new frame for OpenGl, glfw, and ImGui respectively
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    //ImGui::SetNextWindowSize(ImVec2(350, 100)); // Next window size
+    ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+    ImVec2 titleSize = ImGui::CalcTextSize("You Win!");
+
+    ImVec2 titlePos = ImVec2((screenSize.x - titleSize.x) * 0.4f, screenSize.y * 0.35f);
+
+    ImGui::SetNextWindowBgAlpha(0.6f); // Next window background alpha
+    ImGui::Begin("UI", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground); // A bunch of flags to style window
+
+    // Draw "The Submarine Game" text
+    ImGui::SetCursorPos(titlePos);
+    ImGui::Text("You Win!");
+
+    // End GUI effect ------------------------
+    ImGui::End();
+    ImGui::Render();
+    ImGui::EndFrame(); // <-- End GUI effect
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); // Render
+}
+
+void Game::UpdateLoseHUD()
+{
+    // Generate new frame for OpenGl, glfw, and ImGui respectively
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    //ImGui::SetNextWindowSize(ImVec2(350, 100)); // Next window size
+    ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+    ImVec2 titleSize = ImGui::CalcTextSize("You ran out of oxygen and died!");
+
+    ImVec2 titlePos = ImVec2((screenSize.x - titleSize.x) * 0.4f, screenSize.y * 0.35f);
+
+    ImGui::SetNextWindowBgAlpha(0.6f); // Next window background alpha
+    ImGui::Begin("UI", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground); // A bunch of flags to style window
+
+    // Draw "The Submarine Game" text
+    ImGui::SetCursorPos(titlePos);
+    ImGui::Text("You ran out of oxygen and died!");
+
+    // End GUI effect ------------------------
+    ImGui::End();
+    ImGui::Render();
+    ImGui::EndFrame(); // <-- End GUI effect
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); // Render
 }
 
 void Game::UpdateHUD() {

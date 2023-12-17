@@ -5,7 +5,7 @@ namespace game
 {
     GameCollision::GameCollision()
     {
-
+        prev_collision_ = -1.0;
     }
 
     void GameCollision::CollisionEventSceneNode(Camera* camera, SceneNode* obj)
@@ -28,7 +28,7 @@ namespace game
 
     void GameCollision::CollisionEventCompositeNode(Camera* camera, CompositeNode* obj)
     {
-
+        bool h = false;
         glm::vec3 position_ = glm::vec3(obj->GetRoot()->GetPosition().x, camera->GetPosition().y, obj->GetRoot()->GetPosition().z);
 
         if (glm::length(camera->GetPosition() - position_) <= (camera->GetRadius() + obj->GetRoot()->GetRadius()))
@@ -43,6 +43,7 @@ namespace game
 
             if (obj->GetType() == CompositeNode::Type::Vent && obj->GetCollision() == 1) { // If player is hit by hydrothermal vent stream
                 camera->DecreaseTimer(1);
+                prev_collision_ = glfwGetTime();
             }
             
         }
@@ -57,9 +58,20 @@ namespace game
 
                     if (obj->GetType() == CompositeNode::Type::Stalagmite) {
                         camera->DecreaseTimer(1);
+                        prev_collision_ = glfwGetTime();
                     }
                 }
+                
             }
+        }
+
+        if (glfwGetTime() - prev_collision_ <= 0.05 && prev_collision_ >= 0.0)
+        {
+            camera->SetHurt(true);
+        }
+        else
+        {
+            camera->SetHurt(false);
         }
         
     }
@@ -72,5 +84,6 @@ namespace game
     void GameCollision::PlayerMachinePartCollision(Camera* camera, CompositeNode* obj)
     {
         obj->GetRoot()->SetCollision(2);
+        camera->IncreaseNumParts();
     }
 }

@@ -57,6 +57,22 @@ CompositeNode* SceneGraph::GetNode(int index) const {
     return NULL;
 }
 
+void SceneGraph::ClearObj()
+{
+    int val = 0;
+    int index = 0;
+
+    for (int i = 0; i < node_.size(); i++)
+    {
+        for (SceneNode* node : node_[i]->GetAllNodes())
+        {
+            delete node;
+        }
+        delete node_[i];
+    }
+    node_.clear();
+}
+
 std::vector<CompositeNode *>::const_iterator SceneGraph::begin() const { return node_.begin(); }
 
 
@@ -77,10 +93,35 @@ void SceneGraph::Draw(Camera *camera, SceneNode* light){
     }
 }
 
+void SceneGraph::Draw()
+{
+    glClearColor(background_color_[0],
+        background_color_[1],
+        background_color_[2], 0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Draw all scene nodes
+    //for (int i = 0; i < node_.size(); i++) {
+      //  node_[i]->Draw(camera);
+    //}
+}
+
+void SceneGraph::DeleteNode(CompositeNode* node)
+{
+    for (SceneNode* n : node->GetAllNodes())
+    {
+        delete n;
+    }
+    node->ClearNodes();
+    delete node->GetRoot();
+
+}
 // Handles movement, collisions, and geometric changes
 int SceneGraph::Update(Camera* camera, ResourceManager* resman) {
     int val = 0;
     int index = 0;
+    std::string name;
+    std::string particle = "ParticleStarInstance";
     for (int i = 0; i < node_.size(); i++) {
         node_[i]->Update(camera);
     }
@@ -89,12 +130,23 @@ int SceneGraph::Update(Camera* camera, ResourceManager* resman) {
      {
          if (node_[index]->GetRoot()->GetCollision() == 2)
          {
-             for (SceneNode* node : node_[index]->GetAllNodes())
+             name = node_[index]->GetName();
+             if (name.find("Mechanical_Part") != std::string::npos)
              {
-                 delete node;
+                 char last = name.back();
+
+                 for (int i = 0; i < node_.size(); i++)
+                 {
+                     if (node_[i]->GetName().compare(particle + last) == 0)
+                     {
+                         DeleteNode(node_[i]);
+                         node_.erase(node_.begin() + i);
+                         break;
+                     }
+                 }
              }
-             node_[index]->ClearNodes();
-             delete node_[index]->GetRoot();
+
+             DeleteNode(node_[index]);
              node_.erase(node_.begin() + index);
              continue;
          }

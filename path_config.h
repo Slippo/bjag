@@ -1,2 +1,3 @@
 // change to specify your own location here
-#define MATERIAL_DIRECTORY  "C:\\Users\\nino\\Documents\\GitHub\\bjag"
+#define MATERIAL_DIRECTORY  "D:\\Carleton\\Third Year\\COMP3501\\Project"
+
