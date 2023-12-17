@@ -678,12 +678,6 @@ void ResourceManager::CreatePlane(std::string object_name, std::vector<float> he
             int order_z[8] = { 0, -1, -1, -1,  0,  1, 1, 1 };
             
 
-            /// NOTEWORTHY
-            /// THIS SEQUENCE OF "IF" STATEMENTS IS A HUGE
-            /// BOTTLE NECK!!! THIS SHOULD BE MOVED TO A FUNCTION...
-            /// LOW VALUES (200X200) ARE ACCEPTABLE, BUT AVOID 
-            /// HIGHER SIZES OF PLANE (500X500) UNTIL THIS IS FIXED
-
             // Iterate over neighbours counter clockwise
             // Iteration has a different start depending on the case
             dx = 0;
@@ -691,7 +685,6 @@ void ResourceManager::CreatePlane(std::string object_name, std::vector<float> he
 
             // TOP LEFT n = 3
             if (_x == 0 && _z == 0) {
-                //std::cout << "foo" << std::endl;
                 for (int i = 0; i < 3; i++) {
                     dx = order_x[(i+6)%8];
                     dz = order_z[(i+6)%8];

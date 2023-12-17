@@ -390,8 +390,6 @@ namespace game {
         stem_prime->SetPosition(position_);
         stem_prime->SetOrientation(glm::normalize(glm::angleAxis(0.5f, glm::vec3(0.0, 0.0, 1.0))));
         stem_prime->SetColor(glm::vec3(0.97, 0.51, 0.47));
-        //std::cout << "this is the main stems color: " << glm::to_string(stem_prime->GetColor()) << std::endl;
-        //stem_prime->SetLength(10.0);
         stem_prime->SetPivot(glm::vec3(0, 5, 0));
         stem_prime->SetScale(glm::vec3(0.3, 0.3, 0.3));
         coral->SetRoot(stem_prime);
