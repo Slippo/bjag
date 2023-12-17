@@ -5,6 +5,7 @@ uniform float timer;
 uniform sampler2D texture_map;
 //uniform sampler2D bubble;
 uniform float oxygen;
+uniform int hurt;
 
 // Constants
 float wave_strength = 0.001; // Sine wave strenght; vomit-inducing if > 0.001
@@ -20,7 +21,7 @@ void main() {
 
 	vec4 outer_colour = vec4(0,0,0,1);
 	outer_colour.r = mix(0,0.9, 1 - (oxygen * 1/480)); // make the edge flash red as time runs out
-	outer_colour.r *= abs(sin(timer));
+	outer_colour.r *= abs(sin(mix(1,3,hurt) * timer));
 
 	vec2 pos = (vs_uv * 2) - 1; // - 1 to 1
 	float distance_from_center = sqrt(pow(pos.x, 2) + pow(pos.y, 2));
@@ -35,7 +36,8 @@ void main() {
 	// blue tinge only if in the game world
 	distance_from_center < radius ? colour = vec4(colour.r - 0.1, colour.g - 0.1, colour.b + 0.3, colour.a):colour = outer_colour;
 
-	abs(distance_from_center - radius) < 0.03 ? colour += vec4(0,0.3,0.7,0.2):colour; // outline the circle
+	abs(distance_from_center - radius) < 0.03 ? colour += vec4(mix(0,1,hurt),0.3,0.7,0.2):colour; // outline the circle to resemble a "mask"
+	// outline becomes red when damaged
 
 	colour = 0.9*colour;
 	gl_FragColor = colour;

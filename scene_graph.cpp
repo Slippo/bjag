@@ -263,10 +263,11 @@ void SceneGraph::DisplayTexture(Camera* camera, GLuint program) {
     float current_time = glfwGetTime();
     glUniform1f(timer_var, current_time);
 
-    // Set projection matrix in shader
     GLint oxygen_value = glGetUniformLocation(program, "oxygen");
     glUniform1f(oxygen_value, camera->GetTimer());
     
+    GLint hurt_value = glGetUniformLocation(program, "hurt");
+    glUniform1i(hurt_value, camera->IsBeingHurt());
 
     // Bind texture
     glActiveTexture(GL_TEXTURE0);

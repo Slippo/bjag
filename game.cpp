@@ -599,12 +599,9 @@ void Game::MainLoop(void){
                     }
                 }
 
-                std::cout << "Is being hurt" << camera_.IsBeingHurt() << std::endl;
-
-
                 scene_.DrawToTexture(&camera_, world_light);
 
-                scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
+                scene_.DisplayTexture(&camera_, resman_.GetResource("ScreenSpaceMaterial")->GetResource());
 
                 // Update ImGui UI
                 UpdateHUD();
@@ -622,8 +619,7 @@ void Game::MainLoop(void){
                     scene_.ClearObj();
                     state_ = lose;
                 }
-                //std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
-
+                /// NOT WORKING
                 // Hydrothermal vent collision switch
                 /*
                 if (int(current_time) % 6 == 0) { // On
@@ -638,40 +634,11 @@ void Game::MainLoop(void){
                 }
                 */
             }
-
-
-            // Process camera/player forward movement
-            //camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
-            //if (camera_.GetSpeed() > 0) {
-            //    camera_.SetSpeed(camera_.GetSpeed() * 0.98);
-
-            //}
-            // Draw the scene
-            //scene_.Draw(&camera_, world_light);
-
         }
-
-        // Process camera/player forward movement
-        //camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
-        //if (camera_.GetSpeed() > 0) {
-        //    camera_.SetSpeed(camera_.GetSpeed() * 0.98);
-
-        //}
-        // Draw the scene
-        //scene_.Draw(&camera_, world_light);
-
+        glfwPollEvents();
         // Push buffer drawn in the background onto the display
         glfwSwapBuffers(window_);
-
-        // Win condition
-        //if (camera_.CheckWinCondition() == true) {
-
-            //glfwSetWindowShouldClose(window_, true);
-
-        //}
-
         last_time_ = current_time;
-
     }
 }
 
@@ -875,7 +842,7 @@ void Game::UpdateStartHUD()
 
     //ImGui::SetNextWindowSize(ImVec2(350, 100)); // Next window size
     ImVec2 screenSize = ImGui::GetIO().DisplaySize;
-    ImVec2 titleSize = ImGui::CalcTextSize("The Submarine Game");
+    ImVec2 titleSize = ImGui::CalcTextSize("3501 Leagues Under the Sea");
     ImVec2 pressEnterSize = ImGui::CalcTextSize("Press Enter to start");
 
     ImVec2 titlePos = ImVec2((screenSize.x - titleSize.x) * 0.4f, screenSize.y * 0.35f);
@@ -886,7 +853,7 @@ void Game::UpdateStartHUD()
 
     // Draw "The Submarine Game" text
     ImGui::SetCursorPos(titlePos);
-    ImGui::Text("The Submarine Game");
+    ImGui::Text("3501 Leagues Under the Sea");
 
     // Draw "Press Enter to start" text
     ImGui::SetCursorPos(pressEnterPos);

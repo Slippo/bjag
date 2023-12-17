@@ -339,7 +339,7 @@ void Camera::Update(float delta_time)
 
         if (position_.y <= 3.0)
         {
-            position_ = old_position_;
+            position_ = base_position_;
             state_ = walking;
             t_ = 0.0;
         }
