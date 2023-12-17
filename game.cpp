@@ -588,9 +588,7 @@ void Game::MainLoop(void){
                     scene_.ClearObj();
                     state_ = lose;
                 }
-                /// NOT WORKING
                 // Hydrothermal vent collision switch
-                /*
                 if (int(current_time) % 6 == 0) { // On
                     for (int i = 1; i < 7; i++) {
                         scene_.GetNode("Vent" + std::to_string(i))->SetCollision(1);
@@ -601,7 +599,7 @@ void Game::MainLoop(void){
                         scene_.GetNode("Vent" + std::to_string(i))->SetCollision(0);
                     }
                 }
-                */
+                
             }
         }
         glfwPollEvents();

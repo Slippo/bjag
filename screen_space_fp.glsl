@@ -21,7 +21,7 @@ float genRandom(float seed, int a, int b, int m){
 void main() {
 
 	vec4 outer_colour = vec4(0,0,0,1);
-	outer_colour.r = mix(0,0.9, 1 - (oxygen * 1/480)); // make the edge flash red as time runs out
+	outer_colour.r = mix(0.0,0.9, 1 - (oxygen * 1/480)); // make the edge flash red as time runs out
 	outer_colour.r *= abs(sin(mix(1,3,hurt) * timer));
 
 	vec2 pos = (vs_uv * 2) - 1; // - 1 to 1
