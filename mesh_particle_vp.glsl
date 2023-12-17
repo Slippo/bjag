@@ -39,7 +39,7 @@ void main()
     // Pass the data from the mesh to the geometry shader
     // We only want to go with world-space coordinates for now
     light_pos_vp = vec3(vec4(light_pos,1)); // already in world space
-    vec4 position = world_mat * 10* vec4(vertex, 1.0);
+    vec4 position = world_mat *5* vec4(vertex, 1.0);
 
     vec4 norm = normalize(vec4(normal, 0.0)); // dont apply any matrices yet, all done in the geometry shader
     normal_interp = vec3(norm);

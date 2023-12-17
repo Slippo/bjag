@@ -7,7 +7,7 @@
 namespace game {
     // Configuration constants
     // Main window settings
-    const std::string window_title_g = "Bjag";
+    const std::string window_title_g = "3501 Leagues Under the Sea";
     const unsigned int window_width_g = 1280;
     const unsigned int window_height_g = 720;
     const bool window_full_screen_g = false;
@@ -276,19 +276,16 @@ namespace game {
     resman_.LoadResource(Texture, "RockyTexture", filename.c_str());
 
     // Load texture to be used on skybox
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/sky-box-2.png");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/sky_box.png");
     resman_.LoadResource(Texture, "SkyBoxTexture", filename.c_str());
 
     //metal
     //filename = std::string(MATERIAL_DIRECTORY) + std::string("/Metal_Corrugated_0111_.png");
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/Metal_Corrugated_0111_.png");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/metal_corrugated.png");
     resman_.LoadResource(Texture, "MetalTexture", filename.c_str());
 
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_grass2.png");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_grass.png");
     resman_.LoadResource(Texture, "NormalMapGrass", filename.c_str());
-
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_scales.png");
-    resman_.LoadResource(Texture, "NormalMapScales", filename.c_str());
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_glass.png");
     resman_.LoadResource(Texture, "NormalMapGlass", filename.c_str());
@@ -433,17 +430,10 @@ void Game::PopulateWorld(void) {
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie11", glm::vec3(20.32, 0, -32.43)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie12", glm::vec3(9.75, 0, -34.95)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie13", glm::vec3(-36.17, 1, -24.05)));
-    //
-    //PLACE SEAWEED PATCHES
-    // Seaweed instancer call, can generate random seaweed using given dimensions / density
-    //manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(70.58, 0, -5.64));
-    //manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(-47.98, 0, 17.74));
+
     manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(40.87, 0, -55.81));
     
     // Create particles
-    //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance1", "ParticleVentMaterial", "BubbleTexture", glm::vec3(0, 0, 0)));
-
-    //
     //PARTICLE SYSTEM FOR MECHANICAL PARTS
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance1", "ParticleStarMaterial", "StarTexture", glm::vec3(-23.5, 15.9, -73.3)));
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance2", "ParticleStarMaterial", "StarTexture", glm::vec3(-74.2, 5.0, 89.2)));
@@ -454,11 +444,6 @@ void Game::PopulateWorld(void) {
 
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "FishMesh", "FishParticleInstance1", "MeshParticleMaterial", "FishTexture", glm::vec3(7, 10, 7)));
-    //game::CompositeNode* fish_particles = CreateInstance("ParticleInstance2", "FishMesh", "MeshParticleMaterial", "FishTexture");
-//fish_particles->SetPosition(glm::vec3(0, 0.5, 0));
-//scene_.AddNode(fish_particles);
-
-    //
 }
 
 void Game::SetupGameScreen(void)
@@ -567,7 +552,7 @@ void Game::MainLoop(void){
 
         else if (state_ == ingame)
         {
-            SceneNode* world_light = scene_.GetNode("Sphere")->GetRoot();
+            SceneNode* world_light = scene_.GetNode("Sun")->GetRoot();
             float delta_time = 0.0f;
             // Animate the scene
 

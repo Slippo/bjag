@@ -113,7 +113,7 @@ namespace game {
     }
 
     CompositeNode* Manipulator::ConstructSun(ResourceManager* resman, glm::vec3 position) {
-        CompositeNode* sphere = new CompositeNode("Sphere");
+        CompositeNode* sphere = new CompositeNode("Sun");
 
         SceneNode* root = CreateSceneNodeInstance("Root", "Sphere", "ObjectMaterial", "", resman);
         root->SetColor(glm::vec3(1,1,0));
