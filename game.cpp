@@ -594,7 +594,7 @@ void Game::MainLoop(void){
 
                     if (camera_.GetNumParts() != last_num_machine_parts_)
                     {
-                        SoundEngine->play2D((MATERIAL_DIRECTORY + std::string("\\audio\\ring.mp3")).c_str(), false);
+                        SoundEngine->play2D((MATERIAL_DIRECTORY + std::string("\\audio\\collect_sound.mp3")).c_str(), false);
                         last_num_machine_parts_ = camera_.GetNumParts();
                     }
                 }
