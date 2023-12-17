@@ -47,6 +47,8 @@ namespace game {
             void SetupResources(void);
             // Set up initial scene
             void SetupScene(void);
+            //populate world function
+            void PopulateWorld(void);
             // Run the game: keep the application active
             void MainLoop(void); 
 

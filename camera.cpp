@@ -69,7 +69,6 @@ float Camera::CalculateSlope(float h)
     float curr_height = position_.y;
     float slope = -100;
     
-    
     slope = abs(curr_height - (h));
 
     if (h <= ground_height_ + 0.4)
@@ -302,7 +301,6 @@ void Camera::Update(float delta_time)
     float d = (height_map_)[coordXMax + (width) * coordZMax];
 
     float interpolation = ((1 - t) * ((1 - s) * a + s * b) + t * ((1 - s) * c + s * d)) + 3.0;
-
     if (state_ == jumping)
     {
         //y position is calculated using kinematic equation of vertical motion, factoring in gravity, base y position,
@@ -336,7 +334,6 @@ void Camera::Update(float delta_time)
         
         //if the timer has been going for a while (to account for the initial push-off from the ground), and the distance
         //from the ground is small enough, set state to walking and reset timer to 0
-
         if (t_ >= 2.0 && abs(distance) <= 0.3)
         {
             tempPos.y = interpolation;
@@ -352,12 +349,9 @@ void Camera::Update(float delta_time)
                 position_.y = oldY;
                 return;
             }*/
-
             position_ = tempPos;
-            //position_.y = old_y_;
         }
-        else
-        {
+        else {
             position_ = position_ - (glm::vec3(0.0, 0.4f, 0.0) * delta_time);
         }        
 
@@ -390,8 +384,7 @@ void Camera::UpdateForwardVelocity(float backwards)
     {
         forward_speed_ = max_speed_;
     }
-    if (forward_speed_ <= GetMinSpeed())
-    {
+    if (forward_speed_ <= GetMinSpeed()) {
         forward_speed_ = min_speed_;
     }
 }
@@ -403,14 +396,12 @@ void Camera::UpdateSideVelocity(float left)
     {
         side_speed_ = max_speed_;
     }
-    if (side_speed_ <= GetMinSpeed())
-    {
+    if (side_speed_ <= GetMinSpeed()) {
         side_speed_ = min_speed_;
     }
 }
 
-
-void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up){
+void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up) {
     // Store initial forward and side vectors
     // See slide in "Camera control" for details
     // probably will not be much used (directly setting view a rare occurrence in games)
