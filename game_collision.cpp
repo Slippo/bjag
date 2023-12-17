@@ -29,7 +29,7 @@ namespace game
     void GameCollision::CollisionEventCompositeNode(Camera* camera, CompositeNode* obj)
     {
 
-        glm::vec3 position_ = glm::vec3(obj->GetRoot()->GetPosition().x, camera->GetPosition().y, obj->GetRoot()->GetPosition().z);
+        glm::vec3 position_ = obj->GetRoot()->GetPosition();
 
         if (glm::length(camera->GetPosition() - position_) <= (camera->GetRadius() + obj->GetRoot()->GetRadius()))
         {

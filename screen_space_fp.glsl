@@ -16,22 +16,27 @@ float genRandom(float seed, int a, int b, int m){
     return r;
 }
 
-void main() 
-{
+void main() {
+
+	vec4 outer_colour = vec4(0,0,0,1);
+	outer_colour.r = mix(0,0.9, 1 - (oxygen * 1/480)); // make the edge flash red as time runs out
+	outer_colour.r *= abs(sin(timer));
+
 	vec2 pos = (vs_uv * 2) - 1; // - 1 to 1
-	//pos.x = pos.x + wave_strength*(sin(timer*4+8.0*pos.y));
-
 	float distance_from_center = sqrt(pow(pos.x, 2) + pow(pos.y, 2));
-	float radius = 0.9 * (oxygen * 1/oxygen);
+	float radius = 0.9;
 
-	// inside circle? make it wavy
+	// make the inner pixels wavy
 	distance_from_center < radius ? pos.x = pos.x + 0.005*sin(2*timer + 2*pos.y):pos.x;
 	
-	// outside circle ? make black. inside? render scene
-	distance_from_center > radius ? colour = vec4(0,0,0,1):colour = texture(texture_map, 0.5*pos + 0.5);
+	// make the inner pixels the scene pixels
+	distance_from_center > radius ? colour = outer_colour:colour = texture(texture_map, 0.5*pos + 0.5);
 
 	// blue tinge only if in the game world
-	distance_from_center < radius ? colour = vec4(colour.r - 0.1, colour.g - 0.1, colour.b + 0.3, colour.a):colour = vec4(0,0,0,1);
+	distance_from_center < radius ? colour = vec4(colour.r - 0.1, colour.g - 0.1, colour.b + 0.3, colour.a):colour = outer_colour;
+
+	abs(distance_from_center - radius) < 0.03 ? colour += vec4(0,0.3,0.7,0.2):colour; // outline the circle
+
 	colour = 0.9*colour;
 	gl_FragColor = colour;
 }
