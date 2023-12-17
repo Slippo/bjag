@@ -57,7 +57,7 @@ void main()
 
     if (gl_FrontFacing){
         //gl_FragColor = pixel*lambertian + pixel*specular + pixel*ambient;
-        gl_FragColor = pixel*lambertian + pixel*specular + pixel*ambient;
+        gl_FragColor = pixel*(lambertian + specular + ambient);
     } else {
         gl_FragColor = pixel*0.25*ambient;
     }
