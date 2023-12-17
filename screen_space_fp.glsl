@@ -17,6 +17,7 @@ float genRandom(float seed, int a, int b, int m){
     return r;
 }
 
+// Gives the viewer a "mask" which indicates if damage is being taken
 void main() {
 
 	vec4 outer_colour = vec4(0,0,0,1);
@@ -26,9 +27,10 @@ void main() {
 	vec2 pos = (vs_uv * 2) - 1; // - 1 to 1
 	float distance_from_center = sqrt(pow(pos.x, 2) + pow(pos.y, 2));
 	float radius = 0.9;
+	hurt == 1 ? radius = mix(0.9,0.88, abs(sin(4*timer))):radius; // make view dilate when damaged
 
 	// make the inner pixels wavy
-	distance_from_center < radius ? pos.x = pos.x + 0.005*sin(2*timer + 2*pos.y):pos.x;
+	distance_from_center < radius ? pos.x = pos.x + 0.005*sin((15*hurt+2)*timer + 2*pos.y):pos.x; // waviness increases if damage is taken
 	
 	// make the inner pixels the scene pixels
 	distance_from_center > radius ? colour = outer_colour:colour = texture(texture_map, 0.5*pos + 0.5);

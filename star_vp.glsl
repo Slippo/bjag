@@ -23,6 +23,21 @@ float speed = 2.0; // Controls the speed of the explosion
 float upward = 0.0; // additional y velocity for all particles
 const float pi = 3.14159265358979323;
 
+// Linear congruential generator (LCG)
+// Yields a float in the range [0..1]
+float genRandom(float seed, int a, int b, int m){
+    float r = fract(mod(seed * a + b, m));
+    return r;
+}
+// Random Numbers
+float rand_0 = genRandom(color.r,713597,376547,616027); // ID stored in color
+float rand_1 = genRandom(color.r,984349,365257,408203);
+float rand_2 = genRandom(color.r,266177,702913,611441);
+// big primes
+// 611441 493817 256129 365257 961663 408203 
+// 525137 331883 765251 656809 984349 434191
+// 702913 266177 271027 365257 961663 408203 
+
 void main()
 {
 
@@ -45,9 +60,14 @@ void main()
     }
 
     // Make particles explode in a spherical shape
+    /*
     position.x += t*sin(theta)*cos(phi);
     position.y += t*sin(theta)*sin(phi);
     position.z += t*(cos(theta));
+    */
+    position.x += sin(max(rand_0,max(rand_1,rand_2)) + speed*timer);
+    position.z += cos(max(rand_0,max(rand_1,rand_2)) + speed*timer);
+    position.y += cos(max(rand_0,max(rand_1,rand_2)) + speed*timer);
     // Now apply view transformation
     gl_Position = view_mat * position;
         
