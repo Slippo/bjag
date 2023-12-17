@@ -41,7 +41,7 @@ namespace game {
         state_ = start;
         std::cout << "initialized!" << std::endl;
         SoundEngine = irrklang::createIrrKlangDevice();
-        SoundEngine->play2D((MATERIAL_DIRECTORY + std::string("\\audio\\breakout.mp3")).c_str(), true);
+        SoundEngine->play2D((MATERIAL_DIRECTORY + std::string("\\audio\\stranded.mp3")).c_str(), true);
 
     }
 
