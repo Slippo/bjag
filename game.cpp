@@ -302,6 +302,15 @@ namespace game {
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/stars.png");
     resman_.LoadResource(Texture, "StarTexture", filename.c_str());
 
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/mesh_particle");
+    resman_.LoadResource(Material, "MeshParticleMaterial", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/fish_texture.png");
+    resman_.LoadResource(Texture, "FishTexture", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/fish_new.obj");
+    resman_.LoadResource(Mesh, "FishMesh", filename.c_str());
+
     // Create particles
     resman_.CreateSphereParticles("SphereParticles");
     resman_.CreateSphereParticles("SphereParticlesBubbles", 10);
@@ -400,6 +409,11 @@ void Game::PopulateWorld(void) {
     //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance3", "ParticleGeyserMaterial", "SmokeTexture", glm::vec3(-3, 2, 0)));
 
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "FishMesh", "FishParticleInstance1", "MeshParticleMaterial", "FishTexture", glm::vec3(7, 10, 7)));
+    //game::CompositeNode* fish_particles = CreateInstance("ParticleInstance2", "FishMesh", "MeshParticleMaterial", "FishTexture");
+//fish_particles->SetPosition(glm::vec3(0, 0.5, 0));
+//scene_.AddNode(fish_particles);
+
     //
 }
 
@@ -472,8 +486,7 @@ void Game::SetupScene(void) {
     scene_.GetNode("Stalagmite6")->Scale(glm::vec3(0.7, 0.7, 0.7));
       */
     scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite7", glm::vec3(87.5, 0, -4.0)));
-    scene_.GetNode("Stalagmite7")->Scale(glm::vec3(0.7, 0.7, 0.7));
-
+    scene_.GetNode("Stalagmite7")->Scale(glm::vec3(0.7, 0.7, 0.7));    
 }
 
 void Game::MainLoop(void){
@@ -522,7 +535,7 @@ void Game::MainLoop(void){
 
         scene_.DrawToTexture(&camera_, world_light);
 
-        scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
+        scene_.DisplayTexture(&camera_, resman_.GetResource("ScreenSpaceMaterial")->GetResource());
 
         // Update ImGui
         UpdateHUD();
@@ -715,6 +728,5 @@ SceneNode* Game::CreateSceneNodeInstance(std::string entity_name, std::string ob
     SceneNode* node = new SceneNode(entity_name, geom, mat, NULL, 0);
     return node;
 }
-
 
 } // namespace game
