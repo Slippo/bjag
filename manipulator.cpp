@@ -569,7 +569,7 @@ namespace game {
         game::SceneNode* particles = CreateSceneNodeInstance(object_name, entity_name, material_name, texture_name, resman_);
         particles->SetPosition(position_);
         particles->SetType(SceneNode::Type::ParticleSystem);
-        particles->SetScale(glm::vec3(2, 2, 2));
+        particles->SetScale(glm::vec3(1, 1, 1));
         system->SetRoot(particles);
 
 

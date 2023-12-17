@@ -266,6 +266,7 @@ void SceneGraph::DisplayTexture(Camera* camera, GLuint program) {
     // Set projection matrix in shader
     GLint oxygen_value = glGetUniformLocation(program, "oxygen");
     glUniform1f(oxygen_value, camera->GetTimer());
+    
 
     // Bind texture
     glActiveTexture(GL_TEXTURE0);
