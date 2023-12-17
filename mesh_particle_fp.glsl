@@ -3,8 +3,8 @@
 // Attributes passed from the geometry shader
 in vec4 frag_color;
 in vec2 tex_coord;
-in flat int invocationID;
-in flat int num_invocations;
+in float invocationID;
+in float num_invocations;
 in vec3 light_pos_out;
 
 in vec3 position_interp;

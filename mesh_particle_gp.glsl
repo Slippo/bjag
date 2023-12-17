@@ -22,8 +22,8 @@ uniform mat4 normal_mat;
 // Attributes passed to the fragment shader
 out vec4 frag_color;
 out vec2 tex_coord;
-out int invocationID;
-out int num_invocations;
+out float invocationID;
+out float num_invocations;
 out vec3 position_interp;
 out vec3 normal_interp_g;
 out vec3 light_pos_out;
