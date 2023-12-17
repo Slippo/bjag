@@ -6,7 +6,7 @@ project(${PROJ_NAME})
 
 # Specify project files: header files and source files
 set(HDRS
-      camera.h composite_node.h  game.h  resource.h resource_manager.h scene_graph.h scene_node.h manipulator.h game_collision.h imgui/imgui.h imgui/imgui_impl_glfw.h imgui/imgui_impl_opengl3.h imgui/imgui_impl_opengl3_loader.h imgui/imgui_internal.h imgui/imstb_rectpack.h imgui/imstb_textedit.h imgui/imstb_truetype.h
+      camera.h composite_node.h  game.h  resource.h resource_manager.h scene_graph.h scene_node.h manipulator.h game_collision.h imgui/imgui.h imgui/imgui_impl_glfw.h imgui/imgui_impl_opengl3.h imgui/imgui_impl_opengl3_loader.h imgui/imgui_internal.h imgui/imstb_rectpack.h imgui/imstb_textedit.h imgui/imstb_truetype.h model_loader.h
 )
  
 set(SRCS

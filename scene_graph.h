@@ -73,7 +73,7 @@ namespace game {
             // Draw the scene into a texture
             void DrawToTexture(Camera* camera, SceneNode* light);
             // Process and draw the texture on the screen
-            void DisplayTexture(GLuint program);
+            void DisplayTexture(Camera* camera, GLuint program);
             // Save texture to a file in ppm format
             void SaveTexture(char* filename);
 

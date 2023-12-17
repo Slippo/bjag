@@ -237,7 +237,7 @@ void SceneGraph::DrawToTexture(Camera* camera, SceneNode* light) {
 }
 
 
-void SceneGraph::DisplayTexture(GLuint program) {
+void SceneGraph::DisplayTexture(Camera* camera, GLuint program) {
 
     // Configure output to the screen
     //glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -258,10 +258,14 @@ void SceneGraph::DisplayTexture(GLuint program) {
     glEnableVertexAttribArray(tex_att);
     glVertexAttribPointer(tex_att, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 
-    // Timer
+    // Game timer
     GLint timer_var = glGetUniformLocation(program, "timer");
     float current_time = glfwGetTime();
     glUniform1f(timer_var, current_time);
+
+    // Set projection matrix in shader
+    GLint oxygen_value = glGetUniformLocation(program, "oxygen");
+    glUniform1f(oxygen_value, camera->GetTimer());
 
     // Bind texture
     glActiveTexture(GL_TEXTURE0);
