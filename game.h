@@ -11,6 +11,7 @@
 #include <glm/ext.hpp>
 #include <fstream>
 #include <set>
+#include <irrKlang/irrKlang.h>
 
 #include "scene_graph.h"
 #include "resource_manager.h"
@@ -69,6 +70,8 @@ namespace game {
             // Collision handler
             GameCollision collision_;
 
+            irrklang::ISoundEngine* SoundEngine;
+
             // Flag to turn animation on/off
             bool animating_;
 
@@ -89,6 +92,8 @@ namespace game {
             ImGuiIO imgui_io_;
 
             GameState state_;
+
+            int last_num_machine_parts_ = 0;
 
             // Methods to initialize the game
             void InitWindow(void);

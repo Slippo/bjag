@@ -12,7 +12,7 @@ namespace game {
 //define constant acceleration factor
     float base_vel = 5.0f;
     float jump_height = 4.0f;
-    float gravity = 1.4f;
+    float gravity = 1.8f;
     float t_;
 
 Camera::Camera(void){
@@ -159,6 +159,11 @@ void Camera::SetDead(bool d)
     dead_ = d;
 }
 
+void Camera::SetHurt(bool h)
+{
+    hurt_ = h;
+}
+
 void Camera::Translate(glm::vec3 trans){
     position_ += trans;
 }
@@ -225,6 +230,10 @@ int Camera::GetNumParts(void) const {
     return num_parts_;
 }
 
+bool Camera::IsBeingHurt(void) const {
+    return hurt_;
+}
+
 void Camera::IncreaseNumParts(void) {
     num_parts_ += 1;
 }
@@ -275,7 +284,6 @@ void Camera::Update(float delta_time)
 {
     glm::vec3 oldPos = position_;
     glm::vec3 tempPos = position_ + ((GetForwardMovement() * forward_speed_ * delta_time)) + (GetSideMovement() * side_speed_ * delta_time);
-    std::cout << forward_speed_ << std::endl;
     //position_ += (GetForwardMovement() * forward_speed_ * delta_time);
     //position_ += (GetSideMovement() * side_speed_ * delta_time);    
 
@@ -327,7 +335,7 @@ void Camera::Update(float delta_time)
         position_.y = base_y_position_ + (0.5 * (jump_height + (base_vel - (gravity * t_))) * t_);
 
         //timer is increemented here, 0.1 for each recorded frame
-        t_ += 0.05;
+        t_ += delta_time;
 
         //distance from base y position to current y is calculated here
         float distance = position_.y - interpolation;
@@ -379,26 +387,26 @@ void Camera::Update(float delta_time)
 }
 void Camera::UpdateForwardVelocity(float backwards)
 {
-    forward_speed_ += (0.2 * backwards);
-    if (forward_speed_ >= GetMaxSpeed())
+    forward_speed_ = max_speed_ * backwards;
+    /*if (forward_speed_ >= GetMaxSpeed())
     {
         forward_speed_ = max_speed_;
     }
     if (forward_speed_ <= GetMinSpeed()) {
         forward_speed_ = min_speed_;
-    }
+    }*/
 }
 
 void Camera::UpdateSideVelocity(float left)
 {
-    side_speed_ += (0.2 * left);
-    if (side_speed_ >= GetMaxSpeed())
+    side_speed_ = max_speed_ * left;
+    /*if (side_speed_ >= GetMaxSpeed())
     {
         side_speed_ = max_speed_;
     }
     if (side_speed_ <= GetMinSpeed()) {
         side_speed_ = min_speed_;
-    }
+    }*/
 }
 
 void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up) {

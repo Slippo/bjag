@@ -66,6 +66,7 @@ namespace game {
             int Update(Camera *camera, ResourceManager *resman);
 
             void ClearObj();
+            void DeleteNode(CompositeNode* node);
             // Drawing from/to a texture
             // Setup the texture
             void SetupDrawToTexture(void);

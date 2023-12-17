@@ -40,6 +40,7 @@ namespace game {
             void DecreaseTimer(float t);
             void AddPart(); // Increase num_parts_
             void SetDead(bool d);
+            void SetHurt(bool h);
             inline void SetState(CameraState t) { state_ = t; }
             void SetHeightMap(std::vector<float> h, std::vector<float> height_boundary);
             void SetDimensions(int x, int z, int width, int height);
@@ -67,6 +68,7 @@ namespace game {
             int GetNumParts(void) const;
             void IncreaseNumParts(void);
             bool IsDead(void) const;
+            bool IsBeingHurt(void) const;
             bool CheckWinCondition(void) const;
             inline CameraState GetState() { return state_; }
 
@@ -127,6 +129,8 @@ namespace game {
 
             // Win condition
             bool win_condition_ = false;
+
+            bool hurt_ = false;
 
             // Create view matrix from current camera parameters
             void SetupViewMatrix(void);

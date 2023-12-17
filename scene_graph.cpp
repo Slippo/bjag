@@ -106,10 +106,22 @@ void SceneGraph::Draw()
     //}
 }
 
+void SceneGraph::DeleteNode(CompositeNode* node)
+{
+    for (SceneNode* n : node->GetAllNodes())
+    {
+        delete n;
+    }
+    node->ClearNodes();
+    delete node->GetRoot();
+
+}
 // Handles movement, collisions, and geometric changes
 int SceneGraph::Update(Camera* camera, ResourceManager* resman) {
     int val = 0;
     int index = 0;
+    std::string name;
+    std::string particle = "ParticleStarInstance";
     for (int i = 0; i < node_.size(); i++) {
         node_[i]->Update(camera);
     }
@@ -118,12 +130,23 @@ int SceneGraph::Update(Camera* camera, ResourceManager* resman) {
      {
          if (node_[index]->GetRoot()->GetCollision() == 2)
          {
-             for (SceneNode* node : node_[index]->GetAllNodes())
+             name = node_[index]->GetName();
+             if (name.find("Mechanical_Part") != std::string::npos)
              {
-                 delete node;
+                 char last = name.back();
+
+                 for (int i = 0; i < node_.size(); i++)
+                 {
+                     if (node_[i]->GetName().compare(particle + last) == 0)
+                     {
+                         DeleteNode(node_[i]);
+                         node_.erase(node_.begin() + i);
+                         break;
+                     }
+                 }
              }
-             node_[index]->ClearNodes();
-             delete node_[index]->GetRoot();
+
+             DeleteNode(node_[index]);
              node_.erase(node_.begin() + index);
              continue;
          }

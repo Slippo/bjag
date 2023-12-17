@@ -51,6 +51,10 @@ namespace game {
         animating_ = true;
         moving_ = false;
         state_ = start;
+        std::cout << "initialized!" << std::endl;
+        SoundEngine = irrklang::createIrrKlangDevice();
+        SoundEngine->play2D((MATERIAL_DIRECTORY + std::string("\\audio\\breakout.mp3")).c_str(), true);
+
     }
 
 
@@ -457,7 +461,6 @@ void Game::PopulateWorld(void) {
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance3", "ParticleStarMaterial", "StarTexture", glm::vec3(-74.07, 5.0, -75.85)));
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance4", "ParticleStarMaterial", "StarTexture", glm::vec3(19.44, 17.85, 83.95)));
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance5", "ParticleStarMaterial", "StarTexture", glm::vec3(81.98, 5.0, -26.343)));
-
     //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance3", "ParticleGeyserMaterial", "SmokeTexture", glm::vec3(-3, 2, 0)));
 
     //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
@@ -553,6 +556,7 @@ void Game::MainLoop(void){
     // Loop while the user did not close the window
     while (!glfwWindowShouldClose(window_)){
 
+
         double current_time = glfwGetTime();
         if (state_ == start)
         {
@@ -598,7 +602,15 @@ void Game::MainLoop(void){
                 for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++)
                 {
                     collision_.CollisionEventCompositeNode(&camera_, *iterator);
+
+                    if (camera_.GetNumParts() != last_num_machine_parts_)
+                    {
+                        SoundEngine->play2D((MATERIAL_DIRECTORY + std::string("\\audio\\ring.mp3")).c_str(), false);
+                        last_num_machine_parts_ = camera_.GetNumParts();
+                    }
                 }
+
+                std::cout << "Is being hurt" << camera_.IsBeingHurt() << std::endl;
 
 
                 scene_.DrawToTexture(&camera_, world_light);
@@ -648,8 +660,6 @@ void Game::MainLoop(void){
 
         }
 
-        camera_.Update(delta_time);
-
         // Process camera/player forward movement
         //camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
         //if (camera_.GetSpeed() > 0) {
@@ -658,13 +668,6 @@ void Game::MainLoop(void){
         //}
         // Draw the scene
         //scene_.Draw(&camera_, world_light);
-
-        scene_.DrawToTexture(&camera_, world_light);
-
-        scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
-
-        // Update ImGui UI
-        UpdateHUD();
 
         // Update other events like input handling
         glfwPollEvents();
