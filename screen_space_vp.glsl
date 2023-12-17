@@ -1,13 +1,13 @@
-#version 130
+#version 400
 
 in vec3 position;
 in vec2 uv;
+uniform float timer;
+out vec2 vs_uv;
 
-out vec2 uv0;
-
-void main()
-{
-    gl_Position = vec4(position, 1.0);
-
-    uv0 = uv;
+void main() {
+    
+    vec3 pos = position;
+    gl_Position = vec4(pos, 1.0);
+    vs_uv = uv;
 }

@@ -61,6 +61,9 @@ namespace game {
 
             // Load a texture from an image file: png, jpg, etc.
             void LoadTexture(const std::string name, const char* filename);
+
+            // Load a mesh from an obj file
+            void LoadMesh(const std::string name, const char* filename);
             // Load a text file into memory (could be source code)
             std::string LoadTextFile(const char *filename);
 

@@ -1,25 +1,20 @@
 #include <iostream>
 #include <time.h>
 #include <sstream>
-
 #include "game.h"
 #include "path_config.h"
 
 namespace game {
-
-    // Some configuration constants
-    // They are written here as global variables, but ideally they should be loaded from a configuration file
-
+    // Configuration constants
     // Main window settings
     const std::string window_title_g = "Bjag";
     const unsigned int window_width_g = 1280;
     const unsigned int window_height_g = 720;
     const bool window_full_screen_g = false;
-
     // Viewport and camera settings
-    float camera_near_clip_distance_g = 0.01;
+    float camera_near_clip_distance_g = 0.05;
     float camera_far_clip_distance_g = 1000.0;
-    float camera_fov_g = 60.0; // Field-of-view of camera (degrees)
+    float camera_fov_g = 60.0; // degrees
     const glm::vec3 viewport_background_color_g(0.5, 0.5, 1.0);
     glm::vec3 camera_position_g(0.0, 5.0, 8.0);
     glm::vec3 camera_look_at_g(0.0, 2.5, 0.0);
@@ -28,16 +23,9 @@ namespace game {
     // Materials 
     const std::string material_directory_g = MATERIAL_DIRECTORY;
 
-    // Manipulator
     Manipulator* manipulator = new Manipulator();
 
-    // Text Renderer
-    //TextRenderer* text_renderer = new TextRenderer();
-
-    Game::Game(void) {
-
-        // Don't do work in the constructor, leave it for the Init() function
-    }
+    Game::Game(void) {}
 
 
     void Game::Init(void) {
@@ -56,7 +44,6 @@ namespace game {
         SoundEngine->play2D((MATERIAL_DIRECTORY + std::string("\\audio\\breakout.mp3")).c_str(), true);
 
     }
-
 
     void Game::InitWindow(void) {
 
@@ -324,10 +311,7 @@ namespace game {
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/Gear.png");
     resman_.LoadResource(Texture, "GearTexture", filename.c_str());
   
-    // PARTICLE EFFECT SECTION
-
-    // Load material to be applied to environment particle effect
-    
+    // PARTICLE FX
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/environment");
     resman_.LoadResource(Material, "ParticleGeyserMaterial", filename.c_str());
 
@@ -355,6 +339,15 @@ namespace game {
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/stars.png");
     resman_.LoadResource(Texture, "StarTexture", filename.c_str());
 
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/mesh_particle");
+    resman_.LoadResource(Material, "MeshParticleMaterial", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/fish_texture.png");
+    resman_.LoadResource(Texture, "FishTexture", filename.c_str());
+
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/fish_new.obj");
+    resman_.LoadResource(Mesh, "FishMesh", filename.c_str());
+
     // Create particles
     resman_.CreateSphereParticles("SphereParticles");
     resman_.CreateSphereParticles("SphereParticlesBubbles", 10);
@@ -374,7 +367,6 @@ void Game::SetupScene(void)
 }
 
 void Game::PopulateWorld(void) {
-
     //scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(10, 0, -10)));
     //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
 
@@ -387,50 +379,47 @@ void Game::PopulateWorld(void) {
     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part3", glm::vec3(-74.07, 5.0, -75.85)));
     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part4", glm::vec3(19.44, 17.85, 83.95)));
     scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part5", glm::vec3(81.98, 5.0, -26.343)));
-  /*
-    // Light source ("sun")
-    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0,100,0)));
-  
-    //scene_.GetNode("Stalagmite1")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1)));
     
-    scene_.AddNode(manipulator->ConstructSubmarine(&resman_, "Submarine", glm::vec3(-17, 7.5, -33)));
-    //scene_.GetNode("Submarine")->Rotate(glm::angleAxis(glm::pi<float>(), glm::vec3(1, 1, 1)));
-    //scene_.AddNode(manipulator->ConstructPart(&resman_, "Mechanical_Part1", glm::vec3(0, 3, 0)));
-
-    scene_.AddNode(manipulator->ConstructSkyBox(&resman_, "Sky_Box", glm::vec3(0, 3, 0)));
-*/
 
    //scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
 
   // scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
 
-    scene_.AddNode(manipulator->ConstructRock(&resman_, "ROCK", glm::vec3(0, 0, 0)));
-    scene_.GetNode("ROCK")->Scale(glm::vec3(0.8, 0.5, 0.5));
+    //scene_.AddNode(manipulator->ConstructRock(&resman_, "ROCK", glm::vec3(0, 0, 0)));
+    //scene_.GetNode("ROCK")->Scale(glm::vec3(0.8, 0.5, 0.5));
 
 
     //scene_.AddNode(manipulator->ConstructSeaweed(&resman_, "Seaweed1", 4, glm::vec3(0, 0, -5)));
 
     //PLACE GEORGE'S PLANT
+    
+    //
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp1", 4, glm::vec3(3.84, 0.0, -38.37))); 
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp2", 4, glm::vec3(-42.6, 0.0, -13.96)));
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp3", 4, glm::vec3(4.9, 0.0, 14.03)));
+    
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp4", 4, glm::vec3(74.54, 0.0, -86.53)));
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp5", 4, glm::vec3(73.77, 0.0, 87.39)));
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp6", 4, glm::vec3(87.15, 0.0, 32.46)));
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp7", 4, glm::vec3(-17.5, 0.0, 47.9)));
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp8", 4, glm::vec3(10.09, 0.0, -62.77)));
     scene_.AddNode(manipulator->ConstructKelp(&resman_, "Kelp9", 4, glm::vec3(-69.82, 0.0, -35.23)));
-
+    //
     //PLACE CORAL
-    scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(-31.67, 1.6, 0.343)));
+    scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral1", glm::vec3(-31.67, 1.6, 0.343))); //
+    //
     scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral2", glm::vec3(-11.26, 1.6, 9.43)));
     scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral3", glm::vec3(62.44, 1.6, 62.33)));
     scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral4", glm::vec3(49.37, 1.6, 18.47)));
     scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral5", glm::vec3(73.73, 1.6, -57.04)));
     scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral6", glm::vec3(-20.59, 1.6, 87.86)));
     scene_.AddNode(manipulator->ConstructCoral(&resman_, "Coral7", glm::vec3(-81.3, 1.6, -6.87)));
-
+    //
     //PLACE ANEMONIES
+    
+     // 
+    //scene_.AddNode(manipulator->ConstructSeaweed(&resman_, "Seaweed1", 4, glm::vec3(-3,0,6)));
+    //
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie1", glm::vec3(14.49, 0, -33.57)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie2", glm::vec3(-39.42, 0, 24.37)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie3", glm::vec3(6.47, 0, 36.26)));
@@ -444,17 +433,17 @@ void Game::PopulateWorld(void) {
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie11", glm::vec3(20.32, 0, -32.43)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie12", glm::vec3(9.75, 0, -34.95)));
     scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie13", glm::vec3(-36.17, 1, -24.05)));
-
+    //
     //PLACE SEAWEED PATCHES
     // Seaweed instancer call, can generate random seaweed using given dimensions / density
-    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(70.58, 0, -5.64));
-    manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(-47.98, 0, 17.74));
+    //manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(70.58, 0, -5.64));
+    //manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(-47.98, 0, 17.74));
     manipulator->ConstructSeaweedPatch(&resman_, &scene_, 10, 20, 20, glm::vec3(40.87, 0, -55.81));
     
     // Create particles
     //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance1", "ParticleVentMaterial", "BubbleTexture", glm::vec3(0, 0, 0)));
 
-
+    //
     //PARTICLE SYSTEM FOR MECHANICAL PARTS
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance1", "ParticleStarMaterial", "StarTexture", glm::vec3(-23.5, 15.9, -73.3)));
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance2", "ParticleStarMaterial", "StarTexture", glm::vec3(-74.2, 5.0, 89.2)));
@@ -463,8 +452,13 @@ void Game::PopulateWorld(void) {
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleStarInstance5", "ParticleStarMaterial", "StarTexture", glm::vec3(81.98, 5.0, -26.343)));
     //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticles", "ParticleInstance3", "ParticleGeyserMaterial", "SmokeTexture", glm::vec3(-3, 2, 0)));
 
-    //scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
+    scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "FishMesh", "FishParticleInstance1", "MeshParticleMaterial", "FishTexture", glm::vec3(7, 10, 7)));
+    //game::CompositeNode* fish_particles = CreateInstance("ParticleInstance2", "FishMesh", "MeshParticleMaterial", "FishTexture");
+//fish_particles->SetPosition(glm::vec3(0, 0.5, 0));
+//scene_.AddNode(fish_particles);
 
+    //
 }
 
 void Game::SetupGameScreen(void)
@@ -473,21 +467,16 @@ void Game::SetupGameScreen(void)
     camera_.SetTimer(500); // Starting player time limit / oxygen
 
     scene_.SetBackgroundColor(viewport_background_color_g);
+    scene_.AddNode(manipulator->ConstructSkyBox(&resman_, "Sky_Box", glm::vec3(0, 3, 0)));
 
-    // Floor of the game (sand)
+    scene_.AddNode(manipulator->ConstructPlane(&resman_)); // "Plane" | sandy floor
 
-    scene_.AddNode(manipulator->ConstructPlane(&resman_)); // name is "Plane"
-    //scene_.GetNode("Plane")
+    scene_.AddNode(manipulator->ConstructBoundary(&resman_)); // "Boundary" | stone walls
 
-    // Boundary "walls" (stone)
-    scene_.AddNode(manipulator->ConstructBoundary(&resman_));
-
-    // Light source ("sun")
-    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0, 100, 0)));
+    scene_.AddNode(manipulator->ConstructSun(&resman_, glm::vec3(0, 100, 0))); // "Sun"
 
     PopulateWorld();
 
-  //
     scene_.AddNode(manipulator->ConstructParticleSystem(&resman_, "SphereParticlesBubbles", "BubbleParticles", "ParticleBubbleMaterial", "BubbleTexture", glm::vec3(0, 3, 0)));
 
 
@@ -521,7 +510,7 @@ void Game::SetupGameScreen(void)
     scene_.GetNode("Vent6")->Scale(glm::vec3(15.0, 1.0, 15.0));
     scene_.GetNode("Vent6")->SetType(CompositeNode::Type::Vent);
     scene_.AddNode(manipulator->ConstructVentBase(&resman_, "VentBase6", glm::vec3(-80.8, 0, -61.5)));
-
+    /*
     // Stalagmites
     scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite1", glm::vec3(85.2, 0, 19.2)));
     scene_.GetNode("Stalagmite1")->Scale(glm::vec3(0.7, 0.9, 0.7));
@@ -540,10 +529,9 @@ void Game::SetupGameScreen(void)
 
     scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite6", glm::vec3(78.5, 0, 22.5)));
     scene_.GetNode("Stalagmite6")->Scale(glm::vec3(0.7, 0.7, 0.7));
-
+      */
     scene_.AddNode(manipulator->ConstructStalagmite(&resman_, "Stalagmite7", glm::vec3(87.5, 0, -4.0)));
-    scene_.GetNode("Stalagmite7")->Scale(glm::vec3(0.7, 0.7, 0.7));
-  //
+    scene_.GetNode("Stalagmite7")->Scale(glm::vec3(0.7, 0.7, 0.7));    
 }
 
 void Game::SetupStartScreen(void)
@@ -553,9 +541,11 @@ void Game::SetupStartScreen(void)
 }
 
 void Game::MainLoop(void){
-    // Loop while the user did not close the window
+    double current_time = 0.0f;
+    float last_time = 0.0f;
+    float delta_time = 0.0f;
+    float mytheta = glm::pi<float>() / 64;
     while (!glfwWindowShouldClose(window_)){
-
 
         double current_time = glfwGetTime();
         if (state_ == start)
@@ -599,8 +589,7 @@ void Game::MainLoop(void){
 
                 scene_.GetNode("BubbleParticles")->SetPosition(camera_.GetPosition() + glm::vec3(0, -0.5, 0.08)); // Make passive bubble particles follow player
 
-                for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++)
-                {
+                for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++) {
                     collision_.CollisionEventCompositeNode(&camera_, *iterator);
 
                     if (camera_.GetNumParts() != last_num_machine_parts_)
@@ -610,12 +599,9 @@ void Game::MainLoop(void){
                     }
                 }
 
-                std::cout << "Is being hurt" << camera_.IsBeingHurt() << std::endl;
-
-
                 scene_.DrawToTexture(&camera_, world_light);
 
-                scene_.DisplayTexture(resman_.GetResource("ScreenSpaceMaterial")->GetResource());
+                scene_.DisplayTexture(&camera_, resman_.GetResource("ScreenSpaceMaterial")->GetResource());
 
                 // Update ImGui UI
                 UpdateHUD();
@@ -633,9 +619,9 @@ void Game::MainLoop(void){
                     scene_.ClearObj();
                     state_ = lose;
                 }
-                //std::cout << camera_.GetPosition().x << ", " << camera_.GetPosition().y << ", " << camera_.GetPosition().z << std::endl;
-
+                /// NOT WORKING
                 // Hydrothermal vent collision switch
+                /*
                 if (int(current_time) % 6 == 0) { // On
                     for (int i = 1; i < 7; i++) {
                         scene_.GetNode("Vent" + std::to_string(i))->SetCollision(1);
@@ -646,44 +632,13 @@ void Game::MainLoop(void){
                         scene_.GetNode("Vent" + std::to_string(i))->SetCollision(0);
                     }
                 }
+                */
             }
-
-
-            // Process camera/player forward movement
-            //camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
-            //if (camera_.GetSpeed() > 0) {
-            //    camera_.SetSpeed(camera_.GetSpeed() * 0.98);
-
-            //}
-            // Draw the scene
-            //scene_.Draw(&camera_, world_light);
-
         }
-
-        // Process camera/player forward movement
-        //camera_.Translate(camera_.GetForward() * camera_.GetSpeed());
-        //if (camera_.GetSpeed() > 0) {
-        //    camera_.SetSpeed(camera_.GetSpeed() * 0.98);
-
-        //}
-        // Draw the scene
-        //scene_.Draw(&camera_, world_light);
-
-        // Update other events like input handling
         glfwPollEvents();
-
         // Push buffer drawn in the background onto the display
         glfwSwapBuffers(window_);
-
-        // Win condition
-        //if (camera_.CheckWinCondition() == true) {
-
-            //glfwSetWindowShouldClose(window_, true);
-
-        //}
-
         last_time_ = current_time;
-
     }
 }
 
@@ -706,9 +661,6 @@ void Game::CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
-
-
-    // Get user data with a pointer to the game class
     void* ptr = glfwGetWindowUserPointer(window);
     Game *game = (Game *) ptr;
 
@@ -862,9 +814,7 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
             game->camera_.SetSideSpeed(0);
         }
     }
-
-    if (game->pressed_.find(GLFW_KEY_D) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_A) == game->pressed_.end())
-    {
+    if (game->pressed_.find(GLFW_KEY_D) == game->pressed_.end() && game->pressed_.find(GLFW_KEY_A) == game->pressed_.end()) {
         game->camera_.SetSideSpeed(0);
     }
 
@@ -873,7 +823,6 @@ void Game::KeyCallback(GLFWwindow* window, int key, int scancode, int action, in
     }
 
 }
-
 
 void Game::ResizeCallback(GLFWwindow* window, int width, int height){
 
@@ -893,7 +842,7 @@ void Game::UpdateStartHUD()
 
     //ImGui::SetNextWindowSize(ImVec2(350, 100)); // Next window size
     ImVec2 screenSize = ImGui::GetIO().DisplaySize;
-    ImVec2 titleSize = ImGui::CalcTextSize("The Submarine Game");
+    ImVec2 titleSize = ImGui::CalcTextSize("3501 Leagues Under the Sea");
     ImVec2 pressEnterSize = ImGui::CalcTextSize("Press Enter to start");
 
     ImVec2 titlePos = ImVec2((screenSize.x - titleSize.x) * 0.4f, screenSize.y * 0.35f);
@@ -904,7 +853,7 @@ void Game::UpdateStartHUD()
 
     // Draw "The Submarine Game" text
     ImGui::SetCursorPos(titlePos);
-    ImGui::Text("The Submarine Game");
+    ImGui::Text("3501 Leagues Under the Sea");
 
     // Draw "Press Enter to start" text
     ImGui::SetCursorPos(pressEnterPos);
@@ -1044,6 +993,5 @@ SceneNode* Game::CreateSceneNodeInstance(std::string entity_name, std::string ob
     SceneNode* node = new SceneNode(entity_name, geom, mat, NULL, 0);
     return node;
 }
-
 
 } // namespace game

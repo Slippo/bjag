@@ -9,6 +9,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <vector>
 
@@ -95,8 +96,6 @@ namespace game {
             float max_speed_ = 9.0f; // Maximum speed factor
             float min_speed_ = -9.0f; // Minimum speed factor
             float jump_limit_ = 60.0f;
-            float jump_ = 0.0;
-            float base_y_position_ = 0.0;
             float timer_ = 240.0; // Oxygen / health / game time
             int num_parts_ = 0; // Game win condition, goes up when submarine part is collected
             glm::vec3 position_; // Position of camera
@@ -110,7 +109,7 @@ namespace game {
             glm::vec3 movement_side_;
             glm::mat4 view_matrix_; // View matrix
             glm::mat4 projection_matrix_; // Projection matrix
-            glm::vec3 old_position_;
+            glm::vec3 base_position_;
             CameraState state_;
 
             std::vector<float> height_map_;
@@ -120,6 +119,7 @@ namespace game {
             int width;
             int height;
 
+
             float max_y_;
             float ground_height_;
 
@@ -127,7 +127,12 @@ namespace game {
             float radius_;
             bool dead_;
 
-            // Win condition
+            // Physics values
+            float base_vel = 10.0f;
+            float jump_height = 10.0f;
+            float gravity = 5.8f;
+            float t_;
+
             bool win_condition_ = false;
 
             bool hurt_ = false;

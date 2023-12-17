@@ -24,8 +24,7 @@ namespace game
 		// Handles collision if the player collides with a beacon (the beacon disappears if it's active)
 		void PlayerMachinePartCollision(Camera* camera, CompositeNode* obj);
 	private:
-		float last_collision_;
-		float prev_;
+		float prev_collision_;
 	};
 }
 

@@ -80,7 +80,7 @@ namespace game {
 
             bool moving_;
 
-            std::set<int> pressed_;
+            std::set<int> pressed_; // TBR
 
             // Size of both planes
             const glm::ivec2 plane_size_ = glm::ivec2(200,200);
@@ -118,7 +118,7 @@ namespace game {
             // The scene node instance is used to make the cylinders (stems/branches)
             SceneNode* CreateSphereInstance(std::string entity_name, std::string object_name, std::string material_name);
             SceneNode* CreateSceneNodeInstance(std::string entity_name, std::string object_name, std::string material_name);
-
+            // Create an instance of an object stored in the resource manager
 
 
     }; // class Game
