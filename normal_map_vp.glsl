@@ -59,8 +59,4 @@ void main()
 
     // Send texture coordinates
     vertex_uv = uv;
-
-
-
-
 }

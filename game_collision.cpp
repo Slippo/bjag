@@ -8,6 +8,7 @@ namespace game
         prev_collision_ = -1.0;
     }
 
+    // IDK what the point of this is
     void GameCollision::CollisionEventSceneNode(Camera* camera, SceneNode* obj)
     {
 

@@ -264,7 +264,7 @@ namespace game {
     resman_.LoadResource(Texture, "NormalMapStone", filename.c_str());
 
     //normal map for rock
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/Pebbles_026_normal.png");
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_pebbles.png");
     resman_.LoadResource(Texture, "NormalMapRock", filename.c_str());
     
     // shader for 3-term lighting and texture combined effect
@@ -281,8 +281,8 @@ namespace game {
 
     //metal
     //filename = std::string(MATERIAL_DIRECTORY) + std::string("/Metal_Corrugated_0111_.png");
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/metal_corrugated.png");
-    resman_.LoadResource(Texture, "MetalTexture", filename.c_str());
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/rust.png");
+    resman_.LoadResource(Texture, "RustTexture", filename.c_str());
 
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/nm_grass.png");
     resman_.LoadResource(Texture, "NormalMapGrass", filename.c_str());
@@ -345,14 +345,12 @@ namespace game {
     filename = std::string(MATERIAL_DIRECTORY) + std::string("/fish_new.obj");
     resman_.LoadResource(Mesh, "FishMesh", filename.c_str());
 
+    filename = std::string(MATERIAL_DIRECTORY) + std::string("/item_material");
+    resman_.LoadResource(Material, "ItemMaterial", filename.c_str());
+
     // Create particles
     resman_.CreateSphereParticles("SphereParticles");
     resman_.CreateSphereParticles("SphereParticlesBubbles", 10);
-
-
-    /*resman_.CreateCone("MachinePart", 2.0, 1.0, 10, 10);
-    filename = std::string(MATERIAL_DIRECTORY) + std::string("/material");
-    resman_.LoadResource(Material, "ObjectMaterial", filename.c_str());*/
 }
 
 void Game::SetupScene(void)
@@ -381,10 +379,6 @@ void Game::PopulateWorld(void) {
    //scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
 
   // scene_.AddNode(manipulator->ConstructAnemonie(&resman_, "Anemonie", glm::vec3(0, 2, 0)));
-
-    //scene_.AddNode(manipulator->ConstructRock(&resman_, "ROCK", glm::vec3(0, 0, 0)));
-    //scene_.GetNode("ROCK")->Scale(glm::vec3(0.8, 0.5, 0.5));
-
 
     //scene_.AddNode(manipulator->ConstructSeaweed(&resman_, "Seaweed1", 4, glm::vec3(0, 0, -5)));
 
@@ -527,39 +521,29 @@ void Game::SetupStartScreen(void)
 
 void Game::MainLoop(void){
     double current_time = 0.0f;
-    float last_time = 0.0f;
     float delta_time = 0.0f;
     float mytheta = glm::pi<float>() / 64;
     while (!glfwWindowShouldClose(window_)){
 
-        double current_time = glfwGetTime();
-        if (state_ == start)
-        {
-            // scene_.SetBackgroundColor(glm::vec3(1.0, 0.0, 0.1));
+        current_time = glfwGetTime();
+        if (state_ == start) {
             UpdateStartHUD();
         } 
-        else if (state_ == win)
-        {
+        else if (state_ == win) {
             scene_.Draw();
             UpdateWinHUD();
         }
-        else if (state_ == lose)
-        {
+        else if (state_ == lose) {
             scene_.Draw();
 
             UpdateLoseHUD();
         }
-
-        else if (state_ == ingame)
-        {
+        else if (state_ == ingame) {
             SceneNode* world_light = scene_.GetNode("Sun")->GetRoot();
             float delta_time = 0.0f;
             // Animate the scene
 
             if (animating_) {
-
-                float mytheta = glm::pi<float>() / 64;
-                
                 delta_time = current_time - last_time_;
 
                 //if ((current_time - last_time_) > 0.05) {
