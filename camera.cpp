@@ -54,22 +54,7 @@ void Camera::SetTimer(float t) {
     timer_ = t;
 }
 
-/// TODO: document this function
-float Camera::CalculateSlope(float h) {
-    float curr_height = position_.y;
-    float slope = -100;
-    
-    slope = abs(curr_height - (h));
-
-    if (h <= ground_height_ + 0.4)
-    {
-        slope = 0;
-    }
-
-    return slope;
-}
-
-/// TODO: document this function
+// This function sets the necessary height maps for the camera to use when traversing the terrain
 void Camera::SetHeightMap(std::vector<float> h, std::vector<float> height_boundary) {
 
     for (int i = 0; i < h.size(); i++) {
@@ -86,6 +71,8 @@ void Camera::SetHeightMap(std::vector<float> h, std::vector<float> height_bounda
             float heightB = height_map_[j + 1 + (width - 1) * i];
             float heightC = height_map_[j + (width - 1) * (i + 1)];
             float heightD = height_map_[(j + 1) + (width - 1) * (i + 1)];
+            // A B
+            // C D
 
             //AB
             slopes[0] = heightB - heightA;
@@ -109,7 +96,7 @@ void Camera::SetHeightMap(std::vector<float> h, std::vector<float> height_bounda
         }
     }
 }
- // IDK what this does
+ // This function sets the necessary height map dimensions for the camera
 void Camera::SetDimensions(int x, int z, int w, int h) {
     offsetX = x;
     offsetZ = z;
@@ -258,8 +245,6 @@ void Camera::Update(float delta_time)
 {
     glm::vec3 old_position = position_;
     glm::vec3 tempPos = position_ + ((GetForwardMovement() * forward_speed_ * delta_time)) + (GetSideMovement() * side_speed_ * delta_time);
-    //position_ += (GetForwardMovement() * forward_speed_ * delta_time);
-    //position_ += (GetSideMovement() * side_speed_ * delta_time);    
 
     float oldY = 0.0;
     
@@ -295,15 +280,6 @@ void Camera::Update(float delta_time)
                 return;
             }
         }
-        /*else
-        {
-            float slope = CalculateSlope(interpolation);
-            if (slope >= 1.1 || x == 0 || x == height - 2 || z == 0 || z == width - 2)
-            {
-                state_ = falling;
-            }
-
-        }*/
         
         position_ = tempPos;
         position_.y = base_position_.y + (0.5 * (jump_height + (base_vel - (gravity * t_))) * t_);
@@ -319,18 +295,9 @@ void Camera::Update(float delta_time)
         if (t_ >= 2.0 && abs(distance) <= 0.3)
         {
             tempPos.y = interpolation;
-            //float slope = CalculateSlope(interpolation);
             t_ = 0.0;
             state_ = walking;
 
-            /*if (slope >= 1.1 || x == 0 || x == height - 2 || z == 0 || z == width - 2)
-            {
-                std::cout << "Hello" << std::endl;
-                position_.x = oldPos.x;
-                position_.z = oldPos.z;
-                position_.y = oldY;
-                return;
-            }*/
             position_ = tempPos;
         }
         else {
@@ -363,25 +330,11 @@ void Camera::Update(float delta_time)
 void Camera::UpdateForwardVelocity(float backwards)
 {
     forward_speed_ = max_speed_ * backwards;
-    /*if (forward_speed_ >= GetMaxSpeed())
-    {
-        forward_speed_ = max_speed_;
-    }
-    if (forward_speed_ <= GetMinSpeed()) {
-        forward_speed_ = min_speed_;
-    }*/
 }
 
 void Camera::UpdateSideVelocity(float left)
 {
     side_speed_ = max_speed_ * left;
-    /*if (side_speed_ >= GetMaxSpeed())
-    {
-        side_speed_ = max_speed_;
-    }
-    if (side_speed_ <= GetMinSpeed()) {
-        side_speed_ = min_speed_;
-    }*/
 }
 
 void Camera::SetView(glm::vec3 position, glm::vec3 look_at, glm::vec3 up) {

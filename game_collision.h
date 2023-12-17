@@ -15,12 +15,8 @@ namespace game
 		GameCollision();
 
 		// Handler in the event the camera (player) collides with any object
-		void CollisionEventSceneNode(Camera* camera, SceneNode* obj);
-
-
 		void CollisionEventCompositeNode(Camera* camera, CompositeNode* obj);
 
-		void PlayerSeaweedCollision(Camera* camera, CompositeNode* obj);
 		// Handles collision if the player collides with a beacon (the beacon disappears if it's active)
 		void PlayerMachinePartCollision(Camera* camera, CompositeNode* obj);
 	private:

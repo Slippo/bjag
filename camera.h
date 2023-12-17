@@ -45,7 +45,6 @@ namespace game {
             inline void SetState(CameraState t) { state_ = t; }
             void SetHeightMap(std::vector<float> h, std::vector<float> height_boundary);
             void SetDimensions(int x, int z, int width, int height);
-            float CalculateSlope(float h);
             void UpdateForwardVelocity(float backwards);
             void UpdateSideVelocity(float left);
             void Update(float delta_time);

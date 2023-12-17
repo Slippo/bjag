@@ -7,26 +7,6 @@ namespace game
     {
         prev_collision_ = -1.0;
     }
-
-    // IDK what the point of this is
-    void GameCollision::CollisionEventSceneNode(Camera* camera, SceneNode* obj)
-    {
-
-        if (glm::length(camera->GetPosition() - obj->GetPosition()) <= (camera->GetRadius() + obj->GetRadius()))
-        {
-
-            //if (obj->GetType() == 1 && obj->GetCollision() == 1)
-            //{
-                //PlayerMachinePartCollision(camera, obj);
-            //}
-
-            //else if (obj->GetType() == 1)
-            //{
-            //    PlayerEnemyCollision(camera, obj);
-            //}    
-        }
-    }
-
     void GameCollision::CollisionEventCompositeNode(Camera* camera, CompositeNode* obj)
     {
 
@@ -35,10 +15,9 @@ namespace game
 
         if (glm::length(camera->GetPosition() - position_) <= (camera->GetRadius() + obj->GetRoot()->GetRadius()))
         {
-            // std::cout << "Collision detected" << std::endl;
+            // If we collided with a machine part
             if (obj->GetType() == 5 && obj->GetRoot()->GetCollision() == 1)
             {
-                // PlayerSeaweedCollision(camera, obj);
                 PlayerMachinePartCollision(camera, obj);
                 return;
             }
@@ -50,7 +29,7 @@ namespace game
             
         }
 
-        if (obj->hitboxes_.size() != 0) { // If the object has a hitbox
+        if (obj->hitboxes_.size() != 0) { // If the object has a hitbox (for spikes)
 
             for (int i = 0; i < obj->hitboxes_.size(); i++) { // For each hitbox
 
@@ -78,11 +57,7 @@ namespace game
         
     }
 
-    void GameCollision::PlayerSeaweedCollision(Camera* camera, CompositeNode* obj)
-    {
-        obj->GetRoot()->SetCollision(2);
-    }
-
+    // If player collides with machine part, increase the number of parts we've collected
     void GameCollision::PlayerMachinePartCollision(Camera* camera, CompositeNode* obj)
     {
         obj->GetRoot()->SetCollision(2);

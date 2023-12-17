@@ -39,7 +39,6 @@ namespace game {
         animating_ = true;
         moving_ = false;
         state_ = start;
-        std::cout << "initialized!" << std::endl;
         SoundEngine = irrklang::createIrrKlangDevice();
         SoundEngine->play2D((MATERIAL_DIRECTORY + std::string("\\audio\\stranded.mp3")).c_str(), true);
 
@@ -558,6 +557,7 @@ void Game::MainLoop(void){
 
                 scene_.GetNode("BubbleParticles")->SetPosition(camera_.GetPosition() + glm::vec3(0, -0.5, 0.08)); // Make passive bubble particles follow player
 
+                // Check if player collided with any objects
                 for (std::vector<CompositeNode*>::const_iterator iterator = scene_.begin(); iterator != scene_.end(); iterator++) {
                     collision_.CollisionEventCompositeNode(&camera_, *iterator);
 
