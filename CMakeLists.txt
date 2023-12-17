@@ -15,14 +15,14 @@ set(SRCS
 
 set(IRRKLANG_DLL_PATH irrKlang.dll)
 
-#set(IKPMP3_DLL_PATH ikpMP3.dll)
+set(IKPMP3_DLL_PATH ikpMP3.dll)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 # Add path name to configuration file
 #configure_file(path_config.h.in path_config.h)
-#file(COPY ${IRRKLANG_DLL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH})
-#file(COPY ${IKPMP3_DLL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+file(COPY ${IRRKLANG_DLL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+file(COPY ${IKPMP3_DLL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 
 # Add executable based on the header and source files
 add_executable(${PROJ_NAME} ${HDRS} ${SRCS})
