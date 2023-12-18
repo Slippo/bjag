@@ -556,7 +556,7 @@ namespace game {
         node3->SetColor(glm::vec3(0.501, 0.501, 0.501));
         node1->AddChild(node3);
         part->AddNode(node3);
-      
+        part->Scale(glm::vec3(2));
         return part;
     }
 
